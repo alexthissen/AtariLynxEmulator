@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emulation.Core8Bit", "Framework\Emulation.Core8Bit\Emulation.Core8Bit.csproj", "{714EA8D7-CD22-41B6-956B-C0B8076E7C30}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Framework", "Framework", "{57DA1BC1-ABF4-498A-99DA-D60A132A272D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{36DA151D-7800-4816-8101-2C38E721D71B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Atari", "Atari", "{C32557B1-9366-4061-85F9-460C1C8019F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtariLynx", "Atari\AtariLynx\AtariLynx.csproj", "{55628D95-A00F-4266-B784-20B81D662004}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emulation.6502", "Framework\Emulation.6502\Emulation.6502.csproj", "{244BE6E7-3086-4522-A21F-975BB9D37F0B}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 4
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs01
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = Atari\\AtariLynx\\AtariLynx.csproj
+		SccProjectTopLevelParentUniqueName1 = AtariLynxEmulator.sln
+		SccProjectName1 = Atari/AtariLynx
+		SccLocalPath1 = Atari\\AtariLynx
+		SccProjectUniqueName2 = Framework\\Emulation.6502\\Emulation.6502.csproj
+		SccProjectTopLevelParentUniqueName2 = AtariLynxEmulator.sln
+		SccProjectName2 = Framework/Emulation.6502
+		SccLocalPath2 = Framework\\Emulation.6502
+		SccProjectUniqueName3 = Framework\\Emulation.Core8Bit\\Emulation.Core8Bit.csproj
+		SccProjectTopLevelParentUniqueName3 = AtariLynxEmulator.sln
+		SccProjectName3 = Framework/Emulation.Core8Bit
+		SccLocalPath3 = Framework\\Emulation.Core8Bit
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{714EA8D7-CD22-41B6-956B-C0B8076E7C30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{714EA8D7-CD22-41B6-956B-C0B8076E7C30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{714EA8D7-CD22-41B6-956B-C0B8076E7C30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{714EA8D7-CD22-41B6-956B-C0B8076E7C30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55628D95-A00F-4266-B784-20B81D662004}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55628D95-A00F-4266-B784-20B81D662004}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55628D95-A00F-4266-B784-20B81D662004}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55628D95-A00F-4266-B784-20B81D662004}.Release|Any CPU.Build.0 = Release|Any CPU
+		{244BE6E7-3086-4522-A21F-975BB9D37F0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{244BE6E7-3086-4522-A21F-975BB9D37F0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{244BE6E7-3086-4522-A21F-975BB9D37F0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{244BE6E7-3086-4522-A21F-975BB9D37F0B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{714EA8D7-CD22-41B6-956B-C0B8076E7C30} = {57DA1BC1-ABF4-498A-99DA-D60A132A272D}
+		{244BE6E7-3086-4522-A21F-975BB9D37F0B} = {57DA1BC1-ABF4-498A-99DA-D60A132A272D}
+		{55628D95-A00F-4266-B784-20B81D662004} = {C32557B1-9366-4061-85F9-460C1C8019F4}
+	EndGlobalSection
+EndGlobal
