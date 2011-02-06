@@ -54,7 +54,10 @@ namespace KillerApps.Emulation.Processors
 		public bool C; // Carry flag for processor status register
 
 		protected IMemoryAccess16BitBus Memory { get; private set; }
-		
+
+		// Irq and Mni related
+		public bool IsSystemIrqActive { get; private set; }
+
 		public Nmos6502(IMemoryAccess16BitBus memory)
 		{
 			Memory = memory;
@@ -62,10 +65,15 @@ namespace KillerApps.Emulation.Processors
 
 		// Stack related functions
 		internal void PushOnStack(byte m) { Memory.PokeByte((ushort)(0x0100 + SP), m); SP--; SP &= 0xff; }
-		internal int PullFromStack() { SP++; SP &= 0xff; return Memory.PeekByte((ushort)(SP + 0x0100)); }
+		internal byte PullFromStack() { SP++; SP &= 0xff; return Memory.PeekByte((ushort)(SP + 0x0100)); }
+		internal byte PeekStack(byte depth) { return Memory.PeekByte((ushort)((SP + 0x0100 - depth) & 0x01ff)); }
 
 		public override void Execute(int cyclesToExecute)
 		{
+			// When Irq is triggered and inerrupts are not disabled, run interrupt sequence
+			// "Then, the interrupt signal waits for the end of the current CPU cycle before actually interrupting the CPU."
+			if (IsSystemIrqActive && !I) RunInterruptSequence(InterruptType.Irq);
+
 			// Fetch opcode
 			Opcode = Memory.PeekByte(PC);
 			Debug.WriteLineIf(true, String.Format("Nmos6502::Execute: PC {0:X4}, Opcode {1:X2} ", PC, Opcode));
@@ -74,6 +82,25 @@ namespace KillerApps.Emulation.Processors
 			// Decode and execute
 			switch (Opcode)
 			{
+				case 0x00:
+					// Implied addressing
+					BRK();
+					break;
+
+				case 0x40: // RTI
+					// Need to peek at stack to see B flag in current proccessor status 
+					byte status = PeekStack(0);
+
+					// Only clear IRQ if this is not a BRK instruction based RTI
+					if ((status & 0x10) != 0)
+					{
+						// TODO: Restore sleep and adjust timing from sleep
+					}
+
+					// Implied addressing
+					RTI();
+					break;
+
 				default:
 					Debug.WriteLine(String.Format("Nmos6502::Execute: Unhandled opcode {0:X2}", Opcode));
 					break;
@@ -92,7 +119,40 @@ namespace KillerApps.Emulation.Processors
 
 		public override object SignalInterrupt(params object[] args)
 		{
-			throw new NotImplementedException();
+			// Set flag to indicate a IRQ is being signaled. This will be picked up at the next 
+			// update of the CPU.
+			IsSystemIrqActive = true;
+
+			// Nothing to report back to the signaler
+			return null;
+		}
+
+		// "The interrupt sequence takes two clocks for internal operations, two to push the 
+		// return address onto the stack, one to push the processor status register, and two more 
+		// to get the ISR's beginning address from $FFFE-FFFF (for IRQ) or $FFFA-FFFB (for NMI)
+		// -- in that order."
+		protected virtual void RunInterruptSequence(InterruptType irqType)
+		{
+			Debug.WriteLine(String.Format("IRQ sequence run at PC={0}", PC));
+		
+			// "The interrupt sequence pushes three bytes onto the stack. First is the high byte of 
+			// the return address, followed by the low byte, and finally the status byte from 
+			// the P processor status register."
+			PushOnStack((byte)(PC >> 8));
+			PushOnStack((byte)(PC & 0xff));
+			PushOnStack((byte)(ProcessorStatus & 0xef));		// Clear B flag on stack
+
+			// "It is important for the programmer to note that the interrupt-disable I flag is set, 
+			// and that the decimal D flag is cleared on the 65C02 but not affected on the NMOS 6502"
+			I = true; // Stop further interrupts
+			D = false; // Clear decimal mode
+
+			// Load Irq vector into program counter
+			ushort vector = irqType == InterruptType.Irq ? VectorAddresses.IRQ_VECTOR : VectorAddresses.NMI_VECTOR;
+			PC = Memory.PeekWord(vector);
+
+			// Clear interrupt status line
+			IsSystemIrqActive = false;
 		}
 	}
 }

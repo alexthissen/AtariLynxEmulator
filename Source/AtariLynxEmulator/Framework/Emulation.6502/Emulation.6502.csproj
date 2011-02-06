@@ -45,8 +45,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="6502\Nmos6502.cs" />
+    <Compile Include="6502\Nmos6502.Opcodes.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="65C02\Cmos65C02.cs" />
     <Compile Include="Clock.cs" />
+    <Compile Include="InterruptType.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VectorAddresses.cs" />
   </ItemGroup>
