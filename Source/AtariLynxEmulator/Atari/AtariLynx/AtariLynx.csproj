@@ -48,11 +48,13 @@
     <Compile Include="MemoryManagementUnit.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MemoryMapControl.cs" />
     <Compile Include="Mikey\MikeyAddresses.cs" />
     <Compile Include="Mikey\MikeyChipset.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Ram64KBMemory.cs" />
     <Compile Include="Suzy\SuzyChipset.cs" />
   </ItemGroup>
   <ItemGroup>

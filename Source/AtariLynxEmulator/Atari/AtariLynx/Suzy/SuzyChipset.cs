@@ -6,7 +6,7 @@ using KillerApps.Emulation.Core;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
-	public class SuzyChipset: IMemoryAccess16BitBus
+	public class SuzyChipset : IMemoryAccess<ushort, byte>
 	{
 		public const int SUZYHARDWARE_READ = 5;
 		public const int SUZYHARDWARE_WRITE = 5;
@@ -14,22 +14,12 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public ulong PaintSprites() { return 0; }
 
-		public void PokeByte(ushort address, byte value)
+		public void Poke(ushort address, byte value)
 		{
 			throw new NotImplementedException();
 		}
 
-		public byte PeekByte(ushort address)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void PokeWord(ushort address, ushort value)
-		{
-			throw new NotImplementedException();
-		}
-
-		public ushort PeekWord(ushort address)
+		public byte Peek(ushort address)
 		{
 			throw new NotImplementedException();
 		}

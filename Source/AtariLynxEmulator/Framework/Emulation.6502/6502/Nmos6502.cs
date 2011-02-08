@@ -10,14 +10,14 @@ namespace KillerApps.Emulation.Processors
 	public partial class Nmos6502: ProcessorBase
 	{
 		// Processor registers
-		public byte A { get; set; }				// Accumulator								8 bits
-		public byte X { get; set; }				// X index register						8 bits
-		public byte Y { get; set; }				// Y index register						8 bits
-		public byte SP { get; set; }				// Stack Pointer							8 bits
+		public byte A { get; set; }	// Accumulator (8 bits)
+		public byte X { get; set; }	// X index register (8 bits)
+		public byte Y { get; set; }	// Y index register	(8 bits)
+		public byte SP { get; set; } // Stack Pointer	(8 bits)
 		
-		public byte Opcode { get; set; }		// Instruction opcode					8 bits
-		public ushort Operand { get; set; }	// Instructions operand				16 bits
-		public ushort PC { get; set; }				// Program Counter						16 bits
+		public byte Opcode { get; set; } // Instruction opcode (8 bits)
+		public ushort Operand { get; set; }	// Instructions operand	(16 bits)
+		public ushort PC { get; set; } // Program Counter (16 bits)
 		public byte ProcessorStatus
 		{
 			get
@@ -53,7 +53,7 @@ namespace KillerApps.Emulation.Processors
 		public bool Z; // Zero flag for processor status register
 		public bool C; // Carry flag for processor status register
 
-		protected IMemoryAccess16BitBus Memory { get; private set; }
+		protected IMemoryAccess<ushort, byte> Memory { get; private set; }
 
 		// Timing and sleep
 		public bool IsAsleep { get; private set; }
@@ -71,16 +71,16 @@ namespace KillerApps.Emulation.Processors
 		// Irq and Mni related
 		public bool IsSystemIrqActive { get; private set; }
 
-		public Nmos6502(IMemoryAccess16BitBus memory, Clock clock)
+		public Nmos6502(IMemoryAccess<ushort, byte> memory, Clock clock)
 		{
 			SystemClock = clock;
 			Memory = memory;
 		}
 
 		// Stack related functions
-		internal void PushOnStack(byte m) { Memory.PokeByte((ushort)(0x0100 + SP), m); SP--; SP &= 0xff; }
-		internal byte PullFromStack() { SP++; SP &= 0xff; return Memory.PeekByte((ushort)(SP + 0x0100)); }
-		internal byte PeekStack(byte depth) { return Memory.PeekByte((ushort)((SP + 0x0100 - depth) & 0x01ff)); }
+		internal void PushOnStack(byte m) { Memory.Poke((ushort)(0x0100 + SP), m); SP--; SP &= 0xff; }
+		internal byte PullFromStack() { SP++; SP &= 0xff; return Memory.Peek((ushort)(SP + 0x0100)); }
+		internal byte PeekStack(byte depth) { return Memory.Peek((ushort)((SP + 0x0100 - depth) & 0x01ff)); }
 
 		public override ulong Execute(int cyclesToExecute)
 		{
@@ -100,7 +100,7 @@ namespace KillerApps.Emulation.Processors
 			if (IsAsleep) return 0;
 
 			// Fetch opcode
-			Opcode = Memory.PeekByte(PC);
+			Opcode = Memory.Peek(PC);
 			Debug.WriteLineIf(true, String.Format("Nmos6502::Execute: PC {0:X4}, Opcode {1:X2} ", PC, Opcode));
 			PC++;
 

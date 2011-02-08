@@ -9,10 +9,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 {
 	public class LynxHandheld
 	{
-		public IMemoryAccess16BitBus Cartridge { get; private set; }
-		public IMemoryAccess16BitBus Ram { get; private set; }
-		public IMemoryAccess16BitBus Rom { get; private set; }
-		public IMemoryAccess16BitBus MMU { get; private set; }
+		public IMemoryAccess<ushort, byte> Cartridge { get; private set; }
+		public IMemoryAccess<ushort, byte> Ram { get; private set; }
+		public IMemoryAccess<ushort, byte> Rom { get; private set; }
+		public IMemoryAccess<ushort, byte> MMU { get; private set; }
 		public MikeyChipset Mikey { get; set; }
 		public SuzyChipset Suzy { get; set; }
 		public Nmos6502 Cpu { get; private set; }
@@ -20,6 +20,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public void Initialize()
 		{
+			Ram = new Ram64KBMemory();
+
 			// Pass all hardware that have memory access to MMU
 			MMU = new MemoryManagementUnit(Rom, Ram, Mikey, Suzy);
 		}

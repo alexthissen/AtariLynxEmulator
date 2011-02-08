@@ -44,7 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IMemoryAccess16BitBus.cs" />
+    <Compile Include="IMemoryAccessT.cs" />
     <Compile Include="ProcessorBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

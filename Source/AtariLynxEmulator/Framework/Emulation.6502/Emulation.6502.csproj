@@ -53,6 +53,7 @@
     <Compile Include="InterruptType.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MemoryAccessExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VectorAddresses.cs" />
   </ItemGroup>

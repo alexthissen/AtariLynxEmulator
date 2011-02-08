@@ -8,7 +8,7 @@ using System.Diagnostics;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
-	public class MikeyChipset: IMemoryAccess16BitBus
+	public class MikeyChipset : IMemoryAccess<ushort, byte>
 	{
 		public const int AUDIO_DPRAM_READWRITE_MIN = 5;
 		public const int AUDIO_DPRAM_READWRITE_MAX = 20;
@@ -31,7 +31,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public void Update() { }
 
-		public void PokeByte(ushort address, byte value)
+		public void Poke(ushort address, byte value)
 		{
 			switch (address)
 			{
@@ -87,7 +87,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			}
 		}
 
-		public byte PeekByte(ushort address)
+		public byte Peek(ushort address)
 		{
 			switch (address)
 			{
@@ -107,16 +107,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 					break;
 			}
 			return 0xff;
-		}
-
-		public void PokeWord(ushort address, ushort value)
-		{
-			throw new NotImplementedException();
-		}
-
-		public ushort PeekWord(ushort address)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }
