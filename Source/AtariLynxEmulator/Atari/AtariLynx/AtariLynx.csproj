@@ -48,6 +48,7 @@
     <Compile Include="MemoryManagementUnit.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Mikey\MikeyAddresses.cs" />
     <Compile Include="Mikey\MikeyChipset.cs">
       <SubType>Code</SubType>
     </Compile>

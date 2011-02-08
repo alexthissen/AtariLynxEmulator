@@ -55,11 +55,25 @@ namespace KillerApps.Emulation.Processors
 
 		protected IMemoryAccess16BitBus Memory { get; private set; }
 
+		// Timing and sleep
+		public bool IsAsleep { get; private set; }
+		private ulong ScheduledWakeUpTime;
+		private Clock SystemClock;
+		public void TrySleep(ulong cyclesToSleep)
+		{
+			// Set time when we need to wake up because Suzy tells us to. 
+			// We might get beaten by earlier IRQs from timers
+			this.ScheduledWakeUpTime = SystemClock.CycleCount + cyclesToSleep;
+			IsAsleep = true;
+			Debug.WriteLine(String.Format("Nmos6502::Sleep: Entering sleep till cycle count {0}", ScheduledWakeUpTime));
+		}
+
 		// Irq and Mni related
 		public bool IsSystemIrqActive { get; private set; }
 
-		public Nmos6502(IMemoryAccess16BitBus memory)
+		public Nmos6502(IMemoryAccess16BitBus memory, Clock clock)
 		{
+			SystemClock = clock;
 			Memory = memory;
 		}
 
@@ -68,11 +82,22 @@ namespace KillerApps.Emulation.Processors
 		internal byte PullFromStack() { SP++; SP &= 0xff; return Memory.PeekByte((ushort)(SP + 0x0100)); }
 		internal byte PeekStack(byte depth) { return Memory.PeekByte((ushort)((SP + 0x0100 - depth) & 0x01ff)); }
 
-		public override void Execute(int cyclesToExecute)
+		public override ulong Execute(int cyclesToExecute)
 		{
 			// When Irq is triggered and inerrupts are not disabled, run interrupt sequence
 			// "Then, the interrupt signal waits for the end of the current CPU cycle before actually interrupting the CPU."
-			if (IsSystemIrqActive && !I) RunInterruptSequence(InterruptType.Irq);
+			if (IsSystemIrqActive)
+			{
+				// "Regarding CPUSLEEP, even if the CPU has set the Interrupt Disable flag in the 
+				// processor status byte, you'll wake up out of sleep."
+				// "If an interrupt occurs while the CPU is asleep, it will wake up the CPU."
+				IsAsleep = false;
+				if (!I) RunInterruptSequence(InterruptType.Irq);
+			}
+
+			// When CPU is sleeping there is nothing to do here. 
+			// Owner needs to increase cycle count to awake CPU.
+			if (IsAsleep) return 0;
 
 			// Fetch opcode
 			Opcode = Memory.PeekByte(PC);
@@ -88,15 +113,6 @@ namespace KillerApps.Emulation.Processors
 					break;
 
 				case 0x40: // RTI
-					// Need to peek at stack to see B flag in current proccessor status 
-					byte status = PeekStack(0);
-
-					// Only clear IRQ if this is not a BRK instruction based RTI
-					if ((status & 0x10) != 0)
-					{
-						// TODO: Restore sleep and adjust timing from sleep
-					}
-
 					// Implied addressing
 					RTI();
 					break;
@@ -105,6 +121,9 @@ namespace KillerApps.Emulation.Processors
 					Debug.WriteLine(String.Format("Nmos6502::Execute: Unhandled opcode {0:X2}", Opcode));
 					break;
 			}
+
+			// TODO: Implement timing of opcode execution and induced memory reads/writes
+			return 0;
 		}
 
 		public override void Initialize()
@@ -119,9 +138,11 @@ namespace KillerApps.Emulation.Processors
 
 		public override object SignalInterrupt(params object[] args)
 		{
-			// Set flag to indicate a IRQ is being signaled. This will be picked up at the next 
-			// update of the CPU.
-			IsSystemIrqActive = true;
+			bool active = args.Length > 0 ? (bool)args[0] : true;
+
+			// Set flag to indicate a IRQ is being signaled or taken down. 
+			// Active IRQs will be picked up at the next update of the CPU.
+			IsSystemIrqActive = active;
 
 			// Nothing to report back to the signaler
 			return null;
@@ -150,6 +171,10 @@ namespace KillerApps.Emulation.Processors
 			// Load Irq vector into program counter
 			ushort vector = irqType == InterruptType.Irq ? VectorAddresses.IRQ_VECTOR : VectorAddresses.NMI_VECTOR;
 			PC = Memory.PeekWord(vector);
+
+			// Save sleep state as an IRQ has possibly woken up CPU
+			// TODO: SystemCPUSleep_Saved = IsAsleep;
+			IsAsleep = false;
 
 			// Clear interrupt status line
 			IsSystemIrqActive = false;

@@ -9,7 +9,7 @@ namespace KillerApps.Emulation.Core
 	{
 		public abstract void Initialize();
 		public abstract void Reset();
-		public abstract void Execute(int cyclesToExecute);
+		public abstract ulong Execute(int cyclesToExecute);
 		public abstract object SignalInterrupt(params object[] args);
 	}
 }

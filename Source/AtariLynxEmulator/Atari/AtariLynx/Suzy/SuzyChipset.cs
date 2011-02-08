@@ -12,6 +12,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public const int SUZYHARDWARE_WRITE = 5;
 		public const int AVAILABLEHARDWARE_READWRITE = 5;
 
+		public ulong PaintSprites() { return 0; }
+
 		public void PokeByte(ushort address, byte value)
 		{
 			throw new NotImplementedException();

@@ -16,6 +16,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public MikeyChipset Mikey { get; set; }
 		public SuzyChipset Suzy { get; set; }
 		public Nmos6502 Cpu { get; private set; }
+		public Clock SystemClock { get; private set; }
 
 		public void Initialize()
 		{
@@ -34,7 +35,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		private void ExecuteCpu(int cyclesToExecute)
 		{
-			Cpu.Execute(cyclesToExecute);
+			SystemClock.CycleCount += Cpu.Execute(cyclesToExecute);
 		}
 
 		private void GenerateInterrupts() { }

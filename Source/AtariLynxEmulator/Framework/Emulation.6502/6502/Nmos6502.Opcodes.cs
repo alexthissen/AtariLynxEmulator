@@ -46,7 +46,6 @@ namespace KillerApps.Emulation.Processors
 		/// stack in that order (interrupts push the PC first and then the PS). 
 		/// Note that unlike RTS, the return address on the stack is the actual address rather 
 		/// than the address-1.
-		/// 
 		/// </remarks>
 		public void RTI()
 		{
