@@ -168,13 +168,9 @@ namespace KillerApps.Emulation.Processors
 			I = true; // Stop further interrupts
 			D = false; // Clear decimal mode
 
-			// Load Irq vector into program counter
+			// Load IRQ vector into program counter
 			ushort vector = irqType == InterruptType.Irq ? VectorAddresses.IRQ_VECTOR : VectorAddresses.NMI_VECTOR;
 			PC = Memory.PeekWord(vector);
-
-			// Save sleep state as an IRQ has possibly woken up CPU
-			// TODO: SystemCPUSleep_Saved = IsAsleep;
-			IsAsleep = false;
 
 			// Clear interrupt status line
 			IsSystemIrqActive = false;

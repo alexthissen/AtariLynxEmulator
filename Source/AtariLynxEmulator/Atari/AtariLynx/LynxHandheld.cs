@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using KillerApps.Emulation.Core;
 using KillerApps.Emulation.Processors;
+using System.Diagnostics;
+using System.IO;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
@@ -21,6 +23,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public void Initialize()
 		{
 			Ram = new Ram64KBMemory();
+			// TODO: Load rom boot image into stream and pass to RomBootMemory ctor
+			Rom = new RomBootMemory(null);
 
 			// Pass all hardware that have memory access to MMU
 			MMU = new MemoryManagementUnit(Rom, Ram, Mikey, Suzy);
@@ -33,13 +37,21 @@ namespace KillerApps.Emulation.Atari.Lynx
 			SynchronizeTime();
 		}
 
-		private void SynchronizeTime() { }
+		private void SynchronizeTime() 
+		{
+			Debug.WriteLineIf(true, String.Format("LynxHandheld::SynchronizeTime: Current time is {0}", SystemClock.CycleCount));
+		}
 
 		private void ExecuteCpu(int cyclesToExecute)
 		{
 			SystemClock.CycleCount += Cpu.Execute(cyclesToExecute);
 		}
 
-		private void GenerateInterrupts() { }
+		private void GenerateInterrupts() 
+		{
+			// Mikey is only source of interrupts. It contains all timers (regular, audio and UART)
+			// TODO: After implementing timing, only update Mikey when there is a predicted timer event
+			Mikey.Update();
+		}
 	}
 }

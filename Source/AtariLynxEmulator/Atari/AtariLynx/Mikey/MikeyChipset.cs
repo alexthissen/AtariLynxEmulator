@@ -29,7 +29,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 			timerInterruptMask = timerInterruptStatusRegister = 0;
 		}
 
-		public void Update() { }
+		public void Update() 
+		{
+			Debug.WriteLineIf(true, "MikeyChipset::Update");
+		}
 
 		public void Poke(ushort address, byte value)
 		{
