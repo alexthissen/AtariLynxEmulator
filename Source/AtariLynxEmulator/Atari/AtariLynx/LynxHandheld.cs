@@ -11,7 +11,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 {
 	public class LynxHandheld
 	{
-		public IMemoryAccess<ushort, byte> Cartridge { get; private set; }
+		public RomCart Cartridge { get; private set; }
 		public IMemoryAccess<ushort, byte> Ram { get; private set; }
 		public IMemoryAccess<ushort, byte> Rom { get; private set; }
 		public IMemoryAccess<ushort, byte> MMU { get; private set; }
@@ -19,6 +19,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public SuzyChipset Suzy { get; set; }
 		public Nmos6502 Cpu { get; private set; }
 		public Clock SystemClock { get; private set; }
+
+		public bool CartridgePowerOn { get; set; }
 
 		public void Initialize()
 		{

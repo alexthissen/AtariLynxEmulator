@@ -18,6 +18,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private byte timerInterruptStatusRegister;
 		private byte timerInterruptMask = 0;
 
+		public ParallelData IODAT { get; set; }
+		public byte IODIR { get; set; }
+
 		public MikeyChipset(LynxHandheld lynx)
 		{
 			this.device = lynx;
@@ -27,6 +30,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		{
 			// SDONEACK = 0 "(not acked)"
 			timerInterruptMask = timerInterruptStatusRegister = 0;
+			IODIR = 0; // reset = 0,0.0.0,0,0,0,0
+			IODAT = new ParallelData(0x00);
 		}
 
 		public void Update() 
@@ -56,6 +61,29 @@ namespace KillerApps.Emulation.Atari.Lynx
 					//Cpu.NextTimerEvent = Master.Cpu.SystemCycleCount;
 					break;
 
+
+				// "Also note that only the lines that are set to input are actually valid for reading."
+				// "8 bits I/O direction corresponding to the 8 bits at FD8B 0=input, 1= output"
+				case MikeyAddresses.IODIR:
+					IODIR = value;
+					break;
+
+				// "Mikey Parallel Data(sort of a R/W) 8 bits of general purpose I/O data"
+				case MikeyAddresses.IODAT:
+					IODAT.ByteData = value;
+
+					Debug.WriteLineIf((IODIR & 0x08) == 0, "MikeyChipset::Poke(IODAT): Rest is not set to output.");
+					Debug.WriteLineIf((IODIR & 0x02) == 0, "MikeyChipset::Poke(IODAT): CartAddressData is not set to output.");
+
+					// "One is that it is the data pin for the shifter that holds the cartridge address."
+					device.Cartridge.CartAddressData(IODAT.CartAddressData);
+					// "The other is that it controls power to the cartridge."
+					device.CartridgePowerOn = !IODAT.CartPowerOff;
+					// "In its current use, it is the write enable line for writeable elements in the cartridge."
+					if ((IODIR & 0x10) == 0x10)
+						device.Cartridge.WriteEnabled = IODAT.AudioIn;
+					break;
+
 				case MikeyAddresses.SDONEACK:
 					// "Write a '00' to SDONEACK, allowing Mikey to respond to sleep commands."
 
@@ -67,7 +95,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 					// will not sleep. So if sprites stop working, something may have gone wrong with your 
 					// SDONEACK software."
 
-					// TODO: Implement state for Suzy Done acknowledgement
+					// TODO: Implement state for Suzy Done acknowledgement if necessary
 					break;
 
 				case MikeyAddresses.CPUSLEEP:
@@ -98,6 +126,15 @@ namespace KillerApps.Emulation.Atari.Lynx
 				case MikeyAddresses.INTRST:
 					// "The software reads either the INTSET or INTRST registers (they have duplicate information) ..."
 					return timerInterruptStatusRegister;
+
+				case MikeyAddresses.IODIR:
+					return this.IODIR;
+
+				// "Note that some lines are used for several functions, please read the spec.
+				// Also note that only the lines that are set to input are actually valid for reading."
+				case MikeyAddresses.IODAT:
+					byte value = IODAT.ByteData;
+					return (byte)(value & (IODIR ^ 0xff));
 
 				// Write-only addresses
 				case MikeyAddresses.CPUSLEEP:

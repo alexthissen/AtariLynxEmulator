@@ -45,6 +45,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cartridge\RomCart.cs" />
+    <Compile Include="Cartridge\RomCartMemoryBank.cs" />
+    <Compile Include="Cartridge\RomCartType.cs" />
     <Compile Include="LynxException.cs" />
     <Compile Include="LynxHandheld.cs" />
     <Compile Include="MemoryManagementUnit.cs">
@@ -55,9 +58,11 @@
     <Compile Include="Mikey\MikeyChipset.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Mikey\ParallelData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Ram64KBMemory.cs" />
     <Compile Include="RomBootMemory.cs" />
+    <Compile Include="Suzy\SuzyAddresses.cs" />
     <Compile Include="Suzy\SuzyChipset.cs" />
   </ItemGroup>
   <ItemGroup>
