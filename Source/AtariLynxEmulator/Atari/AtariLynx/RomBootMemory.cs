@@ -30,11 +30,11 @@ namespace KillerApps.Emulation.Atari.Lynx
 			int bytesRead = stream.Read(romData, 0, ROM_SIZE);
 			if (bytesRead != ROM_SIZE)
 				throw new LynxException("Stream did not have exact size for ROM contents.");
-			if (IsFakeBootImage())
+			if (!VerifyBootImage())
 				throw new LynxException("Boot image file appears to be fake.");
 		}
 
-		private bool IsFakeBootImage()
+		private bool VerifyBootImage()
 		{
 			byte[] romCheck = new byte[16] 
 				{ 
@@ -43,9 +43,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 				};
 			for (int index = 0; index < romCheck.Length; index++)
 			{
-				if (romCheck[index] != romData[index]) return true;
+				if (romCheck[index] != romData[index]) return false;
 			}
-			return false;
+			return true;
 		}
 
 		public void Poke(ushort address, byte value)

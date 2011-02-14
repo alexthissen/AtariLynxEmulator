@@ -45,11 +45,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="6502\Nmos6502.Arithmetic.cs" />
+    <Compile Include="6502\Nmos6502.Registers.cs" />
+    <Compile Include="6502\Nmos6502.Flags.cs" />
+    <Compile Include="6502\Nmos6502.Stack.cs" />
+    <Compile Include="6502\Nmos6502.Bitwise.cs" />
+    <Compile Include="6502\Nmos6502.AddressingModes.cs" />
+    <Compile Include="6502\Nmos6502.Branching.cs" />
     <Compile Include="6502\Nmos6502.cs" />
-    <Compile Include="6502\Nmos6502.Opcodes.cs">
+    <Compile Include="6502\Nmos6502.Logical.cs" />
+    <Compile Include="6502\Nmos6502.System.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="65C02\Cmos65C02.cs" />
+    <Compile Include="65C02\Cmos65SC02.cs" />
+    <Compile Include="65C02\Cmos65SC02.Opcodes.cs" />
+    <Compile Include="65C02\Cmos65SC02.AddressingModes.cs" />
+    <Compile Include="AddressingMode.cs" />
     <Compile Include="Clock.cs" />
     <Compile Include="InterruptType.cs">
       <SubType>Code</SubType>

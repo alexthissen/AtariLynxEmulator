@@ -13,6 +13,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtariLynx", "Atari\AtariLyn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emulation.6502", "Framework\Emulation.6502\Emulation.6502.csproj", "{244BE6E7-3086-4522-A21F-975BB9D37F0B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D0183C14-4CD1-4263-979C-28B60D490DA5}"
+	ProjectSection(SolutionItems) = preProject
+		AtariLynxEmulator.vsmdi = AtariLynxEmulator.vsmdi
+		Local.testsettings = Local.testsettings
+		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 4
@@ -31,6 +38,9 @@ Global
 		SccProjectTopLevelParentUniqueName3 = AtariLynxEmulator.sln
 		SccProjectName3 = Framework/Emulation.Core8Bit
 		SccLocalPath3 = Framework\\Emulation.Core8Bit
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = AtariLynxEmulator.vsmdi
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
