@@ -8,27 +8,20 @@ namespace KillerApps.Emulation.Processors
 	public partial class Nmos6502
 	{
 		/// <summary>
+		/// Bitwise Exclusive OR
+		/// </summary>
+		public void EOR()
+		{
+			A ^= Memory.Peek(Operand);
+			UpdateNegativeZeroFlags(A);
+		}
+
+		/// <summary>
 		/// Bitwise OR with Accumulator
 		/// </summary>
 		public void ORA()
 		{
 			A |= Memory.Peek(Operand);
-			UpdateNegativeZeroFlags(A);
-		}
-
-		/// <summary>
-		/// Arithmetic Shift Left Accumulator
-		/// </summary>
-		/// <remarks>
-		/// This operation shifts all the bits of the accumulator or memory contents one bit 
-		/// left. Bit 0 is set to 0 and bit 7 is placed in the carry flag. The effect of this 
-		/// operation is to multiply the memory contents by 2 (ignoring 2's complement 
-		/// considerations), setting the carry if the result will not fit in 8 bits.
-		/// </remarks>
-		private void ASLA()
-		{
-			C = (A & 0x80) == 0x80;
-			A <<= 1;
 			UpdateNegativeZeroFlags(A);
 		}
 
@@ -99,7 +92,8 @@ namespace KillerApps.Emulation.Processors
 		{
 			byte value = Memory.Peek(Operand);
 			value &= A;
-			UpdateZeroFlag(value);
+			UpdateNegativeZeroFlags(value);
+			V = (value & 0x40) == 0x40;
 		}
 	}
 }

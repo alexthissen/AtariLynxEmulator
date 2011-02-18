@@ -20,7 +20,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		
 		private byte[] romData = new byte[ROM_SIZE];
 
-		public RomBootMemory(Stream stream)
+		public RomBootMemory()
 		{
 			for (int index = 0; index < ROM_SIZE; index++) romData[index] = DEFAULT_ROM_CONTENTS;
 		}

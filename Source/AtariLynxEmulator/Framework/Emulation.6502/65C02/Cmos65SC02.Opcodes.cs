@@ -114,18 +114,12 @@ namespace KillerApps.Emulation.Processors
 		/// The mask pattern in A is ANDed with the value in memory to set or clear the zero flag, but the 
 		/// result is not kept. Bits 7 and 6 of the value from memory are copied into the N and V flags.
 		/// </remarks>
-		public void BIT2()
+		public void BITImmediate()
 		{
 			byte value = Memory.Peek(Operand);
 			value &= A;
-			UpdateZeroFlag(value);
-
 			// "BIT has three additional addressing modes. ... The immediate addressing mode only affects the Z flag."
-			if (Opcode != 0x89)
-			{
-				N = (value & 0x80) == 0x80;
-				V = (value & 0x40) == 0x40;
-			}
+			UpdateZeroFlag(value);
 		}
 	}
 }

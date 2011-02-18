@@ -112,7 +112,7 @@ namespace KillerApps.Emulation.Processors
 		/// If the negative flag is clear then add the relative displacement to the program 
 		/// counter to cause a branch to a new location.
 		/// </remarks>
-		private void BPL()
+		public void BPL()
 		{
 			if (!N)
 			{

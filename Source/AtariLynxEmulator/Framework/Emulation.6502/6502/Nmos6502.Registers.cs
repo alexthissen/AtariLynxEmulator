@@ -148,5 +148,52 @@ namespace KillerApps.Emulation.Processors
 			Y--;
 			UpdateNegativeZeroFlags(Y);
 		}
+
+		/// <summary>
+		/// LoaD Accumulator
+		/// </summary>
+		/// <remarks>
+		/// Loads a byte of memory into the accumulator setting the zero and negative flags as 
+		/// appropriate.
+		/// </remarks>
+		public void LDA()
+		{
+			A = Memory.Peek(Operand);
+			UpdateNegativeZeroFlags(A);
+		}
+
+		/// <summary>
+		/// INcrease Accumulator
+		/// </summary>
+		/// <remarks>
+		/// DEC and INC (without operands) are like DEX, DEY, INX, and INY, but decrement or 
+		/// increment the accumulator rather than the X or Y registers.
+		/// </remarks>
+		public void INA()
+		{
+			A++;
+			UpdateNegativeZeroFlags(A);
+		}
+
+		/// <summary>
+		/// DEcrease Accumulator
+		/// </summary>
+		/// <remarks>
+		/// DEC and INC (without operands) are like DEX, DEY, INX, and INY, but decrement or 
+		/// increment the accumulator rather than the X or Y registers.
+		/// </remarks>
+		public void DEA()
+		{
+			A--;
+			UpdateNegativeZeroFlags(A);
+		}
+
+		/// <summary>
+		/// STore Accumulator
+		/// </summary>
+		public void STA()
+		{
+			Memory.Poke(Operand, A);
+		}
 	}
 }

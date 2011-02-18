@@ -14,7 +14,7 @@ namespace KillerApps.Emulation.Processors
 		/// ASL shifts all bits left one position.
 		/// 0 is shifted into bit 0 and the original bit 7 is shifted into the Carry. 
 		/// </remarks>
-		private void ASL()
+		public void ASL()
 		{
 			byte value = Memory.Peek(Operand);
 			C = (value & 0x80) == 0x80; // Set carry flag if bit 7 is set
@@ -24,11 +24,18 @@ namespace KillerApps.Emulation.Processors
 		}
 
 		/// <summary>
-		/// Bitwise Exclusive OR
+		/// Arithmetic Shift Left Accumulator
 		/// </summary>
-		public void EOR()
+		/// <remarks>
+		/// This operation shifts all the bits of the accumulator or memory contents one bit 
+		/// left. Bit 0 is set to 0 and bit 7 is placed in the carry flag. The effect of this 
+		/// operation is to multiply the memory contents by 2 (ignoring 2's complement 
+		/// considerations), setting the carry if the result will not fit in 8 bits.
+		/// </remarks>
+		public void ASLA()
 		{
-			A ^= Memory.Peek(Operand);
+			C = (A & 0x80) == 0x80;
+			A <<= 1;
 			UpdateNegativeZeroFlags(A);
 		}
 

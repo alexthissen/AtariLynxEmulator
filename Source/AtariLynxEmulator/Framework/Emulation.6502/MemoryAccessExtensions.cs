@@ -10,7 +10,9 @@ namespace KillerApps.Emulation.Processors
 	{
 		public static ushort PeekWord(this IMemoryAccess<ushort, byte> memory, ushort address)
 		{
-			return (ushort)(memory.Peek(address) + memory.Peek(address) << 8);
+			ushort value = memory.Peek(address++);
+			value += (ushort)(memory.Peek(address) << 8);
+			return value;
 		}
 	}
 }

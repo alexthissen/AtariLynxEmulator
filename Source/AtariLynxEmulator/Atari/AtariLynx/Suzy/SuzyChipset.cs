@@ -79,5 +79,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 			return 0;
 		}
+
+		public void Reset()
+		{
+			Debug.WriteLine("Suzy::Reset");
+		}
 	}
 }

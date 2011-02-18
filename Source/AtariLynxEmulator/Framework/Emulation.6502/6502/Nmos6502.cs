@@ -22,6 +22,8 @@ namespace KillerApps.Emulation.Processors
 		{
 			get
 			{
+				// "To the current knowledge, this flag is always 1."
+				// Reserved flag R is always set
 				byte ps = 0x20;
 				if (this.N) ps |= 0x80;
 				if (this.V) ps |= 0x40;
@@ -47,13 +49,14 @@ namespace KillerApps.Emulation.Processors
 		// Processor flags
 		public bool N; // Negative flag for processor status register
 		public bool V; // OVerflow flag for processor status register
+		public bool R = true; // "To the current knowledge, this flag is always 1."
 		public bool B; // Break flag for processor status register
 		public bool D; // Decimal flag for processor status register
 		public bool I; // Interrupt disable flag for processor status register
 		public bool Z; // Zero flag for processor status register
 		public bool C; // Carry flag for processor status register
 
-		protected IMemoryAccess<ushort, byte> Memory { get; private set; }
+		protected internal IMemoryAccess<ushort, byte> Memory { get; private set; }
 
 		// Timing and sleep
 		public bool IsAsleep { get; protected set; }
@@ -69,7 +72,8 @@ namespace KillerApps.Emulation.Processors
 		}
 
 		// Irq and Mni related
-		public bool IsSystemIrqActive { get; private set; }
+		public bool IsSystemIrqActive { get { return ActiveInterrupt != InterruptType.None; } }
+		protected internal InterruptType ActiveInterrupt;
 
 		public Nmos6502(IMemoryAccess<ushort, byte> memory, Clock clock)
 		{
@@ -84,7 +88,7 @@ namespace KillerApps.Emulation.Processors
 
 		public override ulong Execute(int cyclesToExecute)
 		{
-			// When Irq is triggered and inerrupts are not disabled, run interrupt sequence
+			// When Irq is triggered and interrupts are not disabled, run interrupt sequence
 			// "Then, the interrupt signal waits for the end of the current CPU cycle before actually interrupting the CPU."
 			if (IsSystemIrqActive)
 			{
@@ -92,7 +96,11 @@ namespace KillerApps.Emulation.Processors
 				// processor status byte, you'll wake up out of sleep."
 				// "If an interrupt occurs while the CPU is asleep, it will wake up the CPU."
 				IsAsleep = false;
-				if (!I) RunInterruptSequence(InterruptType.Irq);
+
+				// Non-maskable interrupts always trigger sequence and maskable interrupts only when 
+				// Interrupt disable flag is clear
+				if (ActiveInterrupt == InterruptType.Nmi || (!I && ActiveInterrupt == InterruptType.Irq)) 
+					RunInterruptSequence(ActiveInterrupt);
 			}
 
 			// When CPU is sleeping there is nothing to do here. 
@@ -298,9 +306,7 @@ namespace KillerApps.Emulation.Processors
 		{
 			Debug.WriteLine("Nmos6502::Reset()");
 
-			A = 0;
-			X = 0;
-			Y = 0;
+			A = X = Y = 0;
 			SP = 0xff;
 			Opcode = 0;
 			Operand = 0;
@@ -308,25 +314,20 @@ namespace KillerApps.Emulation.Processors
 			// After reset program counter will be set to WORD value at boot vector
 			PC = Memory.PeekWord(VectorAddresses.BOOT_VECTOR);
 
-			N = V = B = D = I = Z = C = false;
-			V = false;
-			B = false;
-			D = false;
-			I = true;
-			Z = true;
-			C = false;
+			N = V = B = D = C = false;
+			I = Z = R = true;
 
-			IsSystemIrqActive = false;
+			ActiveInterrupt = InterruptType.None;
 			IsAsleep = false;
 		}
 
 		public override object SignalInterrupt(params object[] args)
 		{
-			bool active = args.Length > 0 ? (bool)args[0] : true;
+			InterruptType interrupt = args.Length > 0 ? (InterruptType)args[0] : InterruptType.Irq;
 
 			// Set flag to indicate a IRQ is being signaled or taken down. 
 			// Active IRQs will be picked up at the next update of the CPU.
-			IsSystemIrqActive = active;
+			ActiveInterrupt = interrupt;
 
 			// Nothing to report back to the signaler
 			return null;
@@ -354,7 +355,7 @@ namespace KillerApps.Emulation.Processors
 			PC = Memory.PeekWord(vector);
 
 			// Clear interrupt status line
-			IsSystemIrqActive = false;
+			ActiveInterrupt = InterruptType.None;
 		}
 
 		protected virtual void UpdateInterruptFlags()
@@ -362,6 +363,19 @@ namespace KillerApps.Emulation.Processors
 			// "It is important for the programmer to note that the interrupt-disable I flag is set, 
 			// and that the decimal D flag is cleared on the 65C02 but not affected on the NMOS 6502"
 			I = true; // Stop further interrupts
+		}
+
+		public override string ToString()
+		{
+			StringBuilder builder = new StringBuilder();
+
+			builder.AppendFormat("A:{0:x2} X:{1:x2} Y:{2:x2} S:{3:x2} PC:{4:x4} Flags:[", A, X, Y, SP, PC);
+			string flags = "NVRBDIZC";
+			for (byte index = 0, flag = 0x01; index < 8; index++, flag <<= 1)
+				builder.AppendFormat("{0}", (flag & ProcessorStatus) != 0 ? flags[index] : '.');
+			builder.Append("]");
+
+			return builder.ToString();
 		}
 	}
 }

@@ -19,9 +19,21 @@ namespace KillerApps.Emulation.Processors
 		{
 			Operand = Memory.PeekWord(PC);
 			PC += 2;
-			ushort address = PC;
-			if ((address & 0x00ff) == 0x00) address -= 0x0100;
-			Operand = Memory.PeekWord(address);
+			ushort address = Operand;
+			Operand = Memory.Peek(address); // Read low byte of address
+
+			// http://www.textfiles.com/apple/6502.bugs.txt
+			// "On the 6502, JMP (abs) had a bug when the low byte of the operand was $FF, e.g. JMP ($12FF)."
+			// "An indirect JMP (xxFF) will fail because the MSB will be fetched from address xx00 instead of page xx+1."
+			if ((address & 0x00ff) == 0xff)
+			{
+				address -= 0x00ff;
+			}
+			else
+			{
+				address += 1;
+			}
+			Operand += (ushort)(Memory.Peek(address) << 8);
 		}
 
 		// $abcd,X

@@ -20,9 +20,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtariLynx.Tests", "Tests\AtariLynx.Tests\AtariLynx.Tests.csproj", "{EC2DDC9F-46F3-42E1-B2DC-5BB791D0C373}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emulation.6502.Tests", "Tests\Emulation.6502.Tests\Emulation.6502.Tests.csproj", "{E8C9A948-C4D9-4D26-934B-4A1BA5AC5CFC}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 4
+		SccNumberOfProjects = 6
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs01
 		SccLocalPath0 = .
@@ -38,6 +42,14 @@ Global
 		SccProjectTopLevelParentUniqueName3 = AtariLynxEmulator.sln
 		SccProjectName3 = Framework/Emulation.Core8Bit
 		SccLocalPath3 = Framework\\Emulation.Core8Bit
+		SccProjectUniqueName4 = Tests\\AtariLynx.Tests\\AtariLynx.Tests.csproj
+		SccProjectTopLevelParentUniqueName4 = AtariLynxEmulator.sln
+		SccProjectName4 = Tests/AtariLynx.Tests
+		SccLocalPath4 = Tests\\AtariLynx.Tests
+		SccProjectUniqueName5 = Tests\\Emulation.6502.Tests\\Emulation.6502.Tests.csproj
+		SccProjectTopLevelParentUniqueName5 = AtariLynxEmulator.sln
+		SccProjectName5 = Tests/Emulation.6502.Tests
+		SccLocalPath5 = Tests\\Emulation.6502.Tests
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = AtariLynxEmulator.vsmdi
@@ -59,6 +71,14 @@ Global
 		{244BE6E7-3086-4522-A21F-975BB9D37F0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{244BE6E7-3086-4522-A21F-975BB9D37F0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{244BE6E7-3086-4522-A21F-975BB9D37F0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC2DDC9F-46F3-42E1-B2DC-5BB791D0C373}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC2DDC9F-46F3-42E1-B2DC-5BB791D0C373}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC2DDC9F-46F3-42E1-B2DC-5BB791D0C373}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC2DDC9F-46F3-42E1-B2DC-5BB791D0C373}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8C9A948-C4D9-4D26-934B-4A1BA5AC5CFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8C9A948-C4D9-4D26-934B-4A1BA5AC5CFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8C9A948-C4D9-4D26-934B-4A1BA5AC5CFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8C9A948-C4D9-4D26-934B-4A1BA5AC5CFC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,6 +86,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{714EA8D7-CD22-41B6-956B-C0B8076E7C30} = {57DA1BC1-ABF4-498A-99DA-D60A132A272D}
 		{244BE6E7-3086-4522-A21F-975BB9D37F0B} = {57DA1BC1-ABF4-498A-99DA-D60A132A272D}
+		{EC2DDC9F-46F3-42E1-B2DC-5BB791D0C373} = {36DA151D-7800-4816-8101-2C38E721D71B}
+		{E8C9A948-C4D9-4D26-934B-4A1BA5AC5CFC} = {36DA151D-7800-4816-8101-2C38E721D71B}
 		{55628D95-A00F-4266-B784-20B81D662004} = {C32557B1-9366-4061-85F9-460C1C8019F4}
 	EndGlobalSection
 EndGlobal
