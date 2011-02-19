@@ -26,10 +26,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private IMemoryAccess<ushort, byte> Ram;
 		private LynxHandheld device;
 
-		public SuzyChipset(LynxHandheld lynx, IMemoryAccess<ushort, byte> ram)
+		public SuzyChipset(LynxHandheld lynx)
 		{
 			this.device = lynx;
-			this.Ram = ram;
+			this.Ram = lynx.Ram;
 		}
 
 		public ulong PaintSprites() 

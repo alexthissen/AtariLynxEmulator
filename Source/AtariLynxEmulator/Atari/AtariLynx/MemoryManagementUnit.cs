@@ -17,19 +17,29 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public IMemoryAccess<ushort, byte> VectorSpace { get; private set; }
 		public IMemoryAccess<ushort, byte> RomSpace { get; private set; }
 
-		public MemoryMapControl MAPCNTL { get; set; }
+		private MemoryMapControl MAPCTL { get; set; }
 
-		private SuzyChipset Suzy;
-		private MikeyChipset Mikey;
+		private IMemoryAccess<ushort, byte> Suzy;
+		private IMemoryAccess<ushort, byte> Mikey;
 		private IMemoryAccess<ushort, byte> Ram;
 		private IMemoryAccess<ushort, byte> Rom;
 
-		public MemoryManagementUnit(IMemoryAccess<ushort, byte> rom, IMemoryAccess<ushort, byte> ram, MikeyChipset mikey, SuzyChipset suzy)
+		public MemoryManagementUnit(IMemoryAccess<ushort, byte> rom, IMemoryAccess<ushort, byte> ram, IMemoryAccess<ushort, byte> mikey, IMemoryAccess<ushort, byte> suzy)
 		{
 			this.Ram = ram;
 			this.Rom = rom;
 			this.Suzy = suzy;
 			this.Mikey = mikey;
+
+			MAPCTL = new MemoryMapControl();
+		}
+
+		public void Reset()
+		{
+			// "(R/W)Mikey reset = 0,0,0,0,0,0,0,0
+			// (W) Suzy reset x,x,x,x,x,x,x,0
+			// (Only bit 0 is implemented)"
+			ConfigureMemoryMapControl(0);			
 		}
 
 		public void Poke(ushort address, byte value)
@@ -44,16 +54,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// "These overlays are controlled by the bits in the hardware register at FFF9."
 			if (address == 0xfff9) // Special case for memory map control register
 			{
-				// "Both Mikey and Suzy accept a write at those addresses but only Mikey responds to a read."
-				MAPCNTL.ByteData = value;
-
-				// "Any address space bit that is set to a 1 will cause 
-				// its related address space to access RAM instead of the hardware or ROM normally accessed."
-				SuzySpace = MAPCNTL.SuzySpaceDisabled ? Ram : Suzy;
-				MikeySpace = MAPCNTL.MikeySpaceDisabled ? Ram : Mikey;
-				VectorSpace = MAPCNTL.VectorSpaceDisabled ? Ram : Rom;
-				RomSpace = MAPCNTL.RomSpaceDisabled ? Ram : Rom;
-
+				ConfigureMemoryMapControl(value);
 				return;
 			}
 
@@ -72,6 +73,19 @@ namespace KillerApps.Emulation.Atari.Lynx
 			if (address >= 0xfc00) { SuzySpace.Poke(address, value); return; }
 		}
 
+		private void ConfigureMemoryMapControl(byte value)
+		{
+			// "Both Mikey and Suzy accept a write at those addresses but only Mikey responds to a read."
+			MAPCTL.ByteData = value;
+
+			// "Any address space bit that is set to a 1 will cause 
+			// its related address space to access RAM instead of the hardware or ROM normally accessed."
+			SuzySpace = MAPCTL.SuzySpaceDisabled ? Ram : Suzy;
+			MikeySpace = MAPCTL.MikeySpaceDisabled ? Ram : Mikey;
+			VectorSpace = MAPCTL.VectorSpaceDisabled ? Ram : Rom;
+			RomSpace = MAPCTL.RomSpaceDisabled ? Ram : Rom;
+		}
+
 		public byte Peek(ushort address)
 		{
 			// Regular RAM 
@@ -86,14 +100,14 @@ namespace KillerApps.Emulation.Atari.Lynx
 				// "Both Mikey and Suzy accept a write at those addresses but only Mikey responds to a read."
 				// Since we will be passing regular RAM memory to Suzy, it is OK to always return value
 				// because only Mikey will be going through this MMU.
-				return MAPCNTL.ByteData;
+				return MAPCTL.ByteData;
 			}
 
 			// For details on address ranges see Poke() implementation
 			if (address >= 0xfffa) { return VectorSpace.Peek(address); }
-			if (address >= 0xfe00) { RomSpace.Peek(address); }
-			if (address >= 0xfd00) { MikeySpace.Peek(address); }
-			if (address >= 0xfc00) { SuzySpace.Peek(address); }
+			if (address >= 0xfe00) { return RomSpace.Peek(address); }
+			if (address >= 0xfd00) { return MikeySpace.Peek(address); }
+			if (address >= 0xfc00) { return SuzySpace.Peek(address); }
 
 			Debug.WriteLine(String.Format("MemoryManagementUnit::Peek: Unknown address {0}", address));
 			return 0;

@@ -43,12 +43,18 @@ namespace AtariLynx.Tests
 		//
 		#endregion
 
-		[Ignore]
 		[TestMethod]
 		public void EmulatorShouldInitializeAtStartup()
 		{
+			// Arrange
 			LynxHandheld handheld = new LynxHandheld();
 			handheld.BootImage = bootImageStream;
+
+			// Act
+			handheld.Initialize();
+
+			// Assert
+			Assert.AreEqual<ushort>(0xff80, handheld.Cpu.PC, "After reset program counter of processor should be at boot address.");
 		}
 	}
 }

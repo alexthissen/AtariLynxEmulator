@@ -14,7 +14,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public RomCart Cartridge { get; private set; }
 		public Ram64KBMemory Ram { get; private set; }
 		public RomBootMemory Rom { get; private set; }
-		public IMemoryAccess<ushort, byte> MMU { get; private set; }
+		public MemoryManagementUnit Mmu { get; private set; }
 		public MikeyChipset Mikey { get; set; }
 		public SuzyChipset Suzy { get; set; }
 		public Cmos65SC02 Cpu { get; private set; }
@@ -30,14 +30,14 @@ namespace KillerApps.Emulation.Atari.Lynx
 			Rom.LoadBootImage(BootImage);
 			
 			Mikey = new MikeyChipset(this);
-			Suzy = new SuzyChipset(this, Ram);
+			Suzy = new SuzyChipset(this);
 
 			// Pass all hardware that have memory access to MMU
-			MMU = new MemoryManagementUnit(Rom, Ram, Mikey, Suzy);
+			Mmu = new MemoryManagementUnit(Rom, Ram, Mikey, Suzy);
 			SystemClock = new Clock();
 
 			// Finally construct processor
-			Cpu = new Cmos65SC02(MMU, SystemClock);
+			Cpu = new Cmos65SC02(Mmu, SystemClock);
 
 			Reset();
 		}
@@ -46,6 +46,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		{
 			Mikey.Reset();
 			Suzy.Reset();
+			Mmu.Reset();
 			Cpu.Reset();
 		}
 

@@ -24,6 +24,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtariLynx.Tests", "Tests\At
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emulation.6502.Tests", "Tests\Emulation.6502.Tests\Emulation.6502.Tests.csproj", "{E8C9A948-C4D9-4D26-934B-4A1BA5AC5CFC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Components", "Components", "{9DA3D9CF-A7C9-4184-B608-9B26AFF6E8C0}"
+	ProjectSection(SolutionItems) = preProject
+		Components\Moq.dll = Components\Moq.dll
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 6
