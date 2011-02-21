@@ -46,6 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cartridge\CartRotation.cs" />
+    <Compile Include="Cartridge\LnxRomImageFileFormat.cs" />
     <Compile Include="Cartridge\RomCart.cs" />
     <Compile Include="Cartridge\RomCartMemoryBank.cs" />
     <Compile Include="Cartridge\RomCartType.cs" />

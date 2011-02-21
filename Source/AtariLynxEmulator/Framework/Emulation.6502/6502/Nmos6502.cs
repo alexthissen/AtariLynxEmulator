@@ -58,6 +58,12 @@ namespace KillerApps.Emulation.Processors
 
 		protected internal IMemoryAccess<ushort, byte> Memory { get; private set; }
 
+		private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
+#if DEBUG
+		Disassembler6500 disassembler = new Disassembler6500();
+		StringBuilder builder = new StringBuilder();
+#endif
+
 		// Timing and sleep
 		public bool IsAsleep { get; protected set; }
 		private ulong ScheduledWakeUpTime;
@@ -107,15 +113,19 @@ namespace KillerApps.Emulation.Processors
 			// Owner needs to increase cycle count to awake CPU.
 			if (IsAsleep) return 0;
 
+#if DEBUG
+			disassembler.DisassembleSingleStatement(Memory, PC, builder);
+			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, String.Format("{0:X4} {1}", PC, builder.ToString()));
+			builder.Clear();
+#endif
+
 			// Fetch opcode
 			Opcode = Memory.Peek(PC);
-			Debug.WriteLineIf(true, String.Format("Nmos6502::Execute: PC {0:X4}, Opcode {1:X2} ", PC, Opcode));
 			PC++;
-
 			ExecuteOpcode();
 
 			// TODO: Implement timing of opcode execution and induced memory reads/writes
-			return 0;
+			return 1;
 		}
 
 		protected virtual void ExecuteOpcode()

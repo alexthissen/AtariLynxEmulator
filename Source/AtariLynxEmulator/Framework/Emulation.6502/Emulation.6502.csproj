@@ -63,6 +63,7 @@
     <Compile Include="65C02\Cmos65SC02.AddressingModes.cs" />
     <Compile Include="AddressingMode.cs" />
     <Compile Include="Clock.cs" />
+    <Compile Include="Disassembler6500.cs" />
     <Compile Include="InterruptType.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -21,6 +21,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public ParallelData IODAT { get; set; }
 		public byte IODIR { get; set; }
 
+		private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
+
 		public MikeyChipset(LynxHandheld lynx)
 		{
 			this.device = lynx;
@@ -36,7 +38,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public void Update() 
 		{
-			Debug.WriteLineIf(true, "MikeyChipset::Update");
+			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, "MikeyChipset::Update");
 		}
 
 		public void Poke(ushort address, byte value)
@@ -72,8 +74,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 				case MikeyAddresses.IODAT:
 					IODAT.ByteData = value;
 
-					Debug.WriteLineIf((IODIR & 0x08) == 0, "MikeyChipset::Poke(IODAT): Rest is not set to output.");
-					Debug.WriteLineIf((IODIR & 0x02) == 0, "MikeyChipset::Poke(IODAT): CartAddressData is not set to output.");
+					Debug.WriteLineIf(((IODIR & 0x08) == 0) & GeneralSwitch.TraceInfo, "MikeyChipset::Poke(IODAT): Rest is not set to output.");
+					Debug.WriteLineIf(((IODIR & 0x02) == 0) & GeneralSwitch.TraceInfo, "MikeyChipset::Poke(IODAT): CartAddressData is not set to output.");
 
 					// "One is that it is the data pin for the shifter that holds the cartridge address."
 					device.Cartridge.CartAddressData(IODAT.CartAddressData);

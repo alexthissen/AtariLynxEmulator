@@ -54,6 +54,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 					device.Cartridge.Poke1(value);
 					break;
 
+				case SuzyAddresses.SUZYHREV:
+					throw new LynxException(String.Format("Suzy::Poke: Writing to read-only address at {0:X4}", address));
+
 				default:
 					break;
 			}
@@ -63,6 +66,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 		{
 			switch (address)
 			{
+				case SuzyAddresses.SUZYHREV:
+					return 0x01;
+					break;
+
 				case SuzyAddresses.RCART0:
 					// "FCB2 uses 'CART0/' as the strobe."
 					// "Read or write 8 bits of data."

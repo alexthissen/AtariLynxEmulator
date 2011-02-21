@@ -20,19 +20,6 @@
       </WebTestRunConfiguration>
     </TestTypeSpecific>
     <AgentRule name="LocalMachineDefaultRole">
-      <DataCollectors>
-        <DataCollector uri="datacollector://microsoft/CodeCoverage/1.0" assemblyQualifiedName="Microsoft.VisualStudio.TestTools.CodeCoverage.CoveragePlugIn, Microsoft.VisualStudio.QualityTools.Plugins.CodeCoverage, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" friendlyName="Code Coverage">
-          <Configuration>
-            <CodeCoverage xmlns="">
-              <Regular>
-                <CodeCoverageItem binaryFile="Framework\Emulation.6502\bin\Debug\KillerApps.Emulation.6502.dll" pdbFile="Framework\Emulation.6502\bin\Debug\KillerApps.Emulation.6502.pdb" instrumentInPlace="true" />
-                <CodeCoverageItem binaryFile="Atari\AtariLynx\bin\Debug\KillerApps.Emulation.Atari.Lynx.dll" pdbFile="Atari\AtariLynx\bin\Debug\KillerApps.Emulation.Atari.Lynx.pdb" instrumentInPlace="true" />
-                <CodeCoverageItem binaryFile="Framework\Emulation.Core8Bit\bin\Debug\KillerApps.Emulation.Core8Bit.dll" pdbFile="Framework\Emulation.Core8Bit\bin\Debug\KillerApps.Emulation.Core8Bit.pdb" instrumentInPlace="true" />
-              </Regular>
-            </CodeCoverage>
-          </Configuration>
-        </DataCollector>
-      </DataCollectors>
     </AgentRule>
   </Execution>
 </TestSettings>

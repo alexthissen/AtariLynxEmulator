@@ -11,7 +11,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 {
 	public class LynxHandheld
 	{
-		public RomCart Cartridge { get; private set; }
+		public RomCart Cartridge { get; set; }
 		public Ram64KBMemory Ram { get; private set; }
 		public RomBootMemory Rom { get; private set; }
 		public MemoryManagementUnit Mmu { get; private set; }
@@ -19,15 +19,19 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public SuzyChipset Suzy { get; set; }
 		public Cmos65SC02 Cpu { get; private set; }
 		public Clock SystemClock { get; private set; }
-		public Stream BootImage { get; set; }
+
+		public Stream BootRomImage { get; set; }
+		public Stream CartRomImage { get; set; }
 
 		public bool CartridgePowerOn { get; set; }
+
+		private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
 
 		public void Initialize()
 		{
 			Ram = new Ram64KBMemory();
 			Rom = new RomBootMemory();
-			Rom.LoadBootImage(BootImage);
+			Rom.LoadBootImage(BootRomImage);
 			
 			Mikey = new MikeyChipset(this);
 			Suzy = new SuzyChipset(this);
@@ -57,11 +61,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 			SynchronizeTime();
 		}
 
-		private void SynchronizeTime() 
-		{
-			Debug.WriteLineIf(true, String.Format("LynxHandheld::SynchronizeTime: Current time is {0}", SystemClock.CycleCount));
-		}
-
 		private void ExecuteCpu(int cyclesToExecute)
 		{
 			SystemClock.CycleCount += Cpu.Execute(cyclesToExecute);
@@ -72,8 +71,12 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// Mikey is only source of interrupts. It contains all timers (regular, audio and UART)
 			// TODO: After implementing timing, only update Mikey when there is a predicted timer event
 			Mikey.Update();
-			Debug.WriteLineIf(true, "LynxHandheld::GenerateInterrupts");
+			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, "LynxHandheld::GenerateInterrupts");
 		}
 
+		private void SynchronizeTime()
+		{
+			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, String.Format("LynxHandheld::SynchronizeTime: Current time is {0}", SystemClock.CycleCount));
+		}
 	}
 }

@@ -14,8 +14,10 @@ namespace AtariLynx.Tests
 	[TestClass]
 	public class LynxHandheldTest
 	{
-		public const string BootImageFilePath = @"D:\lynxboot.img";
-		Stream bootImageStream;
+		public const string BootRomImageFilePath = @"D:\lynxboot.img";
+		public const string CartRomImageFilePath = @"D:\slimeworld.lnx";
+		Stream bootRomImageStream;
+		RomCart cartridge;
 
 		#region Additional test attributes
 		//
@@ -32,8 +34,10 @@ namespace AtariLynx.Tests
 		// Use TestInitialize to run code before running each test 
 		[TestInitialize()]
 		public void TestInitialize() 
-		{ 
-			bootImageStream = new FileStream(BootImageFilePath, FileMode.Open, FileAccess.Read);
+		{
+			bootRomImageStream = new FileStream(BootRomImageFilePath, FileMode.Open, FileAccess.Read);
+			LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
+			cartridge = romImage.LoadCart(CartRomImageFilePath); 
 		}
 
 		//
@@ -48,7 +52,8 @@ namespace AtariLynx.Tests
 		{
 			// Arrange
 			LynxHandheld handheld = new LynxHandheld();
-			handheld.BootImage = bootImageStream;
+			handheld.BootRomImage = bootRomImageStream;
+			handheld.Cartridge = cartridge;
 
 			// Act
 			handheld.Initialize();

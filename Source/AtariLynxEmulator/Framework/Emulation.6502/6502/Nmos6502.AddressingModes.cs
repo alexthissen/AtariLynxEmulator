@@ -5,6 +5,7 @@ using System.Text;
 
 namespace KillerApps.Emulation.Processors
 {
+	// TODO: Optimize zero page addressing to use memory directly instead of via Peek and Poke
 	public partial class Nmos6502
 	{
 		// $abcd
@@ -39,7 +40,8 @@ namespace KillerApps.Emulation.Processors
 		// $abcd,X
 		public void AbsoluteX()
 		{
-			Operand = (ushort)(Memory.PeekWord(PC) + X);
+			Operand = Memory.PeekWord(PC);
+			Operand += X;
 			PC += 2;
 		}
 
@@ -47,10 +49,9 @@ namespace KillerApps.Emulation.Processors
 		public void AbsoluteIndirectX()
 		{
 			Operand = Memory.PeekWord(PC);
-			PC += 2;
 			Operand += X;
-			Operand &= 0xffff;
 			Operand = Memory.PeekWord(Operand);
+			PC += 2;
 		}
 
 		// $abcd,Y
@@ -65,10 +66,9 @@ namespace KillerApps.Emulation.Processors
 		public void AbsoluteIndirectY()
 		{
 			Operand = Memory.PeekWord(PC);
-			PC += 2;
 			Operand += Y;
-			Operand &= 0xffff;
 			Operand = Memory.PeekWord(Operand);
+			PC += 2;
 		}
 
 		public void Implied() { }
@@ -76,41 +76,57 @@ namespace KillerApps.Emulation.Processors
 		// #42
 		public void Immediate()
 		{
+			// TODO: Move immediate inside opcodes, as this is no actual addressing mode
+			// Value of operand should be of type byte in these cases
 			Operand = PC++;
 		}
 
 		// $ZP
 		public void ZeroPage()
 		{
-			Operand = Memory.Peek(PC);
-			PC++;
+			Operand = (ushort)Memory.Peek(PC++);
 		}
 
 		// $ZP,X
 		public void ZeroPageX()
 		{
-			Operand = (ushort)((Memory.Peek(PC++) + X) & 0x00ff);
+			// "The address calculation wraps around if the sum of the base address and the register exceed $FF."
+			byte address = Memory.Peek(PC++);
+			address += X;
+			Operand = (ushort)address;
 		}
 
 		// $ZP,Y
 		public void ZeroPageY()
 		{
-			Operand = (ushort)((Memory.Peek(PC++) + Y) & 0x00ff);
+			// "The address calculation wraps around if the sum of the base address and the register exceed $FF."
+			byte address = Memory.Peek(PC++);
+			address += Y;
+			Operand = (ushort)address;
 		}
 
 		// ($ZP,X)
 		public void ZeroPageIndexedIndirectX()
 		{
-			Operand = Memory.Peek(PC++);
+			Operand = (ushort)Memory.Peek(PC++);
+
+			// "The address is taken from the instruction and the X register added to it 
+			// (with zero page wrap around) to give the location of the least significant byte of 
+			// the target address."
 			Operand += X;
 			Operand &= 0x00ff;
+			Operand = Memory.PeekWord(Operand);
 		}
 
 		// ($ZP), Y
 		public void ZeroPageIndirectIndexedY()
 		{
-			Operand = Memory.Peek(PC++); // Read zero page address 
-			Operand = (ushort)((Memory.PeekWord(Operand) + Y) & 0xffff); // Read higher byte of address
+			// "The instruction contains the zero page location of the least significant byte of 
+			// 16 bit address. The Y register is dynamically added to this value to generated the 
+			// actual target address for operation."
+			Operand = (ushort)Memory.Peek(PC++); // Read zero page address 
+			Operand = Memory.PeekWord(Operand);
+			Operand += Y;
 		}
 	}
 }
