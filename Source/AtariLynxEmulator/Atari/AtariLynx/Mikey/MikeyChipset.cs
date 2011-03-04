@@ -18,6 +18,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private byte timerInterruptStatusRegister;
 		private byte timerInterruptMask = 0;
 
+		public SystemControlBits1 SYSCTL1 { get; set; }
 		public ParallelData IODAT { get; set; }
 		public byte IODIR { get; set; }
 
@@ -34,6 +35,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			timerInterruptMask = timerInterruptStatusRegister = 0;
 			IODIR = 0; // reset = 0,0.0.0,0,0,0,0
 			IODAT = new ParallelData(0x00);
+			SYSCTL1 = new SystemControlBits1(0x02); // reset x,x,x,x,x,x,1,0
 		}
 
 		public void Update() 
@@ -49,7 +51,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 					// "Read is a poll, write will reset the int that corresponds to a set bit."
 					value ^= 0xff;
 					timerInterruptStatusRegister &= value;
-					// TODO: set timer for interrupts to current cycle count to trigger update
+					
+				// TODO: set timer for interrupts to current cycle count to trigger update
 					// Cpu.NextTimerEvent = Cpu.SystemClock.CycleCount;
 					bool activeIrqs = (timerInterruptStatusRegister & timerInterruptMask) != 0;
 					device.Cpu.SignalInterrupt(activeIrqs);
@@ -86,6 +89,16 @@ namespace KillerApps.Emulation.Atari.Lynx
 						device.Cartridge.WriteEnabled = IODAT.AudioIn;
 					break;
 
+				case MikeyAddresses.SYSCTL1:
+					SYSCTL1.ByteData = value;
+					if (!SYSCTL1.Power)
+					{
+						device.Reset();
+						// TODO: Enter debug mode id configured
+					}
+					device.Cartridge.CartAddressStrobe(SYSCTL1.CartAddressStrobe);
+					break;
+
 				case MikeyAddresses.SDONEACK:
 					// "Write a '00' to SDONEACK, allowing Mikey to respond to sleep commands."
 
@@ -115,7 +128,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 					break;
 
 				default:
-					Debug.WriteLine("Mikey::PokeByte: Unknown address specified.");
+					Debug.WriteLine("Mikey::Poke: Unknown address specified.");
 					break;
 			}
 		}
@@ -141,11 +154,11 @@ namespace KillerApps.Emulation.Atari.Lynx
 				// Write-only addresses
 				case MikeyAddresses.CPUSLEEP:
 				case MikeyAddresses.SDONEACK:
-					Debug.WriteLine("Mikey::PeekByte: Write-only address used.");
+					Debug.WriteLine("Mikey::Peek: Write-only address used.");
 					break;
 
 				default:
-					Debug.WriteLine("Mikey::PeekByte: Unknown address specified.");
+					Debug.WriteLine("Mikey::Peek: Unknown address specified.");
 					break;
 			}
 			return 0xff;

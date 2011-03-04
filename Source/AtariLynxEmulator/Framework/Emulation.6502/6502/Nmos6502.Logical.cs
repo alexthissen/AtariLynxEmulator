@@ -12,7 +12,8 @@ namespace KillerApps.Emulation.Processors
 		/// </summary>
 		public void EOR()
 		{
-			A ^= Memory.Peek(Operand);
+			FetchData();
+			A ^= Data;
 			UpdateNegativeZeroFlags(A);
 		}
 
@@ -21,7 +22,8 @@ namespace KillerApps.Emulation.Processors
 		/// </summary>
 		public void ORA()
 		{
-			A |= Memory.Peek(Operand);
+			FetchData();
+			A |= Data;
 			UpdateNegativeZeroFlags(A);
 		}
 
@@ -34,7 +36,8 @@ namespace KillerApps.Emulation.Processors
 		/// </remarks>
 		public void AND()
 		{
-			A &= Memory.Peek(Operand);
+			FetchData();
+			A &= Data;
 			UpdateNegativeZeroFlags(A);
 		}
 
@@ -49,9 +52,9 @@ namespace KillerApps.Emulation.Processors
 		/// </remarks>
 		public void CMP()
 		{
-			byte value = Memory.Peek(Operand);
-			C = A >= value;
-			UpdateNegativeZeroFlags((byte)(A - value));
+			FetchData();
+			C = A >= Data;
+			UpdateNegativeZeroFlags((byte)(A - Data));
 		}
 
 		/// <summary>
@@ -62,9 +65,9 @@ namespace KillerApps.Emulation.Processors
 		/// </remarks>
 		public void CPX()
 		{
-			byte value = Memory.Peek(Operand);
-			C = X >= value;
-			UpdateNegativeZeroFlags((byte)(X - value));
+			FetchData();
+			C = X >= Data;
+			UpdateNegativeZeroFlags((byte)(X - Data));
 		}
 
 		/// <summary>
@@ -75,9 +78,9 @@ namespace KillerApps.Emulation.Processors
 		/// </remarks>
 		public void CPY()
 		{
-			byte value = Memory.Peek(Operand);
-			C = Y >= value;
-			UpdateNegativeZeroFlags((byte)(Y - value));
+			FetchData();
+			C = Y >= Data;
+			UpdateNegativeZeroFlags((byte)(Y - Data));
 		}
 
 		/// <summary>
@@ -90,10 +93,10 @@ namespace KillerApps.Emulation.Processors
 		/// </remarks>
 		public void BIT()
 		{
-			byte value = Memory.Peek(Operand);
-			value &= A;
-			UpdateNegativeZeroFlags(value);
-			V = (value & 0x40) == 0x40;
+			FetchData();
+			Data &= A;
+			UpdateNegativeZeroFlags(Data);
+			V = (Data & 0x40) == 0x40;
 		}
 	}
 }

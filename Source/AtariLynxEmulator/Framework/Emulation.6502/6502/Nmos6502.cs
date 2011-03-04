@@ -4,20 +4,22 @@ using System.Linq;
 using System.Text;
 using KillerApps.Emulation.Core;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace KillerApps.Emulation.Processors
 {
 	public partial class Nmos6502: ProcessorBase
 	{
 		// Processor registers
-		public byte A { get; set; }	// Accumulator (8 bits)
-		public byte X { get; set; }	// X index register (8 bits)
-		public byte Y { get; set; }	// Y index register	(8 bits)
-		public byte SP { get; set; } // Stack Pointer	(8 bits)
-		
-		public byte Opcode { get; set; } // Instruction opcode (8 bits)
-		public ushort Operand { get; set; }	// Instructions operand	(16 bits)
-		public ushort PC { get; set; } // Program Counter (16 bits)
+		public byte A;	// Accumulator (8 bits)
+		public byte X;	// X index register (8 bits)
+		public byte Y;	// Y index register	(8 bits)
+		public byte SP;	// Stack Pointer	(8 bits)
+
+		public byte Opcode; // Instruction opcode (8 bits)
+		public ushort Address; // Instruction operand resolved address
+		public byte Data; // Instruction data
+		public ushort PC; // Program Counter (16 bits)
 		public byte ProcessorStatus
 		{
 			get
@@ -57,6 +59,9 @@ namespace KillerApps.Emulation.Processors
 		public bool C; // Carry flag for processor status register
 
 		protected internal IMemoryAccess<ushort, byte> Memory { get; private set; }
+		// TODO: Push read cycles down to MMU for precise timings (if desired)
+		protected const ulong MemoryReadCycle = 5;
+		protected const ulong MemoryWriteCycle = 5;
 
 		private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
 #if DEBUG
@@ -66,8 +71,9 @@ namespace KillerApps.Emulation.Processors
 
 		// Timing and sleep
 		public bool IsAsleep { get; protected set; }
-		private ulong ScheduledWakeUpTime;
-		private Clock SystemClock;
+		protected ulong ScheduledWakeUpTime;
+		protected Clock SystemClock;
+		protected ulong SystemCycleCount;
 		public void TrySleep(ulong cyclesToSleep)
 		{
 			// Set time when we need to wake up because Suzy tells us to. 
@@ -88,8 +94,27 @@ namespace KillerApps.Emulation.Processors
 		}
 
 		// Stack related functions
-		internal void PushOnStack(byte m) { Memory.Poke((ushort)(0x0100 + SP), m); SP--; SP &= 0xff; }
-		internal byte PullFromStack() { SP++; SP &= 0xff; return Memory.Peek((ushort)(SP + 0x0100)); }
+		internal void PushOnStack(byte m) 
+		{ 
+			Memory.Poke((ushort)(0x0100 + SP), m); 
+			SP--; 
+			SP &= 0xff;
+
+			// Write data and increase stack pointer
+			SystemClock.CycleCount += MemoryWriteCycle + 1;
+		}
+
+		internal byte PullFromStack()
+		{ 
+			SP++; 
+			SP &= 0xff;
+			
+			// Increase stack pointer and fetch data
+			// TODO: Find out if extra cycle is a clock or memory read cycle
+			SystemClock.CycleCount += MemoryReadCycle + 2;
+			return Memory.Peek((ushort)(SP + 0x0100)); 
+		}
+
 		internal byte PeekStack(byte depth) { return Memory.Peek((ushort)((SP + 0x0100 - depth) & 0x01ff)); }
 
 		public override ulong Execute(int cyclesToExecute)
@@ -121,11 +146,20 @@ namespace KillerApps.Emulation.Processors
 
 			// Fetch opcode
 			Opcode = Memory.Peek(PC);
+			SystemClock.CycleCount += MemoryReadCycle;
+
 			PC++;
 			ExecuteOpcode();
 
-			// TODO: Implement timing of opcode execution and induced memory reads/writes
+			// Lookup on timings that Keith Wilkins has made
+			SystemCycleCount += 1 + timings[Opcode] * MemoryReadCycle;
 			return 1;
+		}
+
+		protected void FetchData()
+		{
+			Data = Memory.Peek(Address);
+			SystemClock.CycleCount += MemoryReadCycle;
 		}
 
 		protected virtual void ExecuteOpcode()
@@ -152,7 +186,7 @@ namespace KillerApps.Emulation.Processors
 				case 0x1D: AbsoluteX(); ORA(); break;
 				case 0x1E: AbsoluteX(); ASL(); break;
 
-				case 0x20: Absolute(); JSR(); break;
+				case 0x20: Absolute(); JSR(); break; 
 				case 0x21: ZeroPageIndexedIndirectX(); AND(); break;
 				case 0x24: ZeroPage(); BIT(); break;
 				case 0x25: ZeroPage(); AND(); break;
@@ -319,7 +353,8 @@ namespace KillerApps.Emulation.Processors
 			A = X = Y = 0;
 			SP = 0xff;
 			Opcode = 0;
-			Operand = 0;
+			Address = 0;
+			Data = 0;
 
 			// After reset program counter will be set to WORD value at boot vector
 			PC = Memory.PeekWord(VectorAddresses.BOOT_VECTOR);
@@ -387,5 +422,26 @@ namespace KillerApps.Emulation.Processors
 
 			return builder.ToString();
 		}
+
+		// Timing values by Keith Wilkins
+		protected byte[] timings = new byte[256]
+		{
+			6, 5, 1, 1, 4, 2, 4, 1, 2, 2, 1, 1, 5, 3, 5, 4,
+			1, 4, 4, 1, 4, 3, 5, 4, 1, 3, 1, 1, 5, 3, 6, 4,
+			5, 5, 1, 1, 2, 2, 4, 4, 3, 1, 1, 1, 3, 3, 5, 4,
+			1, 4, 4, 1, 3, 3, 5, 4, 1, 3, 1, 1, 3, 3, 6, 4,
+			5, 5, 1, 1, 2, 2, 4, 4, 2, 1, 1, 1, 2, 3, 5, 4,
+			1, 4, 4, 1, 3, 3, 5, 4, 1, 3, 2, 1, 7, 3, 6, 4,
+			5, 5, 1, 1, 2, 2, 4, 4, 3, 1, 1, 1, 5, 3, 5, 4,
+			1, 4, 4, 1, 3, 3, 5, 4, 1, 3, 3, 1, 5, 3, 6, 4,
+			2, 5, 1, 1, 2, 2, 2, 4, 1, 1, 1, 1, 3, 3, 3, 4,
+			1, 5, 4, 1, 3, 3, 3, 4, 1, 4, 1, 1, 3, 4, 4, 4,
+			1, 5, 1, 1, 2, 2, 2, 4, 1, 1, 1, 1, 3, 3, 3, 4,
+			1, 4, 4, 1, 3, 3, 3, 4, 1, 3, 1, 1, 3, 3, 3, 3,
+			1, 5, 1, 1, 2, 2, 4, 4, 1, 1, 1, 1, 3, 3, 5, 4,
+			1, 4, 4, 1, 3, 3, 5, 4, 1, 3, 2, 1, 3, 3, 6, 4,
+			1, 5, 1, 1, 2, 2, 4, 4, 1, 1, 1, 1, 3, 3, 5, 4,
+			1, 4, 4, 1, 3, 3, 5, 4, 1, 3, 3, 1, 3, 3, 6, 4
+		};
 	}
 }

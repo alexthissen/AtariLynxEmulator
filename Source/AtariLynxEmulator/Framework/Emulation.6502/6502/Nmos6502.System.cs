@@ -100,7 +100,7 @@ namespace KillerApps.Emulation.Processors
 		/// </remarks>
 		public void JMP()
 		{
-			PC = Operand;
+			PC = Address;
 		}
 
 		/// <summary>
@@ -117,7 +117,7 @@ namespace KillerApps.Emulation.Processors
 			address--;
 			PushOnStack((byte)(address >> 8));
 			PushOnStack((byte)(address & 0xff));
-			PC = Operand;
+			PC = this.Address;
 		}
 
 		/// <summary>
@@ -136,10 +136,13 @@ namespace KillerApps.Emulation.Processors
 		/// </summary>
 		public void DEC()
 		{
-			byte value = Memory.Peek(Operand);
-			value--;
-			Memory.Poke(Operand, value);
-			UpdateNegativeZeroFlags(value);
+			FetchData();
+			Data--;
+			Memory.Poke(Address, Data);
+
+			// Increase data, write data to address 
+			SystemClock.CycleCount += MemoryWriteCycle + 1;
+			UpdateNegativeZeroFlags(Data);
 		}
 
 		/// <summary>
@@ -147,10 +150,13 @@ namespace KillerApps.Emulation.Processors
 		/// </summary>
 		public void INC()
 		{
-			byte value = Memory.Peek(Operand);
-			value++;
-			Memory.Poke(Operand, value);
-			UpdateNegativeZeroFlags(value);
+			FetchData();
+			Data++;
+			Memory.Poke(Address, Data);
+
+			// Increase data, Write data to address
+			SystemClock.CycleCount += MemoryWriteCycle + 1;
+			UpdateNegativeZeroFlags(Data);
 		}
 
 		protected void UpdateNegativeZeroFlags(byte value)

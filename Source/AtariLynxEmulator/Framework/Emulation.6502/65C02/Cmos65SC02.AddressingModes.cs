@@ -10,26 +10,37 @@ namespace KillerApps.Emulation.Processors
 		// ($abcd)
 		public void AbsoluteIndirect()
 		{
-			Operand = Memory.PeekWord(PC);
+			Address = Memory.PeekWord(PC);
 			PC += 2;
-			Operand = Memory.PeekWord(Operand);
+			Address = Memory.PeekWord(Address);
+
+			// Fetch low byte, high byte, low byte, high byte
+			// Additional clock cycle for fixing 6502 bug
+			SystemClock.CycleCount += 4 * MemoryReadCycle + 1;
 		}
 
 		// Indirect zero page ($zp)
 		private void ZeroPageIndirect()
 		{
-			Operand = Memory.Peek(PC);
+			Address = Memory.Peek(PC);
 			PC++;
-			Operand = Memory.PeekWord(Operand);
+			Address = Memory.PeekWord(Address);
+
+			// Fetch low byte, low byte, high byte
+			SystemClock.CycleCount += 3 * MemoryReadCycle;
 		}
 
 		// Absolute Indexed Indirect ($abcd,X)
 		private void AbsoluteIndexedIndirectX()
 		{
-			Operand = Memory.PeekWord(PC);
+			Address = Memory.PeekWord(PC);
 			PC += 2;
-			Operand += X;
-			Operand = Memory.PeekWord(Operand);
+			Address += X;
+			Address = Memory.PeekWord(Address);
+
+			// Fetch low byte, high byte, low byte, high byte
+			// Additional clock cycle to fix page crossing?
+			SystemClock.CycleCount += 4 * MemoryReadCycle + 1;
 		}
 	}
 }

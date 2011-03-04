@@ -18,11 +18,11 @@ namespace KillerApps.Emulation.Processors
 		/// </remarks>
 		public void TRB()
 		{
-			byte value = Memory.Peek(Operand);
-			value &= A;
-			UpdateZeroFlag(value);
-			value &= (byte)(A ^ 0xff);
-			Memory.Poke(Operand, value);
+			FetchData();
+			Data &= A;
+			UpdateZeroFlag(Data);
+			Data &= (byte)(A ^ 0xff);
+			Memory.Poke(Address, Data);
 		}
 
 		/// <summary>
@@ -36,16 +36,17 @@ namespace KillerApps.Emulation.Processors
 		/// </remarks>
 		public void TSB()
 		{
-			byte value = Memory.Peek(Operand);
-			UpdateZeroFlag((byte)(value & A));
-			value |= A;
-			Memory.Poke(Operand, value);
+			FetchData();
+			UpdateZeroFlag((byte)(Data & A));
+			Data |= A;
+			Memory.Poke(Address, Data);
 		}
 
 		public void BRA()
 		{
-			sbyte offset = (sbyte)Memory.Peek(PC);
-			PC++;
+			Address = PC++;
+			FetchData();
+			sbyte offset = (sbyte)Data;
 			PC = (ushort)(PC + offset);
 		}
 
@@ -68,7 +69,8 @@ namespace KillerApps.Emulation.Processors
 		/// </remarks>
 		public void STZ()
 		{
-			Memory.Poke(Operand, 0);
+			Memory.Poke(Address, 0);
+			SystemClock.CycleCount += MemoryWriteCycle;
 		}
 
 		/// <summary>
@@ -77,6 +79,7 @@ namespace KillerApps.Emulation.Processors
 		public void WAI()
 		{
 			IsAsleep = true;
+			SystemClock.CycleCount += 2;
 		}
 
 		/// <summary>
@@ -91,6 +94,7 @@ namespace KillerApps.Emulation.Processors
 		public void STP()
 		{
 			IsAsleep = true;
+			SystemClock.CycleCount += 2;
 		}
 
 		/// <summary>
@@ -116,10 +120,10 @@ namespace KillerApps.Emulation.Processors
 		/// </remarks>
 		public void BITImmediate()
 		{
-			byte value = Memory.Peek(Operand);
-			value &= A;
+			FetchData();
+			Data &= A;
 			// "BIT has three additional addressing modes. ... The immediate addressing mode only affects the Z flag."
-			UpdateZeroFlag(value);
+			UpdateZeroFlag(Data);
 		}
 	}
 }

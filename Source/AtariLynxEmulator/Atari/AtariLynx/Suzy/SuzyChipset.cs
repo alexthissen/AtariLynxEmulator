@@ -68,7 +68,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 			{
 				case SuzyAddresses.SUZYHREV:
 					return 0x01;
-					break;
 
 				case SuzyAddresses.RCART0:
 					// "FCB2 uses 'CART0/' as the strobe."

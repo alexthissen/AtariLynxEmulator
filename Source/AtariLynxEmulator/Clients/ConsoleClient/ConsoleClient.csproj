@@ -2,22 +2,24 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{55628D95-A00F-4266-B784-20B81D662004}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{20FFC2CF-11DF-4865-A340-8BA0B2D9C987}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>KillerApps.Emulation.Atari.Lynx</RootNamespace>
-    <AssemblyName>KillerApps.Emulation.Atari.Lynx</AssemblyName>
+    <RootNamespace>ConsoleClient</RootNamespace>
+    <AssemblyName>ConsoleClient</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -25,10 +27,9 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -46,31 +47,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cartridge\CartRotation.cs" />
-    <Compile Include="Cartridge\LnxRomImageFileFormat.cs" />
-    <Compile Include="Cartridge\RomCart.cs" />
-    <Compile Include="Cartridge\RomCartMemoryBank.cs" />
-    <Compile Include="Cartridge\RomCartType.cs" />
-    <Compile Include="LynxAddresses.cs" />
-    <Compile Include="LynxException.cs" />
-    <Compile Include="LynxHandheld.cs" />
-    <Compile Include="MemoryManagementUnit.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="MemoryMapControl.cs" />
-    <Compile Include="Mikey\MikeyAddresses.cs" />
-    <Compile Include="Mikey\MikeyChipset.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Mikey\ParallelData.cs" />
-    <Compile Include="Mikey\SystemControlBits1.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Ram64KBMemory.cs" />
-    <Compile Include="RomBootMemory.cs" />
-    <Compile Include="Suzy\SuzyAddresses.cs" />
-    <Compile Include="Suzy\SuzyChipset.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Atari\AtariLynx\AtariLynx.csproj">
+      <Project>{55628D95-A00F-4266-B784-20B81D662004}</Project>
+      <Name>AtariLynx</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Framework\Emulation.6502\Emulation.6502.csproj">
       <Project>{244BE6E7-3086-4522-A21F-975BB9D37F0B}</Project>
       <Name>Emulation.6502</Name>

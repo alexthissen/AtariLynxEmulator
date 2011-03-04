@@ -37,7 +37,7 @@ namespace KillerApps.Emulation.Processors
 				case 0x16: ZeroPageX(); ASL(); break;
 				case 0x18: CLC(); break;
 				case 0x19: AbsoluteY(); ORA(); break;
-				case 0x1A: INA(); break;
+				case 0x1A: INCA(); break;
 				case 0x1C: Absolute(); TRB(); break;
 				case 0x1D: AbsoluteX(); ORA(); break;
 				case 0x1E: AbsoluteX(); ASL(); break;
@@ -62,7 +62,7 @@ namespace KillerApps.Emulation.Processors
 				case 0x36: ZeroPageX(); ROL(); break;
 				case 0x38: SEC(); break;
 				case 0x39: AbsoluteY(); AND(); break;
-				case 0x3A: DEA(); break;
+				case 0x3A: DECA(); break;
 				case 0x3C: AbsoluteX(); BIT(); break;
 				case 0x3D: AbsoluteX(); AND(); break;
 				case 0x3E: AbsoluteX(); ROL(); break;

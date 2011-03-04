@@ -57,7 +57,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public byte Peek(ushort address)
 		{
-			Debug.Assert((address - ROM_BASEADDRESS) > 0, 
+			Debug.Assert((address - ROM_BASEADDRESS) >= 0, 
 					String.Format("RomMemory::Peek: Address {0:X4} not in correct range for ROM.", address));
 			return romData[address - ROM_BASEADDRESS];
 		}

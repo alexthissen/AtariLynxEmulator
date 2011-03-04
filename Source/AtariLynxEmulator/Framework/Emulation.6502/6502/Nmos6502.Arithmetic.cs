@@ -18,12 +18,13 @@ namespace KillerApps.Emulation.Processors
 		/// </remarks>
 		public void ADC()
 		{
-			int value = Memory.Peek(Operand);
+			FetchData();
 			if (D) // Decimal mode
 			{
+				// TODO: Add 1 cycle for decimal mode
 				int c = C ? 1 : 0;
-				int lo = (A & 0x0f) + (value & 0x0f) + c;
-				int hi = (A & 0xf0) + (value & 0xf0);
+				int lo = (A & 0x0f) + (Data & 0x0f) + c;
+				int hi = (A & 0xf0) + (Data & 0xf0);
 				V = false;
 				C = false;
 				if (lo > 0x09)
@@ -31,7 +32,7 @@ namespace KillerApps.Emulation.Processors
 					hi += 0x10;
 					lo += 0x06;
 				}
-				if ((~(A ^ value) & (A ^ hi) & 0x80) == 0x80) V = true;
+				if ((~(A ^ Data) & (A ^ hi) & 0x80) == 0x80) V = true;
 				if (hi > 0x90) hi += 0x60;
 				if ((hi & 0xff00) == 0xf00) C = true;
 				A = (byte)((lo & 0x0f) + (hi & 0xf0));
@@ -39,10 +40,10 @@ namespace KillerApps.Emulation.Processors
 			else
 			{
 				int c = C ? 1 : 0;
-				int sum = A + value + c;
+				int sum = A + Data + c;
 				V = false;
 				C = false;
-				if ((~(A ^ value) & (A ^ sum) & 0x80) == 0x80) V = true;
+				if ((~(A ^ Data) & (A ^ sum) & 0x80) == 0x80) V = true;
 				if ((sum & 0xff00) != 0) C = true;
 				A = (byte)(sum & 0xff); // LX: Cap result to never be bigger than 0xff value
 			}
@@ -51,16 +52,17 @@ namespace KillerApps.Emulation.Processors
 
 		public void SBC()
 		{
-			int value = Memory.Peek(Operand);
+			FetchData();
 			if (D)
 			{
+				// TODO: Add 1 cycle for decimal mode
 				int c = C ? 0 : 1;
-				int sum = A - value - c;
-				int lo = (A & 0x0f) - (value & 0x0f) - c;
-				int hi = (A & 0xf0) - (value & 0xf0);
+				int sum = A - Data - c;
+				int lo = (A & 0x0f) - (Data & 0x0f) - c;
+				int hi = (A & 0xf0) - (Data & 0xf0);
 				V = false;
 				C = false;
-				if (((A ^ value) & (A ^ sum) & 0x80) != 0) V = true;
+				if (((A ^ Data) & (A ^ sum) & 0x80) != 0) V = true;
 				if ((lo & 0xf0) == 0xf0) lo -= 6;
 				if ((lo & 0x80) == 0x80) hi -= 0x10;
 				if ((hi & 0x0f00) == 0x0f00) hi -= 0x60;
@@ -70,10 +72,10 @@ namespace KillerApps.Emulation.Processors
 			else
 			{
 				int c = C ? 0 : 1;
-				int sum = A - value - c;
+				int sum = A - Data - c;
 				V = false;
 				C = false;
-				if (((A ^ value) & (A ^ sum) & 0x80) != 0) V = true;
+				if (((A ^ Data) & (A ^ sum) & 0x80) != 0) V = true;
 				if ((sum & 0xff00) == 0) C = true;
 				A = (byte)(sum & 0xff);
 			}

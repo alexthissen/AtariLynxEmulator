@@ -16,11 +16,13 @@ namespace KillerApps.Emulation.Processors
 		/// </remarks>
 		public void ASL()
 		{
-			byte value = Memory.Peek(Operand);
-			C = (value & 0x80) == 0x80; // Set carry flag if bit 7 is set
-			value <<= 1; // Do shifting
-			UpdateNegativeZeroFlags(value);
-			Memory.Poke(Operand, value);
+			FetchData();
+			C = (Data & 0x80) == 0x80; // Set carry flag if bit 7 is set
+			Data <<= 1; // Do shifting
+			UpdateNegativeZeroFlags(Data);
+			Memory.Poke(Address, Data);
+			// Update data and write to address
+			SystemClock.CycleCount += MemoryWriteCycle + 1;
 		}
 
 		/// <summary>
@@ -36,6 +38,7 @@ namespace KillerApps.Emulation.Processors
 		{
 			C = (A & 0x80) == 0x80;
 			A <<= 1;
+			SystemClock.CycleCount += 1;
 			UpdateNegativeZeroFlags(A);
 		}
 
@@ -48,12 +51,14 @@ namespace KillerApps.Emulation.Processors
 		/// </remarks>
 		public void LSR()
 		{
-			byte value = Memory.Peek(Operand);
-			C = (value & 0x01) == 0x01;
-			value >>= 1;
-			value &= 0x7f;
-			Memory.Poke(Operand, value);
-			UpdateNegativeZeroFlags(value);
+			FetchData();
+			C = (Data & 0x01) == 0x01;
+			Data >>= 1;
+			Data &= 0x7f;
+			Memory.Poke(Address, Data);
+			// Update data and write to address
+			SystemClock.CycleCount += MemoryWriteCycle + 1;
+			UpdateNegativeZeroFlags(Data);
 		}
 
 		/// <summary>
@@ -68,6 +73,8 @@ namespace KillerApps.Emulation.Processors
 			C = (A & 0x01) == 0x01;
 			A >>= 1;
 			A &= 0x7f;
+			// Update data 
+			SystemClock.CycleCount += 1;
 			UpdateNegativeZeroFlags(A);
 		}
 
@@ -80,13 +87,16 @@ namespace KillerApps.Emulation.Processors
 		/// </remarks>
 		public void ROL()
 		{
-			byte value = Memory.Peek(Operand);
+			FetchData();
 			bool c = C;
-			this.C = (value & 0x80) == 0x80;
-			value <<= 1;
-			value |= c ? (byte)0x01 : (byte)0x00;
-			Memory.Poke(Operand, value);
-			UpdateNegativeZeroFlags(value);
+			this.C = (Data & 0x80) == 0x80;
+			Data <<= 1;
+			Data |= c ? (byte)0x01 : (byte)0x00;
+			Memory.Poke(Address, Data);
+
+			// Update data and write to address
+			SystemClock.CycleCount += MemoryWriteCycle + 1;
+			UpdateNegativeZeroFlags(Data);
 		}
 
 		/// <summary>
@@ -102,6 +112,9 @@ namespace KillerApps.Emulation.Processors
 			this.C = (A & 0x80) == 0x80;
 			A <<= 1;
 			A |= c ? (byte)1 : (byte)0;
+
+			// Update data 
+			SystemClock.CycleCount += 1;
 			UpdateNegativeZeroFlags(A);
 		}
 
@@ -114,14 +127,16 @@ namespace KillerApps.Emulation.Processors
 		/// </remarks>
 		public void ROR()
 		{
-			byte value = Memory.Peek(Operand);
+			FetchData();
 			bool c = C;
-			C = (value & 0x01) == 0x01;
-			value >>= 1;
-			value &= 0x7f;
-			value |= c ? (byte)0x80 : (byte)0x00;
-			Memory.Poke(Operand, value);
-			UpdateNegativeZeroFlags(value);
+			C = (Data & 0x01) == 0x01;
+			Data >>= 1;
+			Data &= 0x7f;
+			Data |= c ? (byte)0x80 : (byte)0x00;
+			Memory.Poke(Address, Data);
+			// Update data and write to address
+			SystemClock.CycleCount += MemoryWriteCycle + 1;
+			UpdateNegativeZeroFlags(Data);
 		}
 
 		/// <summary>
@@ -138,6 +153,8 @@ namespace KillerApps.Emulation.Processors
 			A >>= 1;
 			A &= 0x7f;
 			A |= c ? (byte)0x80 : (byte)0x00;
+			// Update data 
+			SystemClock.CycleCount += 1;
 			UpdateNegativeZeroFlags(A);
 		}
 	}

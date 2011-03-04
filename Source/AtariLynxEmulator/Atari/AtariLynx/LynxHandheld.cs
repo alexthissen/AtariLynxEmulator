@@ -46,7 +46,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			Reset();
 		}
 
-		private void Reset()
+		public void Reset()
 		{
 			Mikey.Reset();
 			Suzy.Reset();
@@ -63,7 +63,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		private void ExecuteCpu(int cyclesToExecute)
 		{
-			SystemClock.CycleCount += Cpu.Execute(cyclesToExecute);
+			Cpu.Execute(cyclesToExecute);
 		}
 
 		private void GenerateInterrupts() 

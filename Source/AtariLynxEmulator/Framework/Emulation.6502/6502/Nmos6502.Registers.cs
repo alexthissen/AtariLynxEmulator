@@ -34,7 +34,9 @@ namespace KillerApps.Emulation.Processors
 		/// </remarks>
 		public void LDX()
 		{
-			X = Memory.Peek(Operand);
+			X = Memory.Peek(Address);
+			SystemClock.CycleCount += MemoryReadCycle;
+
 			UpdateNegativeZeroFlags(X);
 		}
 
@@ -47,7 +49,9 @@ namespace KillerApps.Emulation.Processors
 		/// </remarks>
 		public void LDY()
 		{
-			Y = Memory.Peek(Operand);
+			Y = Memory.Peek(Address);
+			SystemClock.CycleCount += MemoryReadCycle;
+
 			UpdateNegativeZeroFlags(Y);
 		}
 
@@ -56,7 +60,8 @@ namespace KillerApps.Emulation.Processors
 		/// </summary>
 		public void STX()
 		{
-			Memory.Poke(Operand, X);
+			Memory.Poke(Address, X);
+			SystemClock.CycleCount += MemoryWriteCycle;
 		}
 
 		/// <summary>
@@ -64,7 +69,8 @@ namespace KillerApps.Emulation.Processors
 		/// </summary>
 		public void STY()
 		{
-			Memory.Poke(Operand, Y);
+			Memory.Poke(Address, Y);
+			SystemClock.CycleCount += MemoryWriteCycle;
 		}
 
 		/// <summary>
@@ -158,7 +164,8 @@ namespace KillerApps.Emulation.Processors
 		/// </remarks>
 		public void LDA()
 		{
-			A = Memory.Peek(Operand);
+			FetchData();
+			A = Data;
 			UpdateNegativeZeroFlags(A);
 		}
 
@@ -169,7 +176,7 @@ namespace KillerApps.Emulation.Processors
 		/// DEC and INC (without operands) are like DEX, DEY, INX, and INY, but decrement or 
 		/// increment the accumulator rather than the X or Y registers.
 		/// </remarks>
-		public void INA()
+		public void INCA()
 		{
 			A++;
 			UpdateNegativeZeroFlags(A);
@@ -182,7 +189,7 @@ namespace KillerApps.Emulation.Processors
 		/// DEC and INC (without operands) are like DEX, DEY, INX, and INY, but decrement or 
 		/// increment the accumulator rather than the X or Y registers.
 		/// </remarks>
-		public void DEA()
+		public void DECA()
 		{
 			A--;
 			UpdateNegativeZeroFlags(A);
@@ -193,7 +200,8 @@ namespace KillerApps.Emulation.Processors
 		/// </summary>
 		public void STA()
 		{
-			Memory.Poke(Operand, A);
+			Memory.Poke(Address, A);
+			SystemClock.CycleCount += MemoryWriteCycle;
 		}
 	}
 }
