@@ -63,7 +63,6 @@ namespace KillerApps.Emulation.Processors.Tests
 			cpu.Execute(1);
 
 			Assert.IsTrue(cpu.C, "After SEC the Carry flag should be set.");
-			//Assert.AreEqual(2, cpu.SystemCycleCount, "System cycle count should be 2 for SEC");
 		}
 
 		[TestMethod]
@@ -79,7 +78,6 @@ namespace KillerApps.Emulation.Processors.Tests
 			cpu.Execute(1);
 
 			Assert.IsTrue(cpu.I, "After SEI the Interrupt Disable flag should be set.");
-			//Assert.AreEqual(2, cpu.SystemCycleCount, "System cycle count should be 2 for SEI");
 		}
 
 		[TestMethod]
@@ -96,7 +94,6 @@ namespace KillerApps.Emulation.Processors.Tests
 			cpu.Execute(1);
 
 			Assert.IsTrue(cpu.D, "After SED the decimal flag should be set.");
-			//Assert.AreEqual(2, cpu.SystemCycleCount, "System cycle count should be 2 for SED");
 		}
 
 		[TestMethod]

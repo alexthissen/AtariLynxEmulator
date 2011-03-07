@@ -20,40 +20,154 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public SystemControlBits1 SYSCTL1 { get; set; }
 		public ParallelData IODAT { get; set; }
+		public DisplayControlBits DISPCTL { get; set; }
 		public byte IODIR { get; set; }
-
+		public byte PBKUP { get; set; }
+		public Word VideoDisplayStartAddress;
+					
+		// Timers
+		public TimerBase[] Timers = new TimerBase[8];
+		
 		private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
+
+		private const byte Timer0Mask = 0x01; // "B0 = timer 0 (horizontal line timer)"
+		private const byte Timer1Mask = 0x02; // "B1 = timer 1"
+		private const byte Timer2Mask = 0x04; // "B2 = timer 2 (vertical line counter)"
+		private const byte Timer3Mask = 0x08; // "B3 = timer 3"
+		private const byte Timer4Mask = 0x10; // "B4 = serial interrupt"
+		private const byte Timer5Mask = 0x20; // "B5 = timer 5"
+		private const byte Timer6Mask = 0x40; // "B6 = timer 6"
+		private const byte Timer7Mask = 0x80; // "B7 = timer 7"
 
 		public MikeyChipset(LynxHandheld lynx)
 		{
 			this.device = lynx;
 		}
 
+		public void Initialize()
+		{
+			InitializeTimers();
+		}
+
+		private void InitializeTimers()
+		{
+			// "Two of the timers will be used for the video frame rate generator."
+			// Assume timer 0 is always clocked and never linked
+			Timers[0] = new ClockedTimer(Timer0Mask, new StaticTimerControl(0));
+			Timers[0].IrqFired += new EventHandler<InterruptEventArgs>(DisplayRenderLine);
+
+			// "... the second (timer 2) is set to the number of lines."
+			// Assume timer 2 is always linked and never clocked
+			Timers[2] = new LinkedTimer(Timer2Mask, new StaticTimerControl(0)) { PreviousTimer = Timers[0] };
+			Timers[2].IrqFired += new EventHandler<InterruptEventArgs>(DisplayEndOfFrame);
+
+			// "One of the timers (timer 4) will be used as the baud rate generator for the serial expansion port (UART)."
+			Timers[4] = new ClockedTimer(Timer4Mask, new StaticTimerControl(0));
+			Timers[4].IrqFired += new EventHandler<InterruptEventArgs>(GenerateBaudRate);
+
+			// 6th timer is never linked
+			Timers[6] = new ClockedTimer(Timer6Mask, new StaticTimerControl(0));
+
+			// Create odd numbered timers
+			for (int index = 1; index < 8; index += 2)
+			{
+				byte interruptMask = (byte)(2 ^ index);
+				TimerBase timer = TimerFactory.CreateTimer(interruptMask, new StaticTimerControl(0));
+				Timers[index] = timer;
+
+				// Hook up linked timer to previous timer in group B
+				if (timer is LinkedTimer && index > 1) ((LinkedTimer)timer).PreviousTimer = Timers[index - 2];
+				// TODO: Hook up timer 1 to audio 3 when linked
+			}
+		}
+
+		private void GenerateBaudRate(object sender, InterruptEventArgs e) { }
+		private void DisplayEndOfFrame(object sender, InterruptEventArgs e) { }
+		private void DisplayRenderLine(object sender, InterruptEventArgs e) { }
+
 		public void Reset()
 		{
+			Initialize();
+
 			// SDONEACK = 0 "(not acked)"
 			timerInterruptMask = timerInterruptStatusRegister = 0;
 			IODIR = 0; // reset = 0,0.0.0,0,0,0,0
 			IODAT = new ParallelData(0x00);
 			SYSCTL1 = new SystemControlBits1(0x02); // reset x,x,x,x,x,x,1,0
+			DISPCTL = new DisplayControlBits(0x00);	// reset = 0
+		}
+
+		private void ForceTimerUpdate()
+		{
+			//device.NextTimerEvent = device.SystemClock.CycleCount;
+			device.NextTimerEvent = device.SystemClock.CompatibleCycleCount;
 		}
 
 		public void Update() 
 		{
 			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, "MikeyChipset::Update");
+			foreach (TimerBase timer in Timers)
+			{
+				timer.Update(device.SystemClock.CompatibleCycleCount);
+			}
+
+			// Take lowest 
+			device.NextTimerEvent = ulong.MaxValue;
+			var clocks = Timers.OfType<ClockedTimer>().Where(t => t.StaticControlBits.EnableCount);
+			if (clocks.Count() > 0) device.NextTimerEvent = clocks.Min(t => t.TimerEvent);
 		}
 
 		public void Poke(ushort address, byte value)
 		{
+			// Timer addresses can be handled separately
+			if (address >= MikeyAddresses.HTIMBKUP && address <= MikeyAddresses.TIM7CTLB)
+			{
+				int offset = address - MikeyAddresses.HTIMBKUP;
+				int index = offset >> 2; // Divide by 4 to get index of timer
+				switch (offset % 4)
+				{
+					case 0: // Backup value
+						Timers[index].BackupValue = value;
+						return;
+
+					case 1: // Static control
+						// TODO: Fix hookup of static control, creation of new timer and copy of old values
+						StaticTimerControl control = new StaticTimerControl(value);
+						if (control.SourcePeriod == ClockSelect.Linking && Timers[index].StaticControlBits.SourcePeriod != control.SourcePeriod)
+						{
+							Timers[index] = TimerFactory.CreateTimer((byte)(1 << index), control);
+						}
+						// "It is set on time out, reset with the reset timer done bit (xxx1, B6)"
+						if (control.ResetTimerDone)
+						{
+							Timers[index].DynamicControlBits.TimerDone = false;
+						}
+						if (control.EnableCount || control.ResetTimerDone)
+						{
+							Timers[index].Start(device.SystemClock.CompatibleCycleCount);
+							ForceTimerUpdate();
+						}
+						return;
+
+					case 2: // Current value
+						Timers[index].CurrentValue = value;
+						return;
+
+					case 3: // Dynamic control bits
+						Timers[index].DynamicControlBits.ByteData = value;
+						return;
+				}
+			}
+
+			// Handle other addresses
 			switch (address)
 			{
 				case MikeyAddresses.INTRST:
 					// "Read is a poll, write will reset the int that corresponds to a set bit."
 					value ^= 0xff;
 					timerInterruptStatusRegister &= value;
+					ForceTimerUpdate();
 					
-				// TODO: set timer for interrupts to current cycle count to trigger update
-					// Cpu.NextTimerEvent = Cpu.SystemClock.CycleCount;
 					bool activeIrqs = (timerInterruptStatusRegister & timerInterruptMask) != 0;
 					device.Cpu.SignalInterrupt(activeIrqs);
 					break;
@@ -63,9 +177,12 @@ namespace KillerApps.Emulation.Atari.Lynx
 					timerInterruptStatusRegister |= value;
 					activeIrqs = (timerInterruptStatusRegister & timerInterruptMask) != 0;
 					device.Cpu.SignalInterrupt(activeIrqs);
-					//Cpu.NextTimerEvent = Master.Cpu.SystemCycleCount;
+					ForceTimerUpdate();
 					break;
 
+				case MikeyAddresses.MIKEYSREV:
+					// "No actual register is implemented"
+					break;
 
 				// "Also note that only the lines that are set to input are actually valid for reading."
 				// "8 bits I/O direction corresponding to the 8 bits at FD8B 0=input, 1= output"
@@ -126,6 +243,27 @@ namespace KillerApps.Emulation.Atari.Lynx
 					ulong suzyCycles = device.Suzy.PaintSprites();
 					device.Cpu.TrySleep(suzyCycles);
 					break;
+					
+				case MikeyAddresses.DISPCTL:
+					DISPCTL.ByteData = value;
+					break;
+
+				case MikeyAddresses.PBKUP:
+					// "Additionally, the magic 'P' counter has to be set to match the LCD scan rate. The formula is:
+					// INT((((line time - .5us) / 15) * 4) -1)"
+					PBKUP = value;
+					break;
+
+				case MikeyAddresses.DISPADRL:
+					// "DISPADRL (FD94) is lower 8 bits of display address with the bottom 2 bit ignored by the hardware.
+					// The address of the upper left corner of a display buffer must always have '00' in the bottom 2 bits."
+					VideoDisplayStartAddress.LowByte = (byte)(value & 0xFD);
+					break;
+
+				case MikeyAddresses.DISPADRH:
+					// "DISPADRH (FD95) is upper 8 bits of display address."
+					VideoDisplayStartAddress.HighByte = value;
+					break;
 
 				default:
 					Debug.WriteLine("Mikey::Poke: Unknown address specified.");
@@ -151,9 +289,20 @@ namespace KillerApps.Emulation.Atari.Lynx
 					byte value = IODAT.ByteData;
 					return (byte)(value & (IODIR ^ 0xff));
 
+				case MikeyAddresses.PBKUP:
+					return PBKUP;
+
+				case MikeyAddresses.MIKEYSREV:
+					// "No actual register is implemented"
+					break;
+
 				// Write-only addresses
 				case MikeyAddresses.CPUSLEEP:
 				case MikeyAddresses.SDONEACK:
+				case MikeyAddresses.DISPADRL:
+				case MikeyAddresses.DISPADRH:
+				case MikeyAddresses.SYSCTL1:
+				case MikeyAddresses.DISPCTL:
 					Debug.WriteLine("Mikey::Peek: Write-only address used.");
 					break;
 

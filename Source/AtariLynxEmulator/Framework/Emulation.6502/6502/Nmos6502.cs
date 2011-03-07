@@ -64,7 +64,7 @@ namespace KillerApps.Emulation.Processors
 		protected const ulong MemoryWriteCycle = 5;
 
 		private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
-#if DEBUG
+#if !DEBUG
 		Disassembler6500 disassembler = new Disassembler6500();
 		StringBuilder builder = new StringBuilder();
 #endif
@@ -73,7 +73,7 @@ namespace KillerApps.Emulation.Processors
 		public bool IsAsleep { get; protected set; }
 		protected ulong ScheduledWakeUpTime;
 		protected Clock SystemClock;
-		protected ulong SystemCycleCount;
+		
 		public void TrySleep(ulong cyclesToSleep)
 		{
 			// Set time when we need to wake up because Suzy tells us to. 
@@ -138,7 +138,7 @@ namespace KillerApps.Emulation.Processors
 			// Owner needs to increase cycle count to awake CPU.
 			if (IsAsleep) return 0;
 
-#if DEBUG
+#if !DEBUG
 			disassembler.DisassembleSingleStatement(Memory, PC, builder);
 			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, String.Format("{0:X4} {1}", PC, builder.ToString()));
 			builder.Clear();
@@ -147,12 +147,13 @@ namespace KillerApps.Emulation.Processors
 			// Fetch opcode
 			Opcode = Memory.Peek(PC);
 			SystemClock.CycleCount += MemoryReadCycle;
-
+			
+			// Lookup on timings that Keith Wilkins has made
+			SystemClock.CompatibleCycleCount += 1 + timings[Opcode] * MemoryReadCycle;
+			
 			PC++;
 			ExecuteOpcode();
 
-			// Lookup on timings that Keith Wilkins has made
-			SystemCycleCount += 1 + timings[Opcode] * MemoryReadCycle;
 			return 1;
 		}
 

@@ -8,5 +8,6 @@ namespace KillerApps.Emulation.Processors
 	public class Clock
 	{
 		public ulong CycleCount;
+		public ulong CompatibleCycleCount;
 	}
 }

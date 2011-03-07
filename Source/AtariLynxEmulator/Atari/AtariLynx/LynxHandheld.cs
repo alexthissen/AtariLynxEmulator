@@ -14,11 +14,11 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public RomCart Cartridge { get; set; }
 		public Ram64KBMemory Ram { get; private set; }
 		public RomBootMemory Rom { get; private set; }
-		public MemoryManagementUnit Mmu { get; private set; }
-		public MikeyChipset Mikey { get; set; }
-		public SuzyChipset Suzy { get; set; }
+		internal MemoryManagementUnit Mmu { get; private set; }
+		public MikeyChipset Mikey { get; private set; }
+		public SuzyChipset Suzy { get; private set; }
 		public Cmos65SC02 Cpu { get; private set; }
-		public Clock SystemClock { get; private set; }
+		internal Clock SystemClock { get; private set; }
 
 		public Stream BootRomImage { get; set; }
 		public Stream CartRomImage { get; set; }
@@ -39,7 +39,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// Pass all hardware that have memory access to MMU
 			Mmu = new MemoryManagementUnit(Rom, Ram, Mikey, Suzy);
 			SystemClock = new Clock();
-
+			
 			// Finally construct processor
 			Cpu = new Cmos65SC02(Mmu, SystemClock);
 
@@ -56,8 +56,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public void Update()
 		{
-			ExecuteCpu(1);
 			GenerateInterrupts();
+			ExecuteCpu(1);
 			SynchronizeTime();
 		}
 
@@ -69,14 +69,16 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private void GenerateInterrupts() 
 		{
 			// Mikey is only source of interrupts. It contains all timers (regular, audio and UART)
-			// TODO: After implementing timing, only update Mikey when there is a predicted timer event
-			Mikey.Update();
+			if (SystemClock.CompatibleCycleCount >= NextTimerEvent) 
+				Mikey.Update();
 			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, "LynxHandheld::GenerateInterrupts");
 		}
 
 		private void SynchronizeTime()
 		{
-			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, String.Format("LynxHandheld::SynchronizeTime: Current time is {0}", SystemClock.CycleCount));
+			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, String.Format("LynxHandheld::SynchronizeTime: Current time is {0}", SystemClock.CompatibleCycleCount));
 		}
+
+		public ulong NextTimerEvent { get; set; }
 	}
 }

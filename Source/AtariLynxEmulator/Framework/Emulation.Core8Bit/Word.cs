@@ -7,10 +7,10 @@ using System.Runtime.InteropServices;
 namespace KillerApps.Emulation.Core
 {
 	[StructLayout(LayoutKind.Explicit)]
-	public struct WordValue
+	public struct Word
 	{
 		[FieldOffset(0)]
-		public ushort Word;
+		public ushort Value;
 		[FieldOffset(0)]
 		public byte LowByte;
 		[FieldOffset(1)]
