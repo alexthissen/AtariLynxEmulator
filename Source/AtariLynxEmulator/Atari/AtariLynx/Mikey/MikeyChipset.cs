@@ -26,7 +26,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public Word VideoDisplayStartAddress;
 					
 		// Timers
-		public TimerBase[] Timers = new TimerBase[8];
+		public Timer[] Timers = new Timer[8];
 		
 		private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
 
@@ -51,39 +51,36 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		private void InitializeTimers()
 		{
-			// "Two of the timers will be used for the video frame rate generator."
-			// Assume timer 0 is always clocked and never linked
-			Timers[0] = new ClockedTimer(Timer0Mask, new StaticTimerControl(0));
-			Timers[0].IrqFired += new EventHandler<InterruptEventArgs>(DisplayRenderLine);
-
-			// "... the second (timer 2) is set to the number of lines."
-			// Assume timer 2 is always linked and never clocked
-			Timers[2] = new LinkedTimer(Timer2Mask, new StaticTimerControl(0)) { PreviousTimer = Timers[0] };
-			Timers[2].IrqFired += new EventHandler<InterruptEventArgs>(DisplayEndOfFrame);
-
-			// "One of the timers (timer 4) will be used as the baud rate generator for the serial expansion port (UART)."
-			Timers[4] = new ClockedTimer(Timer4Mask, new StaticTimerControl(0));
-			Timers[4].IrqFired += new EventHandler<InterruptEventArgs>(GenerateBaudRate);
-
-			// 6th timer is never linked
-			Timers[6] = new ClockedTimer(Timer6Mask, new StaticTimerControl(0));
-
-			// Create odd numbered timers
-			for (int index = 1; index < 8; index += 2)
+			// Create all timers
+			for (int index = 0; index < 8; index++)
 			{
 				byte interruptMask = (byte)(2 ^ index);
-				TimerBase timer = TimerFactory.CreateTimer(interruptMask, new StaticTimerControl(0));
-				Timers[index] = timer;
+				Timers[index] = new Timer(interruptMask);
 
 				// Hook up linked timer to previous timer in group B
-				if (timer is LinkedTimer && index > 1) ((LinkedTimer)timer).PreviousTimer = Timers[index - 2];
+				if (index > 1) Timers[index].PreviousTimer = Timers[index - 2];
 				// TODO: Hook up timer 1 to audio 3 when linked
+
+				Timers[index].Expired += new EventHandler<TimerExpirationEventArgs>(TimerExpired);
 			}
+
+			// "Two of the timers will be used for the video frame rate generator."
+			Timers[0].Expired += new EventHandler<TimerExpirationEventArgs>(DisplayRenderLine);
+			// "... the second (timer 2) is set to the number of lines."
+			Timers[2].Expired += new EventHandler<TimerExpirationEventArgs>(DisplayEndOfFrame);
+			// "One of the timers (timer 4) will be used as the baud rate generator for the serial expansion port (UART)."
+			Timers[4].Expired += new EventHandler<TimerExpirationEventArgs>(GenerateBaudRate);
 		}
 
-		private void GenerateBaudRate(object sender, InterruptEventArgs e) { }
-		private void DisplayEndOfFrame(object sender, InterruptEventArgs e) { }
-		private void DisplayRenderLine(object sender, InterruptEventArgs e) { }
+		void TimerExpired(object sender, TimerExpirationEventArgs e)
+		{
+			// Trigger a maskable interrupt
+			device.Cpu.SignalInterrupt(InterruptType.Irq);
+		}
+
+		private void GenerateBaudRate(object sender, TimerExpirationEventArgs e) { }
+		private void DisplayEndOfFrame(object sender, TimerExpirationEventArgs e) { }
+		private void DisplayRenderLine(object sender, TimerExpirationEventArgs e) { }
 
 		public void Reset()
 		{
@@ -106,15 +103,15 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public void Update() 
 		{
 			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, "MikeyChipset::Update");
-			foreach (TimerBase timer in Timers)
+			foreach (Timer timer in Timers)
 			{
 				timer.Update(device.SystemClock.CompatibleCycleCount);
 			}
 
 			// Take lowest 
 			device.NextTimerEvent = ulong.MaxValue;
-			var clocks = Timers.OfType<ClockedTimer>().Where(t => t.StaticControlBits.EnableCount);
-			if (clocks.Count() > 0) device.NextTimerEvent = clocks.Min(t => t.TimerEvent);
+			var clocks = Timers.Where(t => t.StaticControlBits.EnableCount);
+			if (clocks.Count() > 0) device.NextTimerEvent = clocks.Min(t => t.ExpirationTime);
 		}
 
 		public void Poke(ushort address, byte value)
@@ -124,37 +121,37 @@ namespace KillerApps.Emulation.Atari.Lynx
 			{
 				int offset = address - MikeyAddresses.HTIMBKUP;
 				int index = offset >> 2; // Divide by 4 to get index of timer
+				Timer timer = Timers[index];
+
 				switch (offset % 4)
 				{
 					case 0: // Backup value
-						Timers[index].BackupValue = value;
+						timer.BackupValue = value;
 						return;
 
 					case 1: // Static control
-						// TODO: Fix hookup of static control, creation of new timer and copy of old values
 						StaticTimerControl control = new StaticTimerControl(value);
-						if (control.SourcePeriod == ClockSelect.Linking && Timers[index].StaticControlBits.SourcePeriod != control.SourcePeriod)
-						{
-							Timers[index] = TimerFactory.CreateTimer((byte)(1 << index), control);
-						}
+						timer.StaticControlBits = control;
+
 						// "It is set on time out, reset with the reset timer done bit (xxx1, B6)"
 						if (control.ResetTimerDone)
 						{
-							Timers[index].DynamicControlBits.TimerDone = false;
+							timer.DynamicControlBits.TimerDone = false;
 						}
 						if (control.EnableCount || control.ResetTimerDone)
 						{
-							Timers[index].Start(device.SystemClock.CompatibleCycleCount);
+							timer.Start(device.SystemClock.CompatibleCycleCount);
 							ForceTimerUpdate();
 						}
 						return;
 
 					case 2: // Current value
-						Timers[index].CurrentValue = value;
+						timer.CurrentValue = value;
+						ForceTimerUpdate();
 						return;
 
 					case 3: // Dynamic control bits
-						Timers[index].DynamicControlBits.ByteData = value;
+						timer.DynamicControlBits.ByteData = value;
 						return;
 				}
 			}

@@ -5,8 +5,8 @@ using System.Text;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
-	public class InterruptEventArgs: EventArgs
+	public class TimerExpirationEventArgs: EventArgs
 	{
-		public byte Mask { get; set; }
+		public byte InterruptMask { get; set; }
 	}
 }
