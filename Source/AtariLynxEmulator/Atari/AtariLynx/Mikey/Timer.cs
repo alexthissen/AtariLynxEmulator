@@ -52,40 +52,38 @@ namespace KillerApps.Emulation.Atari.Lynx
 		{
 			// Only enabled and not-done timers should predict expiration time
 			ExpirationTime = ulong.MaxValue;
-			if (!StaticControlBits.EnableCount || DynamicControlBits.TimerDone) return;
-
-			// Assume timer has not expired and is not updated
-			DynamicControlBits.BorrowOut = false;
-			DynamicControlBits.BorrowIn = false; // TODO: Find out why and when borrow-in is set
-
-			// Calculate new current value and update is necessary
-			TimerLogic.UpdateCurrentValue(currentCycleCount);
-			
-			// When timer value has expired it will borrow out
-			if (DynamicControlBits.BorrowOut)
+			if (StaticControlBits.EnableCount && (StaticControlBits.EnableReload || !DynamicControlBits.TimerDone))
 			{
-				Expire();
-			}
+				// Assume timer has not expired and is not updated
+				DynamicControlBits.BorrowOut = false;
+				DynamicControlBits.BorrowIn = false; // TODO: Find out why and when borrow-in is set
 
-			ExpirationTime = TimerLogic.PredictTimerEvent(currentCycleCount);
+				// Calculate new current value and update is necessary
+				bool expired = TimerLogic.UpdateCurrentValue(currentCycleCount);
+
+				// When timer value has expired it will borrow out
+				if (expired)
+				{
+					Expire();
+				}
+
+				ExpirationTime = TimerLogic.PredictExpirationTime(currentCycleCount);
+			}
 		}
 
 		protected virtual void Expire()
 		{
 			// "It is set on time out, reset with the reset timer done bit (xxx1, B6)"
-			DynamicControlBits.TimerDone = !StaticControlBits.ResetTimerDone;
+			DynamicControlBits.TimerDone = true; // !StaticControlBits.ResetTimerDone;
 			DynamicControlBits.BorrowOut = true;
 
 			// "Timers can be set to stop when they reach a count of 0 or to reload from their backup register."
 			// Reload if neccessary
 			CurrentValue = StaticControlBits.EnableReload ? BackupValue : (byte)0;
 
-			// Handle maskable IRQ when enabled
-			if (StaticControlBits.EnableInterrupt)
-			{
-				Debug.WriteLine("Mikie::Update() - Timer IRQ Triggered");
-				Expired(this, new TimerExpirationEventArgs() { InterruptMask = InterruptMask });
-			}
+			Debug.WriteLine("Mikie::Update() - Timer IRQ Triggered");
+			if (Expired != null) 
+				Expired(this, new TimerExpirationEventArgs() { InterruptMask = this.InterruptMask });
 		}
 
 		public void Start(ulong cycleCount)
@@ -94,7 +92,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			TimerLogic.Start(cycleCount);
 			
 			// Starting a timer will force an update
-			Update(cycleCount);
+			//Update(cycleCount);
 		}
 	}
 }

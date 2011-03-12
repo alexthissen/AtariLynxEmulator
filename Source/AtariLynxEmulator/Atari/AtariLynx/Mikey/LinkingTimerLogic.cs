@@ -16,16 +16,25 @@ namespace KillerApps.Emulation.Atari.Lynx
 			this.Owner = owner;
 		}
 	
-		public void UpdateCurrentValue(ulong currentCycleCount)
+		public bool UpdateCurrentValue(ulong currentCycleCount)
 		{
-			if (Owner.PreviousTimer.DynamicControlBits.BorrowOut)
-			{
-				Owner.CurrentValue--;
-				Owner.DynamicControlBits.BorrowIn = true;
-			}
-			
 			// TODO: Find out what last link carrying is meant for
 			LastLinkCarry = Owner.PreviousTimer.DynamicControlBits.BorrowOut;
+			
+			if (Owner.PreviousTimer.DynamicControlBits.BorrowOut)
+			{
+				Owner.DynamicControlBits.BorrowIn = true;
+
+				if (Owner.CurrentValue == 0)
+				{
+					return true;
+				}
+				else
+				{
+					Owner.CurrentValue--;
+				}
+			}
+			return false;
 		}
 
 		public void Start(ulong cycleCount)
@@ -33,7 +42,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// Nothing to do for linked timers
 		}
 
-		public ulong PredictTimerEvent(ulong currentCycleCount)
+		public ulong PredictExpirationTime(ulong currentCycleCount)
 		{
 			// Predicted timer event is always dependent upon linked timing
 			return ulong.MaxValue;

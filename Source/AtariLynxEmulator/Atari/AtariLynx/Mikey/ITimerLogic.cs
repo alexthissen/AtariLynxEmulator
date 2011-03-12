@@ -8,8 +8,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 {
 	public interface ITimerLogic
 	{
-		void UpdateCurrentValue(ulong currentCycleCount);
-		ulong PredictTimerEvent(ulong currentCycleCount);
+		bool UpdateCurrentValue(ulong currentCycleCount);
+		ulong PredictExpirationTime(ulong currentCycleCount);
 		void Start(ulong cycleCount);
 	}
 }

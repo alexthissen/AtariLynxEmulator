@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace KillerApps.Emulation.Processors
+namespace KillerApps.Emulation.Atari.Lynx
 {
-	public enum InterruptType
+	public interface IResetable
 	{
-		Irq,
-		Nmi,
-		None
+		void Reset();
 	}
 }

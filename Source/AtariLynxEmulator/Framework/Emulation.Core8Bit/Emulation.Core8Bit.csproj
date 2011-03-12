@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="EmulationException.cs" />
     <Compile Include="IMemoryAccessT.cs" />
+    <Compile Include="InterruptType.cs" />
     <Compile Include="ProcessorBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Word.cs" />

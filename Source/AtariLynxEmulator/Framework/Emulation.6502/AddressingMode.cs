@@ -20,7 +20,6 @@ namespace KillerApps.Emulation.Processors
 		ZeroPage, // $12
 		ZeroPageX, // $12,X
 		ZeroPageY, // $12,Y
-		//ZeroPageRelative, // $12, $1234
 		ZeroPageIndexedIndirectX, // ($12,X)
 		ZeroPageIndirectIndexedY, // ($12),Y
 		ZeroPageIndirect // ($12)

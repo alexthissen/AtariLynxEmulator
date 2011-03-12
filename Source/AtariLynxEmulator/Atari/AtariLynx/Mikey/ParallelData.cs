@@ -68,6 +68,11 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public bool Rest 
 		{ 
 			get { return (ByteData & RestMask) == RestMask; }
+			set 
+			{ 
+				ByteData &= RestMask ^ 0xFF;
+				ByteData |= value ? RestMask : (byte)0;
+			}
 		}
 
 		// "This bit can be an input or an output. In its current use, it is the write enable line 

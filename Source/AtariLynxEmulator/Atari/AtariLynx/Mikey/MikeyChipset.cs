@@ -14,10 +14,14 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public const int AUDIO_DPRAM_READWRITE_MAX = 20;
 		public const int COLORPALETTE_DPRAM_READWRITE = 5;
 		public const int AVAILABLEHARDWARE_READWRITE = 5;
-		private LynxHandheld device;
+		
+		private ILynxDevice device;
 		private byte timerInterruptStatusRegister;
 		private byte timerInterruptMask = 0;
 
+		public byte[] RedColorMap = new byte[0x10];
+		public byte[] GreenColorMap = new byte[0x10];
+		public byte[] BlueColorMap = new byte[0x10];
 		public SystemControlBits1 SYSCTL1 { get; set; }
 		public ParallelData IODAT { get; set; }
 		public DisplayControlBits DISPCTL { get; set; }
@@ -39,7 +43,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private const byte Timer6Mask = 0x40; // "B6 = timer 6"
 		private const byte Timer7Mask = 0x80; // "B7 = timer 7"
 
-		public MikeyChipset(LynxHandheld lynx)
+		public MikeyChipset(ILynxDevice lynx)
 		{
 			this.device = lynx;
 		}
@@ -54,7 +58,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// Create all timers
 			for (int index = 0; index < 8; index++)
 			{
-				byte interruptMask = (byte)(2 ^ index);
+				byte interruptMask = (byte)(1 << index);
 				Timers[index] = new Timer(interruptMask);
 
 				// Hook up linked timer to previous timer in group B
@@ -64,6 +68,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 				Timers[index].Expired += new EventHandler<TimerExpirationEventArgs>(TimerExpired);
 			}
 
+			// Timer 6 is not part of a group and does not have a timer linked to it
+			Timers[5].PreviousTimer = null;
+
 			// "Two of the timers will be used for the video frame rate generator."
 			Timers[0].Expired += new EventHandler<TimerExpirationEventArgs>(DisplayRenderLine);
 			// "... the second (timer 2) is set to the number of lines."
@@ -72,15 +79,27 @@ namespace KillerApps.Emulation.Atari.Lynx
 			Timers[4].Expired += new EventHandler<TimerExpirationEventArgs>(GenerateBaudRate);
 		}
 
-		void TimerExpired(object sender, TimerExpirationEventArgs e)
+		private void TimerExpired(object sender, TimerExpirationEventArgs e)
 		{
-			// Trigger a maskable interrupt
-			device.Cpu.SignalInterrupt(InterruptType.Irq);
+			Timer timer = (Timer)sender;
+			
+			// Only timers with enabled interrupt will trigger
+			if (timer.StaticControlBits.EnableInterrupt)
+			{
+				// Update interrupt status
+				timerInterruptStatusRegister |= e.InterruptMask;
+
+				// Trigger a maskable interrupt
+				device.Cpu.SignalInterrupt(InterruptType.Irq);
+			}
 		}
 
 		private void GenerateBaudRate(object sender, TimerExpirationEventArgs e) { }
 		private void DisplayEndOfFrame(object sender, TimerExpirationEventArgs e) { }
-		private void DisplayRenderLine(object sender, TimerExpirationEventArgs e) { }
+		private void DisplayRenderLine(object sender, TimerExpirationEventArgs e) 
+		{
+ 			// TODO: Implementation of Keith does not always trigger IRQ when DMA is not enabled, display bits (?) or display current have not been set
+		}
 
 		public void Reset()
 		{
@@ -163,29 +182,30 @@ namespace KillerApps.Emulation.Atari.Lynx
 					// "Read is a poll, write will reset the int that corresponds to a set bit."
 					value ^= 0xff;
 					timerInterruptStatusRegister &= value;
-					ForceTimerUpdate();
 					
-					bool activeIrqs = (timerInterruptStatusRegister & timerInterruptMask) != 0;
-					device.Cpu.SignalInterrupt(activeIrqs);
-					break;
+					// TODO: Keith Wilkins has fix below for Championship Rally here. Is it still necessary?
+					//device.Cpu.SignalInterrupt(...)
+					//ForceTimerUpdate();
+					return;
 
 				case MikeyAddresses.INTSET:
 					// "Read is a poll, write will set the int that corresponds to a set bit."
 					timerInterruptStatusRegister |= value;
-					activeIrqs = (timerInterruptStatusRegister & timerInterruptMask) != 0;
-					device.Cpu.SignalInterrupt(activeIrqs);
-					ForceTimerUpdate();
-					break;
+				
+					// TODO: Keith Wilkins has fix for Championship Rally here. Is it still necessary?
+					//device.Cpu.SignalInterrupt(...)
+					//ForceTimerUpdate();
+					return;
 
 				case MikeyAddresses.MIKEYSREV:
 					// "No actual register is implemented"
-					break;
+					return;
 
 				// "Also note that only the lines that are set to input are actually valid for reading."
 				// "8 bits I/O direction corresponding to the 8 bits at FD8B 0=input, 1= output"
 				case MikeyAddresses.IODIR:
 					IODIR = value;
-					break;
+					return;
 
 				// "Mikey Parallel Data(sort of a R/W) 8 bits of general purpose I/O data"
 				case MikeyAddresses.IODAT:
@@ -201,7 +221,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 					// "In its current use, it is the write enable line for writeable elements in the cartridge."
 					if ((IODIR & 0x10) == 0x10)
 						device.Cartridge.WriteEnabled = IODAT.AudioIn;
-					break;
+					return;
 
 				case MikeyAddresses.SYSCTL1:
 					SYSCTL1.ByteData = value;
@@ -211,7 +231,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 						// TODO: Enter debug mode id configured
 					}
 					device.Cartridge.CartAddressStrobe(SYSCTL1.CartAddressStrobe);
-					break;
+					return;
 
 				case MikeyAddresses.SDONEACK:
 					// "Write a '00' to SDONEACK, allowing Mikey to respond to sleep commands."
@@ -225,7 +245,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 					// SDONEACK software."
 
 					// TODO: Implement state for Suzy Done acknowledgement if necessary
-					break;
+					return;
 
 				case MikeyAddresses.CPUSLEEP:
 					// "A write of '0' to this address will reset the CPU bus request flip fIop.
@@ -239,33 +259,58 @@ namespace KillerApps.Emulation.Atari.Lynx
 					// and skipping forward in time to that moment. 
 					ulong suzyCycles = device.Suzy.PaintSprites();
 					device.Cpu.TrySleep(suzyCycles);
-					break;
+					return;
 					
 				case MikeyAddresses.DISPCTL:
 					DISPCTL.ByteData = value;
-					break;
+					return;
 
 				case MikeyAddresses.PBKUP:
 					// "Additionally, the magic 'P' counter has to be set to match the LCD scan rate. The formula is:
 					// INT((((line time - .5us) / 15) * 4) -1)"
 					PBKUP = value;
-					break;
+					return;
 
 				case MikeyAddresses.DISPADRL:
 					// "DISPADRL (FD94) is lower 8 bits of display address with the bottom 2 bit ignored by the hardware.
 					// The address of the upper left corner of a display buffer must always have '00' in the bottom 2 bits."
 					VideoDisplayStartAddress.LowByte = (byte)(value & 0xFD);
-					break;
+					return;
 
 				case MikeyAddresses.DISPADRH:
 					// "DISPADRH (FD95) is upper 8 bits of display address."
 					VideoDisplayStartAddress.HighByte = value;
+					return;
+
+				case MikeyAddresses.MAGRDY0:
+				case MikeyAddresses.MAGRDY1:
+				case MikeyAddresses.AUDIN:
+				case MikeyAddresses.MIKEYHREV:
+					Debug.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Mikey::Poke - Read-only address {0:X4} used (value {1:X2}).", address, value));
 					break;
 
 				default:
-					Debug.WriteLine("Mikey::Poke: Unknown address specified.");
 					break;
 			}
+
+			// Blue and red color map
+			if (address >= MikeyAddresses.BLUERED0)
+			{
+				int index = address - MikeyAddresses.BLUERED0;
+				BlueColorMap[index] = (byte)((value & 0xF0) >> 4);
+				RedColorMap[index] = (byte)(value & 0x0F);
+				return;
+			}
+
+			// Green color map
+			if (address >= MikeyAddresses.GREEN0)
+			{
+				int index = address - MikeyAddresses.GREEN0;
+				GreenColorMap[index] = (byte)(value & 0x0F);
+				return;
+			}
+
+			Debug.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Mikey::Poke: Unknown address {0:X$} specified (value {1:X2}).", address,value));
 		}
 
 		public byte Peek(ushort address)
@@ -289,6 +334,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 				case MikeyAddresses.PBKUP:
 					return PBKUP;
 
+				case MikeyAddresses.MIKEYHREV:
+					// "No actual register is implemented"
+					return 0x01;
+
 				case MikeyAddresses.MIKEYSREV:
 					// "No actual register is implemented"
 					break;
@@ -300,13 +349,26 @@ namespace KillerApps.Emulation.Atari.Lynx
 				case MikeyAddresses.DISPADRH:
 				case MikeyAddresses.SYSCTL1:
 				case MikeyAddresses.DISPCTL:
-					Debug.WriteLine("Mikey::Peek: Write-only address used.");
-					break;
+					Debug.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Mikey::Peek - Write-only address {0:X4} used.", address));
+					return 0xFF;
 
 				default:
-					Debug.WriteLine("Mikey::Peek: Unknown address specified.");
 					break;
 			}
+
+			if (address >= MikeyAddresses.BLUERED0)
+			{
+				int index = address - MikeyAddresses.BLUERED0;
+				return (byte)((BlueColorMap[index] << 4) + RedColorMap[index]);
+			}
+
+			if (address >= MikeyAddresses.GREEN0)
+			{
+				int index = address - MikeyAddresses.GREEN0;
+				return GreenColorMap[index];
+			}
+
+			Debug.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Mikey::Peek -  Unknown address {0:X4} specified.", address));
 			return 0xff;
 		}
 	}

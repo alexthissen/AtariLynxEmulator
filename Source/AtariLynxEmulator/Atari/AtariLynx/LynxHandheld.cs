@@ -9,7 +9,18 @@ using System.IO;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
-	public class LynxHandheld
+	public interface ILynxDevice: IResetable
+	{
+		RomCart Cartridge { get; set; }
+		MikeyChipset Mikey { get; }
+		SuzyChipset Suzy { get; }
+		Cmos65SC02 Cpu { get; }
+		Clock SystemClock { get; }
+		bool CartridgePowerOn { get; set; }
+		ulong NextTimerEvent { get; set; }
+	}
+
+	public class LynxHandheld: ILynxDevice
 	{
 		public RomCart Cartridge { get; set; }
 		public Ram64KBMemory Ram { get; private set; }
@@ -18,12 +29,13 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public MikeyChipset Mikey { get; private set; }
 		public SuzyChipset Suzy { get; private set; }
 		public Cmos65SC02 Cpu { get; private set; }
-		internal Clock SystemClock { get; private set; }
+		public Clock SystemClock { get; private set; }
 
 		public Stream BootRomImage { get; set; }
 		public Stream CartRomImage { get; set; }
 
 		public bool CartridgePowerOn { get; set; }
+		public ulong NextTimerEvent { get; set; }
 
 		private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
 
@@ -78,7 +90,5 @@ namespace KillerApps.Emulation.Atari.Lynx
 		{
 			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, String.Format("LynxHandheld::SynchronizeTime: Current time is {0}", SystemClock.CompatibleCycleCount));
 		}
-
-		public ulong NextTimerEvent { get; set; }
 	}
 }

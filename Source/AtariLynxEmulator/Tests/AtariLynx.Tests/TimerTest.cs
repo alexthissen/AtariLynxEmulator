@@ -162,7 +162,9 @@ namespace AtariLynx.Tests
 			
 			// TODO: Check if this condition is true
 			Assert.IsTrue(timer.DynamicControlBits.TimerDone, "Reloading timer should set TimerDone flag.");
-			Assert.AreEqual<ulong>(16 + (backupValue + 1)* 16, timer.ExpirationTime, "Predicted timer event not correct.");
+			// TODO: Presumably backup value should be loaded 1 period after reaching zero (+1 on backup value)
+			Assert.AreEqual<ulong>(16 + (backupValue + 1) * 16, timer.ExpirationTime, "Predicted timer event not correct.");
+			//Assert.AreEqual<ulong>(16 + backupValue * 16, timer.ExpirationTime, "Predicted timer event not correct.");
 		}
 
 		[TestMethod]
@@ -196,6 +198,7 @@ namespace AtariLynx.Tests
 		{
 			Timer timer = clockedTimer;
 			timer.Start(0);
+			timer.Update(0);
 			
 			// Get current prediction of expiration
 			ulong timerEvent = timer.ExpirationTime;
@@ -313,13 +316,15 @@ namespace AtariLynx.Tests
 		public void ReloadingTimerWithMissedExpirationShouldSetExpirationTimeAfterCurrentCycleCount()
 		{
 			Timer timer = reloadingTimer;
-			ulong interval = (1 + backupValue + 1) * 16; // 1 for first expiration, backup value + 1 for second expiration
-			
+			ulong period = 16;
+			ulong interval = (1 + backupValue + 1) * period; // 1 for first expiration, backup value + 1 for second expiration
+			timer.Start(0);
+
 			// Act
 			timer.Update(interval); 
 
 			// Assert
-			Assert.AreEqual<ulong>(interval + 1, timer.ExpirationTime, "Missed expiration should mean an immediate expiration again.");
+			Assert.AreEqual<ulong>(period + 1, timer.ExpirationTime, "Missed expiration should mean an immediate expiration again.");
 		}
 		
 		[TestMethod]

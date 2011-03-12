@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="MemoryManagementUnitTest.cs" />
     <Compile Include="MemoryMapControl.cs" />
+    <Compile Include="MikeyChipsetTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LynxHandheldTest.cs" />
     <Compile Include="TimerTest.cs" />

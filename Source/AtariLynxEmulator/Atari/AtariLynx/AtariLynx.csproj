@@ -51,6 +51,7 @@
     <Compile Include="Cartridge\RomCart.cs" />
     <Compile Include="Cartridge\RomCartMemoryBank.cs" />
     <Compile Include="Cartridge\RomCartType.cs" />
+    <Compile Include="IResetable.cs" />
     <Compile Include="LynxAddresses.cs" />
     <Compile Include="LynxException.cs" />
     <Compile Include="LynxHandheld.cs" />

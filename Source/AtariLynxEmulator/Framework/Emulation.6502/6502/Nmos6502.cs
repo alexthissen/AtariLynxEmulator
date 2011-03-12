@@ -367,10 +367,8 @@ namespace KillerApps.Emulation.Processors
 			IsAsleep = false;
 		}
 
-		public override object SignalInterrupt(params object[] args)
+		public override object SignalInterrupt(InterruptType interrupt, params object[] details)
 		{
-			InterruptType interrupt = args.Length > 0 ? (InterruptType)args[0] : InterruptType.Irq;
-
 			// Set flag to indicate a IRQ is being signaled or taken down. 
 			// Active IRQs will be picked up at the next update of the CPU.
 			ActiveInterrupt = interrupt;
