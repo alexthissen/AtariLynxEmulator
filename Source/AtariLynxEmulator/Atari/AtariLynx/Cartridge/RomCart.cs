@@ -23,6 +23,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private RomCartMemoryBank Bank0 { get; set; }
 		private RomCartMemoryBank Bank1 { get; set; }
 
+		private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
+
 		public RomCart(int bank0Size, int bank1Size)
 		{
 			Bank0 = new RomCartMemoryBank(bank0Size);
@@ -46,7 +48,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		// "CartAddressData is the data input to the shift register ..."
 		public void CartAddressData(bool data)
 		{
-			Debug.WriteLine(String.Format("CartAddressData (${0:x})", data));
+			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, String.Format("CartAddressData (${0:x})", data));
 			addressData = data;
 		}
 
@@ -69,7 +71,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			}
 
 			currentStrobe = strobe;
-			Debug.WriteLine("CartAddressStrobe (strobe={0}) shifter=${1:x}", strobe, shiftRegister);
+			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, String.Format("CartAddressStrobe (strobe={0}) shifter=${1:x}", strobe, shiftRegister));
 		}
 
 		public void Poke0(byte value)

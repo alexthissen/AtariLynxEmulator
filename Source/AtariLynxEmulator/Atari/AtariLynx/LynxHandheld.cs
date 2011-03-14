@@ -18,6 +18,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		Clock SystemClock { get; }
 		bool CartridgePowerOn { get; set; }
 		ulong NextTimerEvent { get; set; }
+		Ram64KBMemory Ram { get; }
+		RomBootMemory Rom { get; }
 	}
 
 	public class LynxHandheld: ILynxDevice
@@ -30,6 +32,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public SuzyChipset Suzy { get; private set; }
 		public Cmos65SC02 Cpu { get; private set; }
 		public Clock SystemClock { get; private set; }
+		public byte[] LcdScreenDma;
 
 		public Stream BootRomImage { get; set; }
 		public Stream CartRomImage { get; set; }
@@ -51,9 +54,12 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// Pass all hardware that have memory access to MMU
 			Mmu = new MemoryManagementUnit(Rom, Ram, Mikey, Suzy);
 			SystemClock = new Clock();
-			
+			LcdScreenDma = new byte[0x3FC0 * 4];
+
 			// Finally construct processor
 			Cpu = new Cmos65SC02(Mmu, SystemClock);
+
+			Mikey.Initialize();
 
 			Reset();
 		}
@@ -76,6 +82,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private void ExecuteCpu(int cyclesToExecute)
 		{
 			Cpu.Execute(cyclesToExecute);
+			if (Cpu.IsAsleep) SystemClock.CompatibleCycleCount = NextTimerEvent;
 		}
 
 		private void GenerateInterrupts() 

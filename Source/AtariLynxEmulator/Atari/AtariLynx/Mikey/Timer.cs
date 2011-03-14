@@ -81,7 +81,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// Reload if neccessary
 			CurrentValue = StaticControlBits.EnableReload ? BackupValue : (byte)0;
 
-			Debug.WriteLine("Mikie::Update() - Timer IRQ Triggered");
 			if (Expired != null) 
 				Expired(this, new TimerExpirationEventArgs() { InterruptMask = this.InterruptMask });
 		}

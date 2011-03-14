@@ -32,7 +32,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			this.Ram = lynx.Ram;
 		}
 
-		public ulong PaintSprites() 
+		public ulong PaintSprites()
 		{
 			Debug.WriteLineIf(true, "SuzyChipset::PaintSprites");
 			return 0; 

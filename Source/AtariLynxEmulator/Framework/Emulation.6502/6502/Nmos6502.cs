@@ -64,21 +64,21 @@ namespace KillerApps.Emulation.Processors
 		protected const ulong MemoryWriteCycle = 5;
 
 		private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
-#if !DEBUG
+#if DEBUG
 		Disassembler6500 disassembler = new Disassembler6500();
 		StringBuilder builder = new StringBuilder();
 #endif
 
 		// Timing and sleep
 		public bool IsAsleep { get; protected set; }
-		protected ulong ScheduledWakeUpTime;
+		public ulong ScheduledWakeUpTime;
 		protected Clock SystemClock;
 		
 		public void TrySleep(ulong cyclesToSleep)
 		{
 			// Set time when we need to wake up because Suzy tells us to. 
 			// We might get beaten by earlier IRQs from timers
-			this.ScheduledWakeUpTime = SystemClock.CycleCount + cyclesToSleep;
+			this.ScheduledWakeUpTime = SystemClock.CompatibleCycleCount + cyclesToSleep;
 			IsAsleep = true;
 			Debug.WriteLine(String.Format("Nmos6502::Sleep: Entering sleep till cycle count {0}", ScheduledWakeUpTime));
 		}
@@ -136,9 +136,19 @@ namespace KillerApps.Emulation.Processors
 
 			// When CPU is sleeping there is nothing to do here. 
 			// Owner needs to increase cycle count to awake CPU.
-			if (IsAsleep) return 0;
+			if (IsAsleep)
+			{
+				// Wake up when scheduled wakeup time has passed
+				if (SystemClock.CompatibleCycleCount >= ScheduledWakeUpTime)
+					IsAsleep = false;
+				else
+				{
+					//SystemClock.CompatibleCycleCount = ScheduledWakeUpTime;
+					return 0;
+				}
+			}
 
-#if !DEBUG
+#if DEBUG
 			disassembler.DisassembleSingleStatement(Memory, PC, builder);
 			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, String.Format("{0:X4} {1}", PC, builder.ToString()));
 			builder.Clear();
@@ -153,7 +163,7 @@ namespace KillerApps.Emulation.Processors
 			
 			PC++;
 			ExecuteOpcode();
-
+			
 			return 1;
 		}
 

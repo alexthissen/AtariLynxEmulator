@@ -40,7 +40,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 				if (Owner.CurrentValue < value)
 				{
 					CycleCountCurrentValue += (ulong)((Owner.CurrentValue + 1) << Multiplier);
-					
+					Owner.CurrentValue = 0; // Actually -1 at this point. Optional reloading happens from timer
+
 					// Indicate expiration
 					return true;
 				}
@@ -67,7 +68,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 		{
 			// Negative current value means an immediate timer event
 			byte value = CalculateValueDecrease(currentCycleCount);
-			return (ulong)(value > Owner.CurrentValue ? 1 : ((Owner.CurrentValue + 1) << Multiplier)) + CycleCountCurrentValue;
+			//return (ulong)(value > Owner.CurrentValue ? 1 : ((Owner.CurrentValue + 1) << Multiplier)) + CycleCountCurrentValue;
+
+			// For now use Wilkins logic and predict new timer event from current system cycle count
+			return (ulong)(value > Owner.CurrentValue ? 1 : ((Owner.CurrentValue + 1 - value) << Multiplier)) + currentCycleCount;
 		}
 	}
 }

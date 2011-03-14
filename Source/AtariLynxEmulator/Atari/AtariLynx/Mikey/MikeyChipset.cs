@@ -22,6 +22,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public byte[] RedColorMap = new byte[0x10];
 		public byte[] GreenColorMap = new byte[0x10];
 		public byte[] BlueColorMap = new byte[0x10];
+		public int[] ArgbColorMap = new int[0x10];
+
 		public SystemControlBits1 SYSCTL1 { get; set; }
 		public ParallelData IODAT { get; set; }
 		public DisplayControlBits DISPCTL { get; set; }
@@ -42,7 +44,13 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private const byte Timer5Mask = 0x20; // "B5 = timer 5"
 		private const byte Timer6Mask = 0x40; // "B6 = timer 6"
 		private const byte Timer7Mask = 0x80; // "B7 = timer 7"
-
+		
+		private ushort currentLynxDmaAddress;
+		private int currentLcdDmaCounter;
+		private byte[] LcdScreenDma;
+		private byte[] VideoMemoryDma;
+		private byte currentLine;
+		
 		public MikeyChipset(ILynxDevice lynx)
 		{
 			this.device = lynx;
@@ -51,6 +59,11 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public void Initialize()
 		{
 			InitializeTimers();
+			// TODO: Clean this hack up and use a decent way to get at the LCD screen memory
+			LcdScreenDma = ((LynxHandheld)device).LcdScreenDma;
+			// TODO: Another hack to avoid rendering when timer 2 has only just started
+			currentLcdDmaCounter = -1;
+			VideoMemoryDma = device.Ram.GetDirectAccess();
 		}
 
 		private void InitializeTimers()
@@ -72,7 +85,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			Timers[5].PreviousTimer = null;
 
 			// "Two of the timers will be used for the video frame rate generator."
-			Timers[0].Expired += new EventHandler<TimerExpirationEventArgs>(DisplayRenderLine);
+			Timers[0].Expired += new EventHandler<TimerExpirationEventArgs>(RenderLine);
 			// "... the second (timer 2) is set to the number of lines."
 			Timers[2].Expired += new EventHandler<TimerExpirationEventArgs>(DisplayEndOfFrame);
 			// "One of the timers (timer 4) will be used as the baud rate generator for the serial expansion port (UART)."
@@ -90,15 +103,76 @@ namespace KillerApps.Emulation.Atari.Lynx
 				timerInterruptStatusRegister |= e.InterruptMask;
 
 				// Trigger a maskable interrupt
+				Debug.WriteLineIf(GeneralSwitch.TraceInfo, String.Format("Mikie::Update() - Timer IRQ Triggered at {0:X8}", device.SystemClock.CompatibleCycleCount));
 				device.Cpu.SignalInterrupt(InterruptType.Irq);
 			}
 		}
 
 		private void GenerateBaudRate(object sender, TimerExpirationEventArgs e) { }
-		private void DisplayEndOfFrame(object sender, TimerExpirationEventArgs e) { }
-		private void DisplayRenderLine(object sender, TimerExpirationEventArgs e) 
+		private void DisplayEndOfFrame(object sender, TimerExpirationEventArgs e) 
 		{
- 			// TODO: Implementation of Keith does not always trigger IRQ when DMA is not enabled, display bits (?) or display current have not been set
+			// Pick up current video start address
+			currentLynxDmaAddress = (ushort)(VideoDisplayStartAddress.Value & 0xFFFC);
+			if (DISPCTL.Flip)
+			{
+				currentLynxDmaAddress += 3;
+			}
+
+			currentLcdDmaCounter = 0;
+			currentLine = Timers[2].BackupValue;
+		}
+		
+		private void RenderLine(object sender, TimerExpirationEventArgs e) 
+		{
+			// TODO: Implementation of Keith does not always trigger IRQ when DMA is not enabled, display bits (?) or display current have not been set
+			if (!DISPCTL.EnableVideoDma) return;
+
+			int backupValue = Timers[2].BackupValue;
+			//currentLine = Timers[2].CurrentValue;
+			
+			// "The current method of driving the LCD requires 3 scan lines of vertical blank."
+			// TODO: Determine if rest is between frames 104, 103 and 102 (for 60Hz)
+			// Keith Wilkins has Rest period between 102, 101 and 100
+			bool rest = (currentLine >= (backupValue - 4) && currentLine <= (backupValue - 2));
+			IODAT.Rest = rest;
+
+			if (currentLine > (backupValue - 3))
+			{
+				currentLine--;
+				return;
+			}
+
+			if (currentLine > 0) currentLine--;
+			if (currentLcdDmaCounter < 0) return;
+
+			// TODO: Define constant for DMA_READWRITE_CYCLE
+			device.SystemClock.CompatibleCycleCount += 80 * 4;
+		
+			// Every byte has two nibbles for two pixels
+			for (int loop = 0; loop < SuzyChipset.SCREEN_WIDTH / 2; loop++)
+			{
+				byte source = VideoMemoryDma[currentLynxDmaAddress];
+				if (DISPCTL.Flip)
+				{
+					currentLynxDmaAddress--;
+					SetPixel((byte)(source & 0x0F));
+					SetPixel((byte)(source >> 4));
+				}
+				else
+				{
+					currentLynxDmaAddress++;
+					SetPixel((byte)(source >> 4));
+					SetPixel((byte)(source & 0x0F));
+				}
+			}
+		}
+
+		private void SetPixel(byte source)
+		{
+			LcdScreenDma[currentLcdDmaCounter++] = RedColorMap[source];
+			LcdScreenDma[currentLcdDmaCounter++] = GreenColorMap[source];
+			LcdScreenDma[currentLcdDmaCounter++] = BlueColorMap[source];
+			LcdScreenDma[currentLcdDmaCounter++] = 0xFF;
 		}
 
 		public void Reset()
@@ -127,10 +201,16 @@ namespace KillerApps.Emulation.Atari.Lynx
 				timer.Update(device.SystemClock.CompatibleCycleCount);
 			}
 
-			// Take lowest 
+			// Take lowest timer 
 			device.NextTimerEvent = ulong.MaxValue;
 			var clocks = Timers.Where(t => t.StaticControlBits.EnableCount);
 			if (clocks.Count() > 0) device.NextTimerEvent = clocks.Min(t => t.ExpirationTime);
+
+			if (device.Cpu.IsAsleep)
+			{
+				// Make wakeup time next timer event if earlier than first timer
+				if (device.NextTimerEvent > device.Cpu.ScheduledWakeUpTime) device.NextTimerEvent = device.Cpu.ScheduledWakeUpTime;
+			}
 		}
 
 		public void Poke(ushort address, byte value)
@@ -371,5 +451,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			Debug.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Mikey::Peek -  Unknown address {0:X4} specified.", address));
 			return 0xff;
 		}
+
+		public int lineAddress { get; set; }
 	}
 }
