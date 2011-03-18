@@ -57,6 +57,12 @@
     <Compile Include="MikeyChipsetTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LynxHandheldTest.cs" />
+    <Compile Include="SpriteCollisionNumberTest.cs" />
+    <Compile Include="SpriteControlBits0Test.cs" />
+    <Compile Include="SpriteControlBits1Test.cs" />
+    <Compile Include="SpriteSystemControlTest.cs" />
+    <Compile Include="StaticTimerControlTest.cs" />
+    <Compile Include="SuzyChipsetTest.cs" />
     <Compile Include="TimerTest.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -79,7 +79,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Ram64KBMemory.cs" />
     <Compile Include="RomBootMemory.cs" />
+    <Compile Include="Suzy\ReloadableDepth.cs" />
+    <Compile Include="Suzy\SizingAlgorithm.cs" />
+    <Compile Include="Suzy\SpriteCollisionNumber.cs" />
+    <Compile Include="Suzy\SpriteControlBits0.cs" />
+    <Compile Include="Suzy\SpriteControlBits1.cs" />
+    <Compile Include="Suzy\SpriteInitializationBits.cs" />
+    <Compile Include="Suzy\SpriteProcessStart.cs" />
+    <Compile Include="Suzy\SpriteSystemControl.cs" />
+    <Compile Include="Suzy\SpriteTypes.cs" />
     <Compile Include="Suzy\SuzyAddresses.cs" />
+    <Compile Include="Suzy\SuzyBusEnable.cs" />
     <Compile Include="Suzy\SuzyChipset.cs" />
   </ItemGroup>
   <ItemGroup>

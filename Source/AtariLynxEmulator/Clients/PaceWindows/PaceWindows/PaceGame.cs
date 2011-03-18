@@ -39,8 +39,8 @@ namespace PaceWindows
 		/// </summary>
 		protected override void Initialize()
 		{
-			//IsFixedTimeStep = false;
-			//TargetElapsedTime = TimeSpan.FromMilliseconds(3000);
+			IsFixedTimeStep = true;
+			TargetElapsedTime = TimeSpan.FromMilliseconds(166); // 60Hz
 
 			lcdScreen = new Texture2D(graphics.GraphicsDevice, 160, 102);
 			Debug.WriteLine("SurfaceFormat: " + lcdScreen.Format.ToString());
@@ -127,7 +127,9 @@ namespace PaceWindows
 			spriteBatch.Begin();
 			spriteBatch.Draw(lcdScreen, new Rectangle(0, 0, 480, 306), new Rectangle(0, 0, 160, 102), Color.White);
 			//spriteBatch.Draw(t2, new Rectangle(0, 0, 160, 102), Color.White);
-			spriteBatch.DrawString(font, DateTime.Now.ToLongTimeString(), new Vector2(100, 100), Color.White);
+			spriteBatch.DrawString(font, DateTime.Now.ToLongTimeString(), new Vector2(10, 10), Color.White);
+			spriteBatch.DrawString(font, emulator.SystemClock.CompatibleCycleCount.ToString("X16"), new Vector2(10, 30), Color.White);
+			spriteBatch.DrawString(font, gameTime.IsRunningSlowly.ToString(), new Vector2(10, 20), Color.White);
 			spriteBatch.End();
 
 			base.Draw(gameTime);

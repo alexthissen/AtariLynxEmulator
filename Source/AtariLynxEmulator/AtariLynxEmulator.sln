@@ -35,7 +35,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleClient", "Clients\Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaceWindows", "Clients\PaceWindows\PaceWindows\PaceWindows.csproj", "{0838352B-7576-445E-A71E-D82796D91F31}"
 EndProject
-Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "PaceWindowsContent", "Clients\PaceWindows\PaceWindowsContent\PaceWindowsContent.contentproj", "{9EAC12D0-AE9D-4969-A2E6-B1E50B41936F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaceWindowsContent", "Clients\PaceWindows\PaceWindowsContent\PaceWindowsContent.contentproj", "{9EAC12D0-AE9D-4969-A2E6-B1E50B41936F}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
