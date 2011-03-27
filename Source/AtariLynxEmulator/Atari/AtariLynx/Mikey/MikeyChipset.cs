@@ -337,7 +337,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 					// sprites and will signal when it is done. 
 					// This is implemented as a new wakeup time by calculating the number of cycles used
 					// and skipping forward in time to that moment. 
-					ulong suzyCycles = device.Suzy.PaintSprites();
+					ulong suzyCycles = device.Suzy.RenderSprites();
 					device.Cpu.TrySleep(suzyCycles);
 					return;
 					

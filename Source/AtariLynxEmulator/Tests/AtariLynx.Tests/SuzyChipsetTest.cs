@@ -47,10 +47,10 @@ namespace AtariLynx.Tests
 		[TestMethod]
 		public void IndividualMathABCDElementsShouldAmountToCorrectInteger()
 		{
-			suzy.Poke(SuzyAddresses.MATHD, 0x78);
-			suzy.Poke(SuzyAddresses.MATHC, 0x56);
-			suzy.Poke(SuzyAddresses.MATHB, 0x34);
-			suzy.Poke(SuzyAddresses.MATHA, 0x12);
+			suzy.Poke(SuzyChipset.Addresses.MATHD, 0x78);
+			suzy.Poke(SuzyChipset.Addresses.MATHC, 0x56);
+			suzy.Poke(SuzyChipset.Addresses.MATHB, 0x34);
+			suzy.Poke(SuzyChipset.Addresses.MATHA, 0x12);
 			
 			// Assert
 			Assert.AreEqual<uint>(0x12345678, BitConverter.ToUInt32(suzy.MathABCD, 0), "Composed integer does not have correct value.");
@@ -59,10 +59,10 @@ namespace AtariLynx.Tests
 		[TestMethod]
 		public void IndividualMathJKLMElementsShouldAmountToCorrectInteger()
 		{
-			suzy.Poke(SuzyAddresses.MATHM, 0x78);
-			suzy.Poke(SuzyAddresses.MATHL, 0x56);
-			suzy.Poke(SuzyAddresses.MATHK, 0x34);
-			suzy.Poke(SuzyAddresses.MATHJ, 0x12);
+			suzy.Poke(SuzyChipset.Addresses.MATHM, 0x78);
+			suzy.Poke(SuzyChipset.Addresses.MATHL, 0x56);
+			suzy.Poke(SuzyChipset.Addresses.MATHK, 0x34);
+			suzy.Poke(SuzyChipset.Addresses.MATHJ, 0x12);
 
 			// Assert
 			Assert.AreEqual<uint>(0x12345678, BitConverter.ToUInt32(suzy.MathJKLM, 0), "Composed integer does not have correct value.");
@@ -71,10 +71,10 @@ namespace AtariLynx.Tests
 		[TestMethod]
 		public void IndividualMathEFGHlementsShouldAmountToCorrectInteger()
 		{
-			suzy.Poke(SuzyAddresses.MATHH, 0x78);
-			suzy.Poke(SuzyAddresses.MATHG, 0x56);
-			suzy.Poke(SuzyAddresses.MATHF, 0x34);
-			suzy.Poke(SuzyAddresses.MATHE, 0x12);
+			suzy.Poke(SuzyChipset.Addresses.MATHH, 0x78);
+			suzy.Poke(SuzyChipset.Addresses.MATHG, 0x56);
+			suzy.Poke(SuzyChipset.Addresses.MATHF, 0x34);
+			suzy.Poke(SuzyChipset.Addresses.MATHE, 0x12);
 
 			// Assert
 			Assert.AreEqual<uint>(0x12345678, BitConverter.ToUInt32(suzy.MathEFGH, 0), "Composed integer does not have correct value.");
@@ -83,8 +83,8 @@ namespace AtariLynx.Tests
 		[TestMethod]
 		public void IndividualMathNPElementsShouldAmountToCorrectShort()
 		{
-			suzy.Poke(SuzyAddresses.MATHP, 0x34);
-			suzy.Poke(SuzyAddresses.MATHN, 0x12);
+			suzy.Poke(SuzyChipset.Addresses.MATHP, 0x34);
+			suzy.Poke(SuzyChipset.Addresses.MATHN, 0x12);
 
 			// Assert
 			Assert.AreEqual<uint>(0x1234, BitConverter.ToUInt16(suzy.MathNP, 0), "Composed integer does not have correct value.");
@@ -96,10 +96,10 @@ namespace AtariLynx.Tests
 			// Act
 			Tuple<ushort, int>[] startAddresses = 
 				{ 
-					new Tuple<ushort, int>(SuzyAddresses.MATHD, 4), 
-					new Tuple<ushort, int>(SuzyAddresses.MATHP, 2),
-					new Tuple<ushort, int>(SuzyAddresses.MATHH, 4),
-					new Tuple<ushort, int>(SuzyAddresses.MATHM, 4)
+					new Tuple<ushort, int>(SuzyChipset.Addresses.MATHD, 4), 
+					new Tuple<ushort, int>(SuzyChipset.Addresses.MATHP, 2),
+					new Tuple<ushort, int>(SuzyChipset.Addresses.MATHH, 4),
+					new Tuple<ushort, int>(SuzyChipset.Addresses.MATHM, 4)
 				};
 
 			foreach (var startAddress in startAddresses)
@@ -136,7 +136,7 @@ namespace AtariLynx.Tests
 		public void SignedMathMultiplyShouldCalculateCorrectProduct()
 		{
 			// Arrange
-			suzy.Poke(SuzyAddresses.SPRSYS, 0x80); // Signed math enabled
+			suzy.Poke(SuzyChipset.Addresses.SPRSYS, 0x80); // Signed math enabled
 			suzy.MathABCD = BitConverter.GetBytes(0xFFFF0002);
 			
 			// Act
@@ -151,7 +151,7 @@ namespace AtariLynx.Tests
 		public void TwoNegativeValuesSignedMathMultiplicationShouldBePositiveProduct()
 		{
 			// Arrange
-			suzy.Poke(SuzyAddresses.SPRSYS, 0x80); // Signed math enabled
+			suzy.Poke(SuzyChipset.Addresses.SPRSYS, 0x80); // Signed math enabled
 			suzy.MathABCD = BitConverter.GetBytes(0xFFFEFFFF);
 			
 			// Act
@@ -166,7 +166,7 @@ namespace AtariLynx.Tests
 		public void MultiplicationsShouldAccumulateWhenSet()
 		{
 			// Arrange
-			suzy.Poke(SuzyAddresses.SPRSYS, 0x40); // Accumulate
+			suzy.Poke(SuzyChipset.Addresses.SPRSYS, 0x40); // Accumulate
 			suzy.MathABCD = BitConverter.GetBytes(0x00010002);
 			
 			// Act
@@ -181,7 +181,7 @@ namespace AtariLynx.Tests
 		public void MultiplicationsShouldContinueFromPresetAccumulation()
 		{
 			// Arrange
-			suzy.Poke(SuzyAddresses.SPRSYS, 0x40); // Accumulate
+			suzy.Poke(SuzyChipset.Addresses.SPRSYS, 0x40); // Accumulate
 			suzy.MathJKLM = BitConverter.GetBytes(0x01020304);
 			suzy.MathABCD = BitConverter.GetBytes(0x00010002);
 			
@@ -197,8 +197,8 @@ namespace AtariLynx.Tests
 		public void InitializingAccumulatorWithKMShouldSetJLToZero()
 		{
 			// Arrange
-			suzy.Poke(SuzyAddresses.MATHM, 0x00);
-			suzy.Poke(SuzyAddresses.MATHK, 0x00);
+			suzy.Poke(SuzyChipset.Addresses.MATHM, 0x00);
+			suzy.Poke(SuzyChipset.Addresses.MATHK, 0x00);
 			
 			// Assert 
 			Assert.AreEqual<uint>(0, BitConverter.ToUInt32(suzy.MathJKLM, 0), "J and L bytes should have been set to zero.");

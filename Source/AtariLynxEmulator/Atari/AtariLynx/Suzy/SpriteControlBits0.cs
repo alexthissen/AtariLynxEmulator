@@ -35,9 +35,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 		}
 		
 		// "B7,B6 = bits/pixel-1 (1,2,3,4)"
-		public int BitsPerPixel 
+		public byte BitsPerPixel 
 		{
-			get { return (ByteData >> 6) + 1; }
+			get { return (byte)((ByteData >> 6) + 1); }
 		}
 
 		private const byte HFlipMask = 0x10;

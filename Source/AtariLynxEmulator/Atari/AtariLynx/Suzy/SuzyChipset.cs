@@ -10,7 +10,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 	// "... and Suzy is only a sprite generation engine. Some non-sprite functions (the switch readers 
 	// and the ROM reader) are in Suzy due to pin limitations. In addition the math functions are part 
 	// of Suzys sprite engine."
-	public class SuzyChipset : IMemoryAccess<ushort, byte>, IResetable
+	public partial class SuzyChipset : IMemoryAccess<ushort, byte>, IResetable
 	{
 		public const int SUZY_BASEADDRESS = 0xfc00;
 		public const int SUZY_SIZE = 0x100;
@@ -27,7 +27,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public const int AVAILABLEHARDWARE_READWRITE = 5; // "Available Hardware(r/w)            Min 5          Max 5"
 
 		// "The video and refresh generators in Mikey and the sprite engine in Suzy see the entire 64K byte range as RAM."
-		private IMemoryAccess<ushort, byte> Ram;
+		internal Ram64KBMemory Ram;
 		private ILynxDevice device;
 
 		public SpriteControlBits0 SPRCTL0 { get; private set; }
@@ -42,13 +42,21 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public byte[] MathABCD = new byte[4];
 		public byte[] MathNP = new byte[2];
 
+		public Word HOFF, VOFF;
+		public Word VIDBAS, COLLBAS;
+		public Word COLLOFF;
+		public Word HSIZOFF, VSIZOFF;
+
+		private SpriteControlBlock SCB = new SpriteControlBlock();
+		private SpriteEngine Engine = null;
+
 		private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
 
 		public SuzyChipset(ILynxDevice lynx)
 		{
-			this.device = lynx;
-			this.Ram = lynx.Ram;
-
+			device = lynx;
+			Ram = lynx.Ram;
+			
 			SPRCTL0 = new SpriteControlBits0(0);
 			SPRCTL1 = new SpriteControlBits1(0);
 			SPRGO = new SpriteProcessStart();
@@ -247,10 +255,26 @@ namespace KillerApps.Emulation.Atari.Lynx
 			return cyclesUsed;
 		}
 
-
-		public ulong PaintSprites()
+		public void Initialize()
 		{
-			Debug.WriteLineIf(GeneralSwitch.TraceInfo, "SuzyChipset::PaintSprites");
+			Engine = new SpriteEngine(Ram.GetDirectAccess());
+		}
+
+		public ulong RenderSprites()
+		{
+			// Start rendering sprites
+			SPRSYS.SpriteProcessStarted = true;
+
+			// Delegate to engine
+			device.SystemClock.CompatibleCycleCount += Engine.RenderSprites();
+			Debug.WriteLineIf(GeneralSwitch.TraceInfo, "SuzyChipset::RenderSprites");
+
+			// "When the engine finishes processing the sprite list, or if it has been requested 
+			// to stop at the end of the current sprite, or if it has been forced off by 
+			// writing a 00 to SPRGO, the SPRITESEN flip flop will be reset."
+			SPRGO.SpriteProcessEnabled = false;
+			SPRSYS.SpriteProcessStarted = false;	
+
 			return 0; 
 		}
 
@@ -258,99 +282,238 @@ namespace KillerApps.Emulation.Atari.Lynx
 		{
 			switch (address)
 			{
-				case SuzyAddresses.MATHA:
+				case Addresses.TMPADRL:
+					Engine.TMPADR.LowByte = value;
+					// "Any CPU write to an LSB will set the MSB to 0."
+					Engine.TMPADR.HighByte = 0;
+					break;
+				case Addresses.TMPADRH:
+					Engine.TMPADR.HighByte = value;
+					break;
+				case Addresses.TILTACUML:
+					Engine.TILTACUM.LowByte = value;
+					// "Any CPU write to an LSB will set the MSB to 0."
+					Engine.TILTACUM.HighByte = 0;
+					break;
+				case Addresses.TILTACUMH:
+					Engine.TILTACUM.HighByte = value;
+					break;
+				case Addresses.HOFFL:
+					HOFF.LowByte = value;
+					// "Any CPU write to an LSB will set the MSB to 0."
+					HOFF.HighByte = 0;
+					break;
+				case Addresses.HOFFH:
+					HOFF.HighByte = value;
+					break;
+				case Addresses.VOFFL:
+					VOFF.LowByte = value;
+					// "Any CPU write to an LSB will set the MSB to 0."
+					VOFF.HighByte = 0;
+					break;
+				case Addresses.VOFFH:
+					VOFF.HighByte = value;
+					break;
+				case Addresses.VIDBASL:
+					VIDBAS.LowByte = value;
+					// "Any CPU write to an LSB will set the MSB to 0."
+					VIDBAS.HighByte = 0;
+					break;
+				case Addresses.VIDBASH:
+					VIDBAS.HighByte = value;
+					break;
+				case Addresses.COLLBASL:
+					COLLBAS.LowByte = value;
+					// "Any CPU write to an LSB will set the MSB to 0."
+					COLLBAS.HighByte = 0;
+					break;
+				case Addresses.COLLBASH:
+					COLLBAS.HighByte = value;
+					break;
+				case Addresses.VIDADRL:
+					Engine.VIDADR.LowByte = value;
+					// "Any CPU write to an LSB will set the MSB to 0."
+					Engine.VIDADR.HighByte = 0;
+					break;
+				case Addresses.VIDADRH:
+					Engine.VIDADR.HighByte = value;
+					break;
+				case Addresses.COLLADRL:
+					Engine.COLLADR.LowByte = value;
+					// "Any CPU write to an LSB will set the MSB to 0."
+					Engine.COLLADR.HighByte = 0;
+					break;
+				case Addresses.COLLADRH:
+					Engine.COLLADR.HighByte = value;
+					break;
+				case Addresses.SCBNEXTL:
+					SCB.SCBNEXT.LowByte = value;
+					// "Any CPU write to an LSB will set the MSB to 0."
+					SCB.SCBNEXT.HighByte = 0;
+					break;
+				case Addresses.SCBNEXTH:
+					SCB.SCBNEXT.HighByte = value;
+					break;
+				case Addresses.SPRDLINEL:
+					SCB.SPRDLINE.LowByte = value;
+					// "Any CPU write to an LSB will set the MSB to 0."
+					SCB.SPRDLINE.HighByte = 0;
+					break;
+				case Addresses.SPRDLINEH:
+					SCB.SPRDLINE.HighByte = value;
+					break;
+				case Addresses.HPOSSTRTL:
+					SCB.HPOSSTRT.LowByte = value;
+					// "Any CPU write to an LSB will set the MSB to 0."
+					SCB.HPOSSTRT.HighByte = 0;
+					break;
+				case Addresses.HPOSSTRTH:
+					SCB.HPOSSTRT.HighByte = value;
+					break;
+				case Addresses.VPOSSTRTL:
+					SCB.VPOSSTRT.LowByte = value;
+					// "Any CPU write to an LSB will set the MSB to 0."
+					SCB.VPOSSTRT.HighByte = 0;
+					break;
+				case Addresses.VPOSSTRTH:
+					SCB.VPOSSTRT.HighByte = value;
+					break;
+				case Addresses.SPRHSIZL:
+					SCB.SPRHSIZ.LowByte = value;
+					// "Any CPU write to an LSB will set the MSB to 0."
+					SCB.SPRHSIZ.HighByte = 0;
+					break;
+				case Addresses.SPRHSIZH:
+					SCB.SPRHSIZ.HighByte = value;
+					break;
+				case Addresses.SPRVSIZL:
+					SCB.SPRVSIZ.LowByte = value;
+					// "Any CPU write to an LSB will set the MSB to 0."
+					SCB.SPRVSIZ.HighByte = 0;
+					break;
+				case Addresses.SPRVSIZH:
+					SCB.SPRVSIZ.HighByte = value;
+					break;
+				case Addresses.STRETCHL:
+					Engine.STRETCH.LowByte = value;
+					// "Any CPU write to an LSB will set the MSB to 0."
+					Engine.STRETCH.HighByte = 0;
+					break;
+				case Addresses.STRETCHH:
+					Engine.STRETCH.HighByte = value;
+					break;
+				case Addresses.TILTL:
+					Engine.TILT.LowByte = value;
+					// "Any CPU write to an LSB will set the MSB to 0."
+					Engine.TILT.HighByte = 0;
+					break;
+				case Addresses.TILTH:
+					Engine.TILT.HighByte = value;
+					break;
+				case Addresses.SCBADRL:
+					Engine.SCBADR.LowByte = value;
+					// "Any CPU write to an LSB will set the MSB to 0."
+					Engine.SCBADR.HighByte = 0;
+					break;
+				case Addresses.SCBADRH:
+					Engine.SCBADR.HighByte = value;
+					break;
+
+				case Addresses.MATHA:
 					MathABCD[3] = value;
 					// "Writing to A will start a 16 bit multiply."
 					Multiply16By16();
 					// TODO: Add clock cycles for multiplication when switching from compatible to precise clock count
 					//device.SystemClock.CompatibleCycleCount += Multiply16By16();
 					break;
-				case SuzyAddresses.MATHB:
+				case Addresses.MATHB:
 					MathABCD[2] = value;
 					// "Writing to B,D,F,H,K, or M will force a '0' to be written to A,C,E,G,J, or L, respectively."
 					MathABCD[3] = 0;
 					break;
-				case SuzyAddresses.MATHC:
+				case Addresses.MATHC:
 					MathABCD[1] = value;
 					break;
-				case SuzyAddresses.MATHD:
+				case Addresses.MATHD:
 					MathABCD[0] = value;
 					// "Writing to B,D,F,H,K, or M will force a '0' to be written to A,C,E,G,J, or L, respectively."
 					MathABCD[1] = 0;
 					break;
-				case SuzyAddresses.MATHE:
+				case Addresses.MATHE:
 					MathEFGH[3] = value;
 					// "Writing to E will start 8 16 bit divide."
 					Divide32By16();
 					// TODO: Add clock cycles for multiplication when switching from compatible to precise clock count
 					//device.SystemClock.CompatibleCycleCount += Divide32By16();
 					break;
-				case SuzyAddresses.MATHF:
+				case Addresses.MATHF:
 					MathEFGH[2] = value;
 					// "Writing to B,D,F,H,K, or M will force a '0' to be written to A,C,E,G,J, or L, respectively."
 					MathEFGH[3] = 0;
 					break;
-				case SuzyAddresses.MATHG:
+				case Addresses.MATHG:
 					MathEFGH[1] = value;
 					break;
-				case SuzyAddresses.MATHH:
+				case Addresses.MATHH:
 					MathEFGH[0] = value;
 					// "Writing to B,D,F,H,K, or M will force a '0' to be written to A,C,E,G,J, or L, respectively."
 					MathEFGH[1] = 0;
 					break;
-				case SuzyAddresses.MATHJ:
+				case Addresses.MATHJ:
 					MathJKLM[3] = value;
 					break;
-				case SuzyAddresses.MATHK:
+				case Addresses.MATHK:
 					MathJKLM[2] = value;
 					// "Writing to B,D,F,H,K, or M will force a '0' to be written to A,C,E,G,J, or L, respectively."
 					MathJKLM[3] = 0;
 					break;
-				case SuzyAddresses.MATHL:
+				case Addresses.MATHL:
 					MathJKLM[1] = value;
 					break;
-				case SuzyAddresses.MATHM:
+				case Addresses.MATHM:
 					MathJKLM[0] = value;
 					// "The write to 'M' will clear the accumulator overflow bit."
 					SPRSYS.LastCarry = false;
 					// "Writing to B,D,F,H,K, or M will force a '0' to be written to A,C,E,G,J, or L, respectively."
 					MathJKLM[1] = 0;
 					break;
-				case SuzyAddresses.MATHN:
+				case Addresses.MATHN:
 					MathNP[1] = value;
 					break;
-				case SuzyAddresses.MATHP:
+				case Addresses.MATHP:
 					MathNP[0] = value;
 					break;
 
-				case SuzyAddresses.SPRGO:
+				case Addresses.SPRGO:
 					SPRGO.ByteData = value;
+					// "Writing a 01 or 05 to SPRGO sets the 'SPRITESEN' flip flop which causes the 
+					// sprite engine to start its operation."
 					// "Write a 1 to start the process, at completion of process this bit will be reset to 0. 
 					// Either setting or clearing this bit will clear the Stop At End Of Current Sprite bit."
 					SPRSYS.StopAtEndOfCurrentSprite = false;
 					break;
 
-				case SuzyAddresses.RCART0: 
+				case Addresses.RCART0: 
 					// "FCB2 uses 'CART0/' as the strobe."
 					// "Read or write 8 bits of data."
 					device.Cartridge.Poke0(value);
 					break;
 
-				case SuzyAddresses.RCART1:
+				case Addresses.RCART1:
 					// "FCB3 uses 'CART1/’ as the strobe."
 					// "Read or write 8 bits of data."
 					device.Cartridge.Poke1(value);
 					break;
 
-				case SuzyAddresses.SUZYHREV:
+				case Addresses.SUZYHREV:
 					throw new LynxException(String.Format("Suzy::Poke: Writing to read-only address at {0:X4}", address));
 
 				// "Set to '$F3' after at least 100ms after power up and before any sprites are drawn."
-				case SuzyAddresses.SPRINIT:
+				case Addresses.SPRINIT:
 					SPRINIT.ByteData = value;
 					break;
 
-				case SuzyAddresses.SPRSYS:
+				case Addresses.SPRSYS:
 					SPRSYS.ByteData = value;
 					break;
 
@@ -365,50 +528,55 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 			switch (address)
 			{
-				case SuzyAddresses.SUZYHREV:
+				case Addresses.SCBNEXTL:
+					return SCB.SCBNEXT.LowByte;
+				case Addresses.SCBNEXTH:
+					return SCB.SCBNEXT.HighByte;
+
+				case Addresses.SUZYHREV:
 					return 0x01;
 
-				case SuzyAddresses.RCART0:
+				case Addresses.RCART0:
 					// "FCB2 uses 'CART0/' as the strobe."
 					// "Read or write 8 bits of data."
 					return device.Cartridge.Peek0();
 
-				case SuzyAddresses.RCART1:
+				case Addresses.RCART1:
 					// "FCB3 uses 'CART1/’ as the strobe."
 					// "Read or write 8 bits of data."
 					return device.Cartridge.Peek1();
 
-				case SuzyAddresses.MATHD:
-				case SuzyAddresses.MATHC:
-				case SuzyAddresses.MATHB:
-				case SuzyAddresses.MATHA:
-					value = MathABCD[address - SuzyAddresses.MATHD];
+				case Addresses.MATHD:
+				case Addresses.MATHC:
+				case Addresses.MATHB:
+				case Addresses.MATHA:
+					value = MathABCD[address - Addresses.MATHD];
 					break;
 
-				case SuzyAddresses.MATHP:
-				case SuzyAddresses.MATHN:
-					value = MathNP[address - SuzyAddresses.MATHP];
+				case Addresses.MATHP:
+				case Addresses.MATHN:
+					value = MathNP[address - Addresses.MATHP];
 					break;
 
-				case SuzyAddresses.MATHH:
-				case SuzyAddresses.MATHG:
-				case SuzyAddresses.MATHF:
-				case SuzyAddresses.MATHE:
-					value = MathEFGH[address - SuzyAddresses.MATHH];
+				case Addresses.MATHH:
+				case Addresses.MATHG:
+				case Addresses.MATHF:
+				case Addresses.MATHE:
+					value = MathEFGH[address - Addresses.MATHH];
 					break;
 
-				case SuzyAddresses.MATHM:
-				case SuzyAddresses.MATHL:
-				case SuzyAddresses.MATHK:
-				case SuzyAddresses.MATHJ:
-					value = MathJKLM[address - SuzyAddresses.MATHM];
+				case Addresses.MATHM:
+				case Addresses.MATHL:
+				case Addresses.MATHK:
+				case Addresses.MATHJ:
+					value = MathJKLM[address - Addresses.MATHM];
 					break;
 
-				case SuzyAddresses.SPRCOL:
-				case SuzyAddresses.SPRINIT:
-				case SuzyAddresses.SPRCTL0:
-				case SuzyAddresses.SPRCTL1:
-				case SuzyAddresses.SUZYBUSEN:
+				case Addresses.SPRCOL:
+				case Addresses.SPRINIT:
+				case Addresses.SPRCTL0:
+				case Addresses.SPRCTL1:
+				case Addresses.SUZYBUSEN:
 					Debug.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Suzy::Peek - Peeking at write-only address ${0:X4}", address));
 					break;
 

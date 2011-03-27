@@ -13,7 +13,12 @@ namespace KillerApps.Emulation.Atari.Lynx
 		// "B0 = Sprite process enabled, 0=disabled."
 		public bool SpriteProcessEnabled 
 		{
-			get { return (ByteData & SPRITE_GOMask) == SPRITE_GOMask; } 
+			get { return (ByteData & SPRITE_GOMask) == SPRITE_GOMask; }
+			set 
+			{ 
+				ByteData &= (SPRITE_GOMask ^ 0xFF);
+				if (value) ByteData |= SPRITE_GOMask;
+			}
 		}
 		
 		// "B2= enable everon detector. 1 = enabled."

@@ -67,7 +67,7 @@ namespace AtariLynx.Tests
 
 			Assert.IsFalse(sprctl1.ReloadPalette, "Palette should be marked for reload.");
 			Assert.IsTrue(sprctl1.SkipSprite, "Sprite should be marked as Skip.");
-			Assert.AreEqual<ReloadableDepth>(ReloadableDepth.HSizeVSizeStretchTilt, sprctl1.ReloadableDepth, "Reloadable depth should be HSizeVSizeStretchTilt.");
+			Assert.AreEqual<ReloadableDepth>(ReloadableDepth.HVST, sprctl1.ReloadableDepth, "Reloadable depth should be HSizeVSizeStretchTilt.");
 			Assert.AreEqual<SizingAlgorithm>(SizingAlgorithm.Shifter, sprctl1.SizingAlgorithm, "Sizing algorithm should be Shifter.");
 			Assert.IsTrue(sprctl1.StartDrawingLeft, "Drawing should start right.");
 			Assert.IsTrue(sprctl1.StartDrawingUp, "Drawing should start down.");
