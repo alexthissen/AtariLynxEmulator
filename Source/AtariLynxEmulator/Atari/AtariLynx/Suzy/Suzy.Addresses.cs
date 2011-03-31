@@ -5,7 +5,7 @@ using System.Text;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
-	public partial class SuzyChipset
+	public partial class Suzy
 	{
 		public static class Addresses
 		{

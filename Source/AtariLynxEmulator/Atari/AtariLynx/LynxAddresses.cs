@@ -7,6 +7,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 {
 	public static class LynxAddresses
 	{
-		public const ushort MAPCTL = 0xfff9;
+		public const ushort MAPCTL = 0xFFF9;
 	}
 }

@@ -26,7 +26,7 @@ namespace ConsoleClient
 
 			handheld.Initialize();
 
-			while (true) handheld.Update();
+			while (true) handheld.Update(1);
 		}
 	}
 }

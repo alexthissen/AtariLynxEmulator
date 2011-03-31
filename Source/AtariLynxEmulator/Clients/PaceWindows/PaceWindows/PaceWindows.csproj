@@ -133,8 +133,9 @@
       <Name>Emulation.Core8Bit</Name>
     </ProjectReference>
     <ProjectReference Include="..\PaceWindowsContent\PaceWindowsContent.contentproj">
-      <Name>PaceWindowsContent</Name>
+      <Name>PaceWindowsContent %28Content%29</Name>
       <XnaReferenceType>Content</XnaReferenceType>
+      <Project>{9EAC12D0-AE9D-4969-A2E6-B1E50B41936F}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

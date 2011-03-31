@@ -7,13 +7,6 @@ using System.Diagnostics;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
-	public enum OrdinaryDataPacketType
-	{
-		Packed,
-		Literal,
-		Unknown
-	}
-
 	public class SpriteDataUnpacker
 	{
 		private ShiftRegister register;
@@ -21,6 +14,13 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private bool totallyLiteral;
 		private byte[] data;
 		private ushort address;
+
+		public enum OrdinaryDataPacketType
+		{
+			Packed,
+			Literal,
+			Unknown
+		}
 
 		public SpriteDataUnpacker(ShiftRegister register, byte[] data)
 		{
@@ -61,10 +61,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 			register.Initialize(new ArraySegment<byte>(data, address, offsetToNextLine));
 			address += offsetToNextLine;
 			
-			// Continue only if there are enough bits left
 			if (totallyLiteral)
 			{
-				for (int index = 0; index < offsetToNextLine * 8 / BitsPerPixel; index++)
+				for (int index = 0; index < ((offsetToNextLine * 8) / BitsPerPixel); index++)
 				{
 					yield return register.GetBits(BitsPerPixel);
 				}
@@ -72,6 +71,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			}
 			else
 			{
+				// Continue only if there are enough bits left
 				while (register.BitsLeft >= 5)
 				{
 					OrdinaryDataPacketType packetType = ReadPacketType();
@@ -81,10 +81,12 @@ namespace KillerApps.Emulation.Atari.Lynx
 					{
 						case OrdinaryDataPacketType.Packed:
 							byte repeatCount = (byte)(register.GetBits(4) + 1);
-							if (!register.TryGetBits(BitsPerPixel, out value)) yield break;
 
 							// "A data Packet header of '00000' is used as an additional detector of the end of the line of sprite data."
-							if (value == 0) yield break;
+							// "... There appears to be a bug with it."
+							// TODO: Find out what bug is
+							if (repeatCount == 0) yield break;
+							if (!register.TryGetBits(BitsPerPixel, out value)) yield break;
 
 							for (int count = 0; count < repeatCount; count++)
 							{

@@ -12,7 +12,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			this.ByteData = sprctl0;
 		}
 
-		public byte ByteData { get; private set; }
+		public byte ByteData { get; set; }
 
 		// "B2,B1,B0 = Sprite Type"
 		public SpriteTypes SpriteType 
@@ -21,17 +21,17 @@ namespace KillerApps.Emulation.Atari.Lynx
 		}
 
 		// "Sprites can be horizontally and/or vertically flipped."
-		// "B5 = H flip, 0 = not flipped"
-		public bool HFlip 
-		{
-			get { return (ByteData & HFlipMask) == HFlipMask; }
-		}
-
-		// "Sprites can be horizontally and/or vertically flipped."
 		// "B4 = V flip, 0 = not flipped"
 		public bool VFlip
 		{
 			get { return (ByteData & VFlipMask) == VFlipMask; }
+		}
+
+		// "Sprites can be horizontally and/or vertically flipped."
+		// "B5 = H flip, 0 = not flipped"
+		public bool HFlip 
+		{
+			get { return (ByteData & HFlipMask) == HFlipMask; }
 		}
 		
 		// "B7,B6 = bits/pixel-1 (1,2,3,4)"

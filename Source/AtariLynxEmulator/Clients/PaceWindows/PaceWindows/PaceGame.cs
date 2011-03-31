@@ -17,7 +17,7 @@ namespace PaceWindows
 	/// <summary>
 	/// This is the main type for your game
 	/// </summary>
-	public class PaceGame : Microsoft.Xna.Framework.Game
+	public class PaceGame : Game
 	{
 		GraphicsDeviceManager graphics;
 		SpriteBatch spriteBatch;
@@ -39,6 +39,11 @@ namespace PaceWindows
 		/// </summary>
 		protected override void Initialize()
 		{
+			graphics.PreferredBackBufferWidth = 160;
+			graphics.PreferredBackBufferHeight = 102;
+			graphics.IsFullScreen = false;
+			graphics.ApplyChanges();
+
 			IsFixedTimeStep = true;
 			TargetElapsedTime = TimeSpan.FromMilliseconds(166); // 60Hz
 
@@ -77,15 +82,15 @@ namespace PaceWindows
 			byte[] ram = new byte[0x3FC0 * 4];
 			for (int i = 0; i < 0x3FC0 * 4; i++)
 			{
-				ram[i] = 0x8f;
+				ram[i] = 0x00;
 			}
 			
 			// TODO: use this.Content to load your game content here
-			t2 = Content.Load<Texture2D>("Test");
 			font = Content.Load<SpriteFont>("DefaultFont");
 		}
+
 		SpriteFont font;
-		Texture2D t2;
+		
 		/// <summary>
 		/// UnloadContent will be called once per game and is the place to unload
 		/// all content.
@@ -106,10 +111,7 @@ namespace PaceWindows
 			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
 				this.Exit();
 
-			for (int i = 0; i < 10000; i++)
-			{
-				emulator.Update();
-			} 
+			emulator.Update(60000);
 
 			base.Update(gameTime);
 		}
@@ -120,13 +122,10 @@ namespace PaceWindows
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Draw(GameTime gameTime)
 		{
-			//GraphicsDevice.Clear(Color.CornflowerBlue);
-			//lcdScreen.SetData(emulator.Ram.GetDirectAccess(), 0x0, 0x3FC0 * 4);
 			lcdScreen.SetData(emulator.LcdScreenDma, 0x0, 0x3FC0 * 4);
 
 			spriteBatch.Begin();
 			spriteBatch.Draw(lcdScreen, new Rectangle(0, 0, 480, 306), new Rectangle(0, 0, 160, 102), Color.White);
-			//spriteBatch.Draw(t2, new Rectangle(0, 0, 160, 102), Color.White);
 			spriteBatch.DrawString(font, DateTime.Now.ToLongTimeString(), new Vector2(10, 10), Color.White);
 			spriteBatch.DrawString(font, emulator.SystemClock.CompatibleCycleCount.ToString("X16"), new Vector2(10, 30), Color.White);
 			spriteBatch.DrawString(font, gameTime.IsRunningSlowly.ToString(), new Vector2(10, 20), Color.White);

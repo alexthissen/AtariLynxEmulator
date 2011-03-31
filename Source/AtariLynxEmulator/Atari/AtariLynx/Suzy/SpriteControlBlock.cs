@@ -13,45 +13,19 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public SpriteControlBits1 SPRCTL1 { get; private set; }
 		public SpriteCollisionNumber SPRCOLL { get; private set; }
 
+		// "The SCBs are linked by pointers in 'Painters Order'."
 		public Word SCBNEXT;
 		public Word SPRDLINE;
 		public Word HPOSSTRT, VPOSSTRT;
 		public Word SPRHSIZ, SPRVSIZ;
 		
-		public ushort NextSCBAddress { get; private set; }
-		public ushort SpriteDataAddress { get; private set; }
-		public short StartingHPos { get; private set; } // "(2) 16 bits of starting H Pos"
-		public short StartingVPos { get; private set; } // "(2) 16 bits of starting V Pos"
-		public ushort HSizeBits { get; private set; } // "(2) 16 bits of H size bits"
-		public ushort VSizeBits { get; private set; } // "(2) 16 bits of V size bits"
-
 		public byte CollisionDepository { get; private set; }
-		
-		public static SpriteControlBlock Create(byte[] ram, ushort startAddress, out ushort bytesRead)
-		{
-			SpriteControlBlock scb = new SpriteControlBlock();
-			bytesRead = scb.ParseDataStructure(ram, startAddress);
-			return scb;
-		}
-			
-		internal ushort ParseDataStructure(byte[] ramMemory, ushort startAddress)
-		{
-			int address = startAddress;
-			
-			// Static area
-			SPRCTL0 = new SpriteControlBits0(ramMemory[address++]);
-			SPRCTL1 = new SpriteControlBits1(ramMemory[address++]);
-			SPRCOLL = new SpriteCollisionNumber(ramMemory[address++]);
-			SCBNEXT.Value = BitConverter.ToUInt16(ramMemory, address); address += 2;
 
-			if (!SPRCTL1.SkipSprite)
-			{
-				SPRDLINE.Value = BitConverter.ToUInt16(ramMemory, address); address += 2;
-				HPOSSTRT.Value = BitConverter.ToUInt16(ramMemory, address); address += 2;
-				VPOSSTRT.Value = BitConverter.ToUInt16(ramMemory, address); address += 2;
-			}
-			
-			return (ushort)(address - startAddress);
+		public SpriteControlBlock()
+		{
+			SPRCTL0 = new SpriteControlBits0(0);
+			SPRCTL1 = new SpriteControlBits1(0);
+			SPRCOLL = new SpriteCollisionNumber(0);
 		}
 
 		public QuadrantOrder StartQuadrant

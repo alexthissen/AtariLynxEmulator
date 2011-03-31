@@ -37,6 +37,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaceWindows", "Clients\Pace
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaceWindowsContent", "Clients\PaceWindows\PaceWindowsContent\PaceWindowsContent.contentproj", "{9EAC12D0-AE9D-4969-A2E6-B1E50B41936F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Roms", "Roms", "{11B3F445-9BD3-45AD-BA93-654665D9F104}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\..\..\..\Alex\Desktop\collision.lnx = ..\..\..\..\..\..\Alex\Desktop\collision.lnx
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 9

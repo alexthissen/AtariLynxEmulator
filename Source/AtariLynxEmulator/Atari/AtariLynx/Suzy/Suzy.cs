@@ -10,7 +10,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 	// "... and Suzy is only a sprite generation engine. Some non-sprite functions (the switch readers 
 	// and the ROM reader) are in Suzy due to pin limitations. In addition the math functions are part 
 	// of Suzys sprite engine."
-	public partial class SuzyChipset : IMemoryAccess<ushort, byte>, IResetable
+	public partial class Suzy : IMemoryAccess<ushort, byte>, IResetable
 	{
 		public const int SUZY_BASEADDRESS = 0xfc00;
 		public const int SUZY_SIZE = 0x100;
@@ -52,7 +52,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
 
-		public SuzyChipset(ILynxDevice lynx)
+		public Suzy(ILynxDevice lynx)
 		{
 			device = lynx;
 			Ram = lynx.Ram;
@@ -101,7 +101,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			
 			if (SPRSYS.SignedMath)
 			{
-				Debug.WriteLineIf(GeneralSwitch.TraceInfo, "SuzyChipset::Multiply16By16 - Signed math multiply operation.");
+				Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::Multiply16By16 - Signed math multiply operation.");
 				
 				// "When signed multiply is enabled, the hardware will convert the number provided by the CPU 
 				// into a positive number and save the sign of the original number."
@@ -145,7 +145,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 				{
 					// "... and an accumulator overflow bit."
 					SPRSYS.LastCarry = true;
-					Debug.WriteLineIf(GeneralSwitch.TraceWarning, "SuzyChipset::Multiply16By16() - Overflow detected");
+					Debug.WriteLineIf(GeneralSwitch.TraceWarning, "Suzy::Multiply16By16() - Overflow detected");
 				}
 				else
 				{
@@ -217,7 +217,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			ushort NP = (ushort)((MathNP[1] << 8) + MathNP[0]);
 			if (NP != 0)
 			{
-				Debug.WriteLineIf(GeneralSwitch.TraceInfo, "SuzyChipset::Divide32By16() - Unsigned math");
+				Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::Divide32By16() - Unsigned math");
 				uint ABCD, JKLM;
 				uint EFGH = BitConverter.ToUInt32(MathEFGH, 0);
 				ABCD = EFGH / NP;
@@ -233,7 +233,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			}
 			else
 			{
-				Debug.WriteLineIf(GeneralSwitch.TraceWarning, "SuzyChipset::Divide32By16() - Divide by zero detected");
+				Debug.WriteLineIf(GeneralSwitch.TraceWarning, "Suzy::Divide32By16() - Divide by zero detected");
 
 				// "The number in the dividend as a result of a divide by zero is 'FFFFFFFF (BigNum)."
 				for (int index = 0; index < 4; index++)
@@ -257,7 +257,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public void Initialize()
 		{
-			Engine = new SpriteEngine(Ram.GetDirectAccess());
+			Engine = new SpriteEngine(this, Ram.GetDirectAccess(), this.SCB);
 		}
 
 		public ulong RenderSprites()
@@ -267,7 +267,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 			// Delegate to engine
 			device.SystemClock.CompatibleCycleCount += Engine.RenderSprites();
-			Debug.WriteLineIf(GeneralSwitch.TraceInfo, "SuzyChipset::RenderSprites");
+			Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::RenderSprites");
 
 			// "When the engine finishes processing the sprite list, or if it has been requested 
 			// to stop at the end of the current sprite, or if it has been forced off by 
@@ -600,6 +600,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 			SPRSYS.SpriteProcessStarted = false;
 
 			SUZYBUSEN.ByteData = 0; // "reset = 0"
+
+			HSIZOFF.Value = 0x007f;
+			VSIZOFF.Value = 0x007f;
 
 			Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::Reset");
 		}

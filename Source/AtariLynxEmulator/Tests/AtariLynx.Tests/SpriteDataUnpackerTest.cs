@@ -59,10 +59,10 @@ namespace AtariLynx.Tests
 			unpacker.Initialize(0, 4, false);
 			
 			// Act
-			OrdinaryDataPacketType packetType = unpacker.ReadPacketType();
+			SpriteDataUnpacker.OrdinaryDataPacketType packetType = unpacker.ReadPacketType();
 
 			// Assert
-			Assert.AreEqual<OrdinaryDataPacketType>(OrdinaryDataPacketType.Packed, packetType, "Wrong packet type read from array.");
+			Assert.AreEqual<SpriteDataUnpacker.OrdinaryDataPacketType>(SpriteDataUnpacker.OrdinaryDataPacketType.Packed, packetType, "Wrong packet type read from array.");
 		}
 
 		[TestMethod]

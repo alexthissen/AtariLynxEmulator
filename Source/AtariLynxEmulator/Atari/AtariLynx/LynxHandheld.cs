@@ -9,27 +9,14 @@ using System.IO;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
-	public interface ILynxDevice: IResetable
-	{
-		RomCart Cartridge { get; set; }
-		MikeyChipset Mikey { get; }
-		SuzyChipset Suzy { get; }
-		Cmos65SC02 Cpu { get; }
-		Clock SystemClock { get; }
-		bool CartridgePowerOn { get; set; }
-		ulong NextTimerEvent { get; set; }
-		Ram64KBMemory Ram { get; }
-		RomBootMemory Rom { get; }
-	}
-
 	public class LynxHandheld: ILynxDevice
 	{
 		public RomCart Cartridge { get; set; }
 		public Ram64KBMemory Ram { get; private set; }
 		public RomBootMemory Rom { get; private set; }
 		internal MemoryManagementUnit Mmu { get; private set; }
-		public MikeyChipset Mikey { get; private set; }
-		public SuzyChipset Suzy { get; private set; }
+		public Mikey Mikey { get; private set; }
+		public Suzy Suzy { get; private set; }
 		public Cmos65SC02 Cpu { get; private set; }
 		public Clock SystemClock { get; private set; }
 		public byte[] LcdScreenDma;
@@ -48,8 +35,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 			Rom = new RomBootMemory();
 			Rom.LoadBootImage(BootRomImage);
 			
-			Mikey = new MikeyChipset(this);
-			Suzy = new SuzyChipset(this);
+			Mikey = new Mikey(this);
+			Suzy = new Suzy(this);
+			Suzy.Initialize();
 
 			// Pass all hardware that have memory access to MMU
 			Mmu = new MemoryManagementUnit(Rom, Ram, Mikey, Suzy);
@@ -72,17 +60,23 @@ namespace KillerApps.Emulation.Atari.Lynx
 			Cpu.Reset();
 		}
 
-		public void Update()
+		public void Update(ulong cyclesToExecute)
 		{
-			GenerateInterrupts();
-			ExecuteCpu(1);
-			SynchronizeTime();
+			ulong executedCycles = 0;
+
+			while (cyclesToExecute > executedCycles)
+			{
+				GenerateInterrupts();
+				executedCycles += ExecuteCpu();
+				SynchronizeTime();
+			}
 		}
 
-		private void ExecuteCpu(int cyclesToExecute)
+		private ulong ExecuteCpu()
 		{
-			Cpu.Execute(cyclesToExecute);
+			ulong executedCycles = Cpu.Execute(1);
 			if (Cpu.IsAsleep) SystemClock.CompatibleCycleCount = NextTimerEvent;
+			return executedCycles;
 		}
 
 		private void GenerateInterrupts() 

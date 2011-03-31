@@ -129,7 +129,7 @@ namespace AtariLynx.Tests
 		{
 			// Arrange
 			mmu.Poke(LynxAddresses.MAPCTL, 0);
-			ushort address = SuzyChipset.Addresses.RCART0;
+			ushort address = Suzy.Addresses.RCART0;
 
 			// Act
 			byte value = mmu.Peek(address);
@@ -147,7 +147,7 @@ namespace AtariLynx.Tests
 			// Act
 			byte value = mmu.Peek(0x1337);
 			mmu.Peek(0xfe00);
-			mmu.Peek(SuzyChipset.Addresses.RCART0);
+			mmu.Peek(Suzy.Addresses.RCART0);
 			mmu.Peek(MikeyAddresses.INTSET);
 			mmu.Peek(VectorAddresses.IRQ_VECTOR);
 

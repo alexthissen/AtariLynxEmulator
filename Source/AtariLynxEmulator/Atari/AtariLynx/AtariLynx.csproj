@@ -51,6 +51,7 @@
     <Compile Include="Cartridge\RomCart.cs" />
     <Compile Include="Cartridge\RomCartMemoryBank.cs" />
     <Compile Include="Cartridge\RomCartType.cs" />
+    <Compile Include="ILynxDevice.cs" />
     <Compile Include="IResetable.cs" />
     <Compile Include="LynxAddresses.cs" />
     <Compile Include="LynxException.cs" />
@@ -66,8 +67,8 @@
     <Compile Include="Mikey\DynamicTimerControl.cs" />
     <Compile Include="Mikey\TimerExpirationEventArgs.cs" />
     <Compile Include="Mikey\LinkingTimerLogic.cs" />
-    <Compile Include="Mikey\MikeyAddresses.cs" />
-    <Compile Include="Mikey\MikeyChipset.cs">
+    <Compile Include="Mikey\Mikey.Addresses.cs" />
+    <Compile Include="Mikey\Mikey.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Mikey\ParallelData.cs" />
@@ -79,7 +80,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Ram64KBMemory.cs" />
     <Compile Include="RomBootMemory.cs" />
-    <Compile Include="Suzy\Quadrant.cs" />
+    <Compile Include="Suzy\QuadrantOrder.cs" />
     <Compile Include="Suzy\ReloadableDepth.cs" />
     <Compile Include="Suzy\ShiftRegister.cs" />
     <Compile Include="Suzy\SizingAlgorithm.cs" />
@@ -95,9 +96,9 @@
     <Compile Include="Suzy\SpriteProcessStart.cs" />
     <Compile Include="Suzy\SpriteSystemControl.cs" />
     <Compile Include="Suzy\SpriteTypes.cs" />
-    <Compile Include="Suzy\SuzyAddresses.cs" />
+    <Compile Include="Suzy\Suzy.Addresses.cs" />
     <Compile Include="Suzy\SuzyBusEnable.cs" />
-    <Compile Include="Suzy\SuzyChipset.cs" />
+    <Compile Include="Suzy\Suzy.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Framework\Emulation.6502\Emulation.6502.csproj">

@@ -54,7 +54,7 @@
   <ItemGroup>
     <Compile Include="MemoryManagementUnitTest.cs" />
     <Compile Include="MemoryMapControl.cs" />
-    <Compile Include="MikeyChipsetTest.cs" />
+    <Compile Include="MikeyTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LynxHandheldTest.cs" />
     <Compile Include="ShiftRegisterTest.cs" />
@@ -64,7 +64,7 @@
     <Compile Include="SpriteDataUnpackerTest.cs" />
     <Compile Include="SpriteSystemControlTest.cs" />
     <Compile Include="StaticTimerControlTest.cs" />
-    <Compile Include="SuzyChipsetTest.cs" />
+    <Compile Include="SuzyTest.cs" />
     <Compile Include="TimerTest.cs" />
   </ItemGroup>
   <ItemGroup>

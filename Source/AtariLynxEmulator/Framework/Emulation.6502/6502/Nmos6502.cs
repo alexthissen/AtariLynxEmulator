@@ -64,7 +64,7 @@ namespace KillerApps.Emulation.Processors
 		protected const ulong MemoryWriteCycle = 5;
 
 		private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
-#if DEBUG
+#if DEVELOP
 		Disassembler6500 disassembler = new Disassembler6500();
 		StringBuilder builder = new StringBuilder();
 #endif
@@ -117,8 +117,10 @@ namespace KillerApps.Emulation.Processors
 
 		internal byte PeekStack(byte depth) { return Memory.Peek((ushort)((SP + 0x0100 - depth) & 0x01ff)); }
 
-		public override ulong Execute(int cyclesToExecute)
+		public override ulong Execute(int instructionsToExecute)
 		{
+			ulong startCycleCount = SystemClock.CompatibleCycleCount;
+
 			// When Irq is triggered and interrupts are not disabled, run interrupt sequence
 			// "Then, the interrupt signal waits for the end of the current CPU cycle before actually interrupting the CPU."
 			if (IsSystemIrqActive)
@@ -148,7 +150,7 @@ namespace KillerApps.Emulation.Processors
 				}
 			}
 
-#if DEBUG
+#if DEVELOP
 			disassembler.DisassembleSingleStatement(Memory, PC, builder);
 			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, String.Format("{0:X4} {1}", PC, builder.ToString()));
 			builder.Clear();
@@ -163,8 +165,8 @@ namespace KillerApps.Emulation.Processors
 			
 			PC++;
 			ExecuteOpcode();
-			
-			return 1;
+
+			return SystemClock.CompatibleCycleCount - startCycleCount;
 		}
 
 		protected void FetchData()

@@ -8,11 +8,8 @@ using Moq;
 
 namespace AtariLynx.Tests
 {
-	/// <summary>
-	/// Summary description for MikeyChipsetTest
-	/// </summary>
 	[TestClass]
-	public class MikeyChipsetTest
+	public class MikeyTest
 	{
 		#region Additional test attributes
 		//
@@ -41,7 +38,7 @@ namespace AtariLynx.Tests
 		{
 			// Arrange
 			Mock<ILynxDevice> device = new Mock<ILynxDevice>();
-			MikeyChipset mikey = new MikeyChipset(device.Object);
+			Mikey mikey = new Mikey(device.Object);
 
 			// Act
 			for (byte index = 0; index < 0x0F; index++)
@@ -64,7 +61,7 @@ namespace AtariLynx.Tests
 		{
 			// Arrange
 			Mock<ILynxDevice> device = new Mock<ILynxDevice>();
-			MikeyChipset mikey = new MikeyChipset(device.Object);
+			Mikey mikey = new Mikey(device.Object);
 
 			// Act
 			for (byte index = 0; index < 0x0F; index++)

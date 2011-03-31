@@ -8,7 +8,7 @@ using System.Diagnostics;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
-	public class MikeyChipset : IMemoryAccess<ushort, byte>
+	public partial class Mikey : IMemoryAccess<ushort, byte>
 	{
 		public const int AUDIO_DPRAM_READWRITE_MIN = 5;
 		public const int AUDIO_DPRAM_READWRITE_MAX = 20;
@@ -51,7 +51,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private byte[] VideoMemoryDma;
 		private byte currentLine;
 		
-		public MikeyChipset(ILynxDevice lynx)
+		public Mikey(ILynxDevice lynx)
 		{
 			this.device = lynx;
 		}
@@ -149,7 +149,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			device.SystemClock.CompatibleCycleCount += 80 * 4;
 		
 			// Every byte has two nibbles for two pixels
-			for (int loop = 0; loop < SuzyChipset.SCREEN_WIDTH / 2; loop++)
+			for (int loop = 0; loop < Suzy.SCREEN_WIDTH / 2; loop++)
 			{
 				byte source = VideoMemoryDma[currentLynxDmaAddress];
 				if (DISPCTL.Flip)
@@ -195,7 +195,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public void Update() 
 		{
-			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, "MikeyChipset::Update");
+			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, "MikeyChipsetUpdate");
 			foreach (Timer timer in Timers)
 			{
 				timer.Update(device.SystemClock.CompatibleCycleCount);
@@ -291,8 +291,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 				case MikeyAddresses.IODAT:
 					IODAT.ByteData = value;
 
-					Debug.WriteLineIf(((IODIR & 0x08) == 0) & GeneralSwitch.TraceInfo, "MikeyChipset::Poke(IODAT): Rest is not set to output.");
-					Debug.WriteLineIf(((IODIR & 0x02) == 0) & GeneralSwitch.TraceInfo, "MikeyChipset::Poke(IODAT): CartAddressData is not set to output.");
+					Debug.WriteLineIf(((IODIR & 0x08) == 0) & GeneralSwitch.TraceInfo, "MikeyChipsetPoke(IODAT): Rest is not set to output.");
+					Debug.WriteLineIf(((IODIR & 0x02) == 0) & GeneralSwitch.TraceInfo, "MikeyChipsetPoke(IODAT): CartAddressData is not set to output.");
 
 					// "One is that it is the data pin for the shifter that holds the cartridge address."
 					device.Cartridge.CartAddressData(IODAT.CartAddressData);
