@@ -39,13 +39,13 @@ namespace PaceWindows
 		/// </summary>
 		protected override void Initialize()
 		{
-			graphics.PreferredBackBufferWidth = 160;
-			graphics.PreferredBackBufferHeight = 102;
+			graphics.PreferredBackBufferWidth = 480;
+			graphics.PreferredBackBufferHeight = 306;
 			graphics.IsFullScreen = false;
 			graphics.ApplyChanges();
 
-			IsFixedTimeStep = true;
-			TargetElapsedTime = TimeSpan.FromMilliseconds(166); // 60Hz
+			IsFixedTimeStep = false;
+			//TargetElapsedTime = TimeSpan.FromMilliseconds(166); // 60Hz
 
 			lcdScreen = new Texture2D(graphics.GraphicsDevice, 160, 102);
 			Debug.WriteLine("SurfaceFormat: " + lcdScreen.Format.ToString());
@@ -66,7 +66,7 @@ namespace PaceWindows
 			emulator.Initialize();
 
 			this.Window.Title = "Portable Atari Console Entertainment emulator";
-			Window.AllowUserResizing = true;
+			Window.AllowUserResizing = false;
 			
 			base.Initialize();
 		}
@@ -107,11 +107,12 @@ namespace PaceWindows
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Update(GameTime gameTime)
 		{
+			GamePadState state = GamePad.GetState(PlayerIndex.One);
 			// Allows the game to exit
-			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+			if (state.Buttons.Back == ButtonState.Pressed)
 				this.Exit();
 
-			emulator.Update(60000);
+			emulator.Update(100000);
 
 			base.Update(gameTime);
 		}
@@ -127,8 +128,8 @@ namespace PaceWindows
 			spriteBatch.Begin();
 			spriteBatch.Draw(lcdScreen, new Rectangle(0, 0, 480, 306), new Rectangle(0, 0, 160, 102), Color.White);
 			spriteBatch.DrawString(font, DateTime.Now.ToLongTimeString(), new Vector2(10, 10), Color.White);
-			spriteBatch.DrawString(font, emulator.SystemClock.CompatibleCycleCount.ToString("X16"), new Vector2(10, 30), Color.White);
-			spriteBatch.DrawString(font, gameTime.IsRunningSlowly.ToString(), new Vector2(10, 20), Color.White);
+			spriteBatch.DrawString(font, emulator.SystemClock.CompatibleCycleCount.ToString("X16"), new Vector2(10, 40), Color.White);
+			spriteBatch.DrawString(font, gameTime.IsRunningSlowly.ToString(), new Vector2(10, 25), Color.White);
 			spriteBatch.End();
 
 			base.Draw(gameTime);

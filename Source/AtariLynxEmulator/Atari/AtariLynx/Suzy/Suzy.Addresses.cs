@@ -82,6 +82,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 			public const ushort SPRSYS = 0xFC92; // "FC92 = SPRSYS. System Control Bits (R/W)"
 
 			public const ushort SUZYHREV = 0xFC88; // Suzy Hardware Revision (R)
+			public const ushort JOYSTICK = 0xFCB0; // "Read Joystick and Switches (R)"
+			public const ushort SWITCHES = 0xFCB1; // "Read Other Switches (R)"
 			public const ushort RCART0 = 0xFCB2; // RCART(R/W)
 			public const ushort RCART1 = 0xFCB3; // RCART(R/W)
 		}

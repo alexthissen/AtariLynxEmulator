@@ -80,6 +80,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Ram64KBMemory.cs" />
     <Compile Include="RomBootMemory.cs" />
+    <Compile Include="Suzy\Joystick.cs" />
     <Compile Include="Suzy\QuadrantOrder.cs" />
     <Compile Include="Suzy\ReloadableDepth.cs" />
     <Compile Include="Suzy\ShiftRegister.cs" />

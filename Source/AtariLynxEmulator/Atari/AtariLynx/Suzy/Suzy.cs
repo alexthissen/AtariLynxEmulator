@@ -36,6 +36,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public SpriteSystemControl SPRSYS { get; private set; }
 		public SpriteInitializationBits SPRINIT { get; private set; }
 		public SuzyBusEnable SUZYBUSEN { get; private set; }
+		public Joystick JOYSTICK { get; private set; }
 
 		public byte[] MathEFGH = new byte[4];
 		public byte[] MathJKLM = new byte[4];
@@ -63,6 +64,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			SPRSYS = new SpriteSystemControl();
 			SPRINIT = new SpriteInitializationBits(0);
 			SUZYBUSEN = new SuzyBusEnable();
+			JOYSTICK = new Joystick();
 		}
 
 		// "We have a 16 by 16 to 32 unsigned and signed multiply with accumulate and a ..."
@@ -410,6 +412,54 @@ namespace KillerApps.Emulation.Atari.Lynx
 				case Addresses.TILTH:
 					Engine.TILT.HighByte = value;
 					break;
+				case Addresses.SPRDOFFL:
+					Engine.SPRDOFF.LowByte = value;
+					// "Any CPU write to an LSB will set the MSB to 0."
+					Engine.SPRDOFF.HighByte = 0;
+					break;
+				case Addresses.SPRDOFFH:
+					Engine.SPRDOFF.HighByte = value;
+					break;
+				case Addresses.SPRVPOSL:
+					Engine.SPRVPOS.LowByte = value;
+					// "Any CPU write to an LSB will set the MSB to 0."
+					Engine.SPRVPOS.HighByte = 0;
+					break;
+				case Addresses.SPRVPOSH:
+					Engine.SPRVPOS.HighByte = value;
+					break;
+				case Addresses.COLLOFFL:
+					COLLOFF.LowByte = value;
+					// "Any CPU write to an LSB will set the MSB to 0."
+					COLLOFF.HighByte = 0;
+					break;
+				case Addresses.COLLOFFH:
+					COLLOFF.HighByte = value;
+					break;
+				case Addresses.VSIZACUML:
+					Engine.VSIZACUM.LowByte = value;
+					// "Any CPU write to an LSB will set the MSB to 0."
+					Engine.VSIZACUM.HighByte = 0;
+					break;
+				case Addresses.VSIZACUMH:
+					Engine.VSIZACUM.HighByte = value;
+					break;
+				case Addresses.HSIZOFFL:
+					HSIZOFF.LowByte = value;
+					// "Any CPU write to an LSB will set the MSB to 0."
+					HSIZOFF.HighByte = 0;
+					break;
+				case Addresses.HSIZOFFH:
+					HSIZOFF.HighByte = value;
+					break;
+				case Addresses.VSIZOFFL:
+					VSIZOFF.LowByte = value;
+					// "Any CPU write to an LSB will set the MSB to 0."
+					VSIZOFF.HighByte = 0;
+					break;
+				case Addresses.VSIZOFFH:
+					VSIZOFF.HighByte = value;
+					break;
 				case Addresses.SCBADRL:
 					Engine.SCBADR.LowByte = value;
 					// "Any CPU write to an LSB will set the MSB to 0."
@@ -417,6 +467,14 @@ namespace KillerApps.Emulation.Atari.Lynx
 					break;
 				case Addresses.SCBADRH:
 					Engine.SCBADR.HighByte = value;
+					break;
+				case Addresses.PROCADRL:
+					Engine.PROCADR.LowByte = value;
+					// "Any CPU write to an LSB will set the MSB to 0."
+					Engine.PROCADR.HighByte = 0;
+					break;
+				case Addresses.PROCADRH:
+					Engine.PROCADR.HighByte = value;
 					break;
 
 				case Addresses.MATHA:
@@ -517,6 +575,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 					SPRSYS.ByteData = value;
 					break;
 
+				case Addresses.SUZYBUSEN:
+					SUZYBUSEN.ByteData = value;
+					break;
+
 				default:
 					break;
 			}
@@ -528,11 +590,55 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 			switch (address)
 			{
-				case Addresses.SCBNEXTL:
-					return SCB.SCBNEXT.LowByte;
-				case Addresses.SCBNEXTH:
-					return SCB.SCBNEXT.HighByte;
-
+				case Addresses.TMPADRL: return Engine.TMPADR.LowByte;
+				case Addresses.TMPADRH: return Engine.TMPADR.HighByte;
+				case Addresses.TILTACUML: return Engine.TILTACUM.LowByte;
+				case Addresses.TILTACUMH: return Engine.TILTACUM.HighByte;
+				case Addresses.HOFFL: return HOFF.LowByte;
+				case Addresses.HOFFH: return HOFF.HighByte;
+				case Addresses.VOFFL: return VOFF.LowByte;
+				case Addresses.VOFFH: return VOFF.HighByte;
+				case Addresses.VIDBASL: return VIDBAS.LowByte;
+				case Addresses.VIDBASH: return VIDBAS.HighByte;
+				case Addresses.COLLBASL: return COLLBAS.LowByte;
+				case Addresses.COLLBASH: return COLLBAS.HighByte;
+				case Addresses.VIDADRL: return Engine.VIDADR.LowByte;
+				case Addresses.VIDADRH: return Engine.VIDADR.HighByte;
+				case Addresses.COLLADRL: return Engine.COLLADR.LowByte;
+				case Addresses.COLLADRH: return Engine.COLLADR.HighByte;
+				case Addresses.SCBNEXTL: return SCB.SCBNEXT.LowByte;
+				case Addresses.SCBNEXTH: return SCB.SCBNEXT.HighByte;
+				case Addresses.SPRDLINEL: return SCB.SPRDLINE.LowByte;
+				case Addresses.SPRDLINEH: return SCB.SPRDLINE.HighByte;
+				case Addresses.HPOSSTRTL: return SCB.HPOSSTRT.LowByte;
+				case Addresses.HPOSSTRTH: return SCB.HPOSSTRT.HighByte;
+				case Addresses.VPOSSTRTL: return SCB.VPOSSTRT.LowByte;
+				case Addresses.VPOSSTRTH: return SCB.VPOSSTRT.HighByte;
+				case Addresses.SPRHSIZL: return SCB.SPRHSIZ.LowByte;
+				case Addresses.SPRHSIZH: return SCB.SPRHSIZ.HighByte;
+				case Addresses.SPRVSIZL: return SCB.SPRVSIZ.LowByte;
+				case Addresses.SPRVSIZH: return SCB.SPRVSIZ.HighByte;
+				case Addresses.STRETCHL: return Engine.STRETCH.LowByte;
+				case Addresses.STRETCHH: return Engine.STRETCH.HighByte;
+				case Addresses.TILTL: return Engine.TILT.LowByte;
+				case Addresses.TILTH: return Engine.TILT.HighByte;
+				case Addresses.SPRDOFFL: return Engine.SPRDOFF.LowByte;
+				case Addresses.SPRDOFFH: return Engine.SPRDOFF.HighByte;
+				case Addresses.SPRVPOSL: return Engine.SPRVPOS.LowByte;
+				case Addresses.SPRVPOSH: return Engine.SPRVPOS.HighByte;
+				case Addresses.COLLOFFL: return COLLOFF.LowByte;
+				case Addresses.COLLOFFH: return COLLOFF.HighByte;
+				case Addresses.VSIZACUML: return Engine.VSIZACUM.LowByte;
+				case Addresses.VSIZACUMH: return Engine.VSIZACUM.HighByte;
+				case Addresses.HSIZOFFL: return HSIZOFF.LowByte;
+				case Addresses.HSIZOFFH: return HSIZOFF.HighByte;
+				case Addresses.VSIZOFFL: return VSIZOFF.LowByte;
+				case Addresses.VSIZOFFH: return VSIZOFF.HighByte;
+				case Addresses.SCBADRL: return Engine.SCBADR.LowByte;
+				case Addresses.SCBADRH: return Engine.SCBADR.HighByte;
+				case Addresses.PROCADRL: return Engine.PROCADR.LowByte;
+				case Addresses.PROCADRH: return Engine.PROCADR.HighByte;
+				
 				case Addresses.SUZYHREV:
 					return 0x01;
 
@@ -572,12 +678,22 @@ namespace KillerApps.Emulation.Atari.Lynx
 					value = MathJKLM[address - Addresses.MATHM];
 					break;
 
+				case Addresses.JOYSTICK:
+					// Set lefthandedness first
+					JOYSTICK.LeftHanded = SPRSYS.LeftHanded;
+					value = JOYSTICK.Value;
+					break;
+
 				case Addresses.SPRCOL:
 				case Addresses.SPRINIT:
 				case Addresses.SPRCTL0:
 				case Addresses.SPRCTL1:
 				case Addresses.SUZYBUSEN:
 					Debug.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Suzy::Peek - Peeking at write-only address ${0:X4}", address));
+					break;
+
+				case Addresses.SPRSYS:
+					value = SPRSYS.ByteData;
 					break;
 
 				default:

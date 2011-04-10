@@ -76,23 +76,27 @@ namespace KillerApps.Emulation.Atari.Lynx
 				PROCADR.Value = scb.SPRDLINE.Value; // Set current PROC address
 
 				// Prepare for unpacking data
-				QuadrantOrder quadrant = scb.StartQuadrant;				
+				QuadrantOrder quadrant = scb.StartQuadrant;
 				unpacker.Initialize(PROCADR.Value, scb.SPRCTL0.BitsPerPixel, scb.SPRCTL1.TotallyLiteral);
 
 				// Loop through all quadrants
 				do
 				{
 					// Quadrant initialization
-					// TODO: Tilt and vertical size initialization
-					// TODO: Vertical scaling size offset
-					TILTACUM.Value = 0;
-					VSIZACUM.Value = suzy.VSIZOFF.Value; // TODO: Make initial value of vertical size accumulator dependent on drawing direction
+					// Determine direction for vertical and horizontal drawing
+					int horizontalIncrease = ((quadrant == QuadrantOrder.DownRight || quadrant == QuadrantOrder.UpRight) ? 1 : -1);
+					int verticalIncrease = (quadrant == QuadrantOrder.UpRight || quadrant == QuadrantOrder.UpLeft) ? -1 : 1;
 
+					TILTACUM.Value = 0;
+					VSIZACUM.Value = (ushort)((verticalIncrease == 1) ? suzy.VSIZOFF.Value : 0);
+					
 					// Calculate current vertical position
 					SPRVPOS.Value = (ushort)((short)scb.VPOSSTRT.Value - suzy.HOFF.Value);
 
 					// Initialize current line data value
 					scb.SPRDLINE.Value = PROCADR.Value;
+
+					// TODO: Fix squashed look by offsetting vertical offset by one
 
 					// Loop through all lines
 					while ((SPRDOFF.Value = unpacker.ReadOffsetToNextLine()) >= 2)
@@ -106,23 +110,21 @@ namespace KillerApps.Emulation.Atari.Lynx
 						COLLADR.Value = (ushort)(suzy.COLLBAS.Value + (SPRVPOS.Value * (Suzy.SCREEN_WIDTH / 2)));
 
 						// TODO: Check visibility
-						// TODO: Set start position
-						// TODO: Tilt and scaling
-
+						
 						scb.HPOSSTRT.Value += (ushort)((short)TILTACUM.Value >> 8);
 						TILTACUM.HighByte = 0;
-						HSIZACUM.Value = suzy.HSIZOFF.Value; // TODO: Make horizontal size accumulator dependent on drawing direction
+						HSIZACUM.Value = (ushort)((horizontalIncrease == 1) ? suzy.HSIZOFF.Value : 0);
 						ushort sprhpos = (ushort)((short)scb.HPOSSTRT.Value - suzy.HOFF.Value);
 
+						// TODO: Fix squashed look by offsetting 1 pixel on other directions
 						// Draw row of pixels
 						foreach (byte pixelIndex in unpacker.PixelsInLine((byte)(SPRDOFF.Value - 1)))
 						{
-							// TODO: Horizontal scaling
 							HSIZACUM.Value += scb.SPRHSIZ.Value;
 							byte pixelWidth = HSIZACUM.HighByte;
 							HSIZACUM.HighByte = 0;
 
-							// TODO: Draw pixel
+							// Draw pixel
 							byte pixelValue = PenIndexPalette[pixelIndex];
 							ushort sprvpos = 0;
 							
@@ -136,20 +138,20 @@ namespace KillerApps.Emulation.Atari.Lynx
 									if (sprhpos < 0 || sprhpos >= Suzy.SCREEN_WIDTH) break;
 									
 									// TODO: Process pixel based on sprite type
-									WritePixel((ushort)(VIDADR.Value + (sprhpos + v * Suzy.SCREEN_WIDTH) / 2), pixelValue, sprhpos % 2 == 0);
+									WritePixel((ushort)(VIDADR.Value + (sprhpos + sprvpos * Suzy.SCREEN_WIDTH) / 2), pixelValue, sprhpos % 2 == 0);
 									
-									sprhpos++; // TODO: Increase or decrease depending on drawing direction
+									sprhpos = (ushort)(sprhpos + horizontalIncrease); 
 								}
 
-								sprvpos++; // TODO: Increase or decrease depending on drawing direction
+								sprvpos = (ushort)(sprvpos + verticalIncrease);
 							}
 						}
 						scb.SPRDLINE.Value += SPRDOFF.Value;
-						SPRVPOS.Value += pixelHeight;
+						SPRVPOS.Value = (ushort)(SPRVPOS.Value + verticalIncrease * pixelHeight);
 
-						//if (StretchingEnabled) scb.SPRHSIZ.Value += STRETCH.Value;
-						//if (suzy.SPRSYS.VStretch) scb.SPRVSIZ.Value += (ushort)(STRETCH.Value * pixelHeight);
-						//if (TiltingEnabled) TILTACUM.Value += TILT.Value;
+						if (StretchingEnabled) scb.SPRHSIZ.Value += STRETCH.Value;
+						if (suzy.SPRSYS.VStretch) scb.SPRVSIZ.Value += (ushort)(STRETCH.Value * pixelHeight);
+						if (TiltingEnabled) TILTACUM.Value += TILT.Value;
 					}
 
 					// Check if all quadrant rendering is done
@@ -163,6 +165,124 @@ namespace KillerApps.Emulation.Atari.Lynx
 			}
 
 			return cyclesUsed; 
+		}
+
+		public void ProcessPixel(ushort address, byte pixel, bool left)
+		{
+			switch (scb.SPRCTL0.SpriteType)
+			{
+				case SpriteTypes.BackgroundShadow:
+					WritePixel(address, pixel, left);
+					if (!scb.SPRCOLL.DontCollide && !suzy.SPRSYS.DontCollide && pixel != 0x0E)
+					{
+						WriteCollision(address, scb.SPRCOLL.Number, left);
+					}
+					break;
+
+				case SpriteTypes.BackgroundNoCollision:
+					WritePixel(address, pixel, left);
+					break;
+
+				case SpriteTypes.BoundaryShadow:
+					if (pixel != 0x00 && pixel != 0x0e && pixel != 0x0f)
+					{
+						WritePixel(address, pixel, left);
+					}
+					if (pixel != 0x00 && pixel != 0x0e)
+					{
+						if (!scb.SPRCOLL.DontCollide && !suzy.SPRSYS.DontCollide)
+						{
+							// TODO: Read collision and set collision number if necessary
+						}
+					}
+					break;
+
+				case SpriteTypes.Boundary:
+					if (pixel != 0x00 && pixel != 0x0f)
+					{
+						WritePixel(address, pixel, left);
+					}
+					if (pixel != 0x00)
+					{
+						if (!scb.SPRCOLL.DontCollide && !suzy.SPRSYS.DontCollide)
+						{
+							// TODO: Read collision and set collision number if necessary
+						}
+					}
+					break;
+
+				case SpriteTypes.Normal:
+					if (pixel != 0x00)
+					{
+						WritePixel(address, pixel, left);
+						if (pixel != 0x00)
+						{
+							if (!scb.SPRCOLL.DontCollide && !suzy.SPRSYS.DontCollide)
+							{
+								// TODO: Read collision and set collision number if necessary
+							}
+						}
+					}
+					break;
+
+				case SpriteTypes.NonCollidable:
+					if (pixel != 0x00) WritePixel(address, pixel, left);
+					break;
+		
+				case SpriteTypes.ExclusiveOrShadow:
+					if (pixel != 0x00) 
+					{
+						byte value = ReadPixel(address, left);
+						value ^= pixel;
+						WritePixel(address, value, left);
+					}
+					if (pixel != 0x00 && pixel != 0x0E)
+					{
+						if (!scb.SPRCOLL.DontCollide && !suzy.SPRSYS.DontCollide && pixel != 0x0E)
+						{
+							// TODO: Read collision and set collision number if necessary
+						}
+					}
+					break;
+
+				case SpriteTypes.Shadow:
+					if (pixel != 0x00) WritePixel(address, pixel, left);
+					if (pixel != 0x00 && pixel != 0x0e)
+					{
+						if (!scb.SPRCOLL.DontCollide && !suzy.SPRSYS.DontCollide)
+						{
+							// TODO: Read collision and set collision number if necessary
+						}
+					}
+					break;
+
+				default:
+					break;
+			}
+		}
+
+		private byte ReadPixel(ushort address,bool left)
+		{
+			byte value = ramMemory[address];
+			if (left)
+			{
+				// Upper nibble screen read
+				value >>= 4;
+			}
+			else
+			{
+				// Lower nibble screen read
+				value &= 0x0f;
+			}
+
+			// TODO: Increase cycle count
+			//cycles_used += SPR_RDWR_CYC;
+			return value;
+		} 
+
+		private void WriteCollision(ushort address, int pixel, bool left)
+		{
+
 		}
 
 		public void WritePixel(ushort address, byte pixel, bool left)
@@ -182,7 +302,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			}
 			ramMemory[address] = value;
 
-			// Increment cycle count for the read/modify/write
+			// TODO: Increase cycle count
 			//cycles_used += 2 * SPR_RDWR_CYC;
 		}
 

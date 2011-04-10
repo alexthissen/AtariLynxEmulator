@@ -18,6 +18,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private ILynxDevice device;
 		private byte timerInterruptStatusRegister;
 		private byte timerInterruptMask = 0;
+		private int lineAddress { get; set; }
 
 		public byte[] RedColorMap = new byte[0x10];
 		public byte[] GreenColorMap = new byte[0x10];
@@ -109,6 +110,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		}
 
 		private void GenerateBaudRate(object sender, TimerExpirationEventArgs e) { }
+		
 		private void DisplayEndOfFrame(object sender, TimerExpirationEventArgs e) 
 		{
 			// Pick up current video start address
@@ -377,8 +379,11 @@ namespace KillerApps.Emulation.Atari.Lynx
 			if (address >= MikeyAddresses.BLUERED0)
 			{
 				int index = address - MikeyAddresses.BLUERED0;
-				BlueColorMap[index] = (byte)((value & 0xF0) >> 4);
-				RedColorMap[index] = (byte)(value & 0x0F);
+				BlueColorMap[index] = (byte)(value & 0xF0);
+				RedColorMap[index] = (byte)((value & 0x0F) << 4);
+				//ArgbColorMap[index] = 0; //&= 0xFF0000FF;
+				//ArgbColorMap[index] |= (value & 0xF0) << 8;
+				//ArgbColorMap[index] |= (value & 0x0F) << 28;
 				return;
 			}
 
@@ -386,7 +391,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 			if (address >= MikeyAddresses.GREEN0)
 			{
 				int index = address - MikeyAddresses.GREEN0;
-				GreenColorMap[index] = (byte)(value & 0x0F);
+				GreenColorMap[index] = (byte)((value & 0x0F) << 4);
+				//ArgbColorMap[index] &=  
+				//ArgbColorMap[index] |= (value & 0x0F) << 20;
 				return;
 			}
 
@@ -451,7 +458,5 @@ namespace KillerApps.Emulation.Atari.Lynx
 			Debug.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Mikey::Peek -  Unknown address {0:X4} specified.", address));
 			return 0xff;
 		}
-
-		public int lineAddress { get; set; }
 	}
 }
