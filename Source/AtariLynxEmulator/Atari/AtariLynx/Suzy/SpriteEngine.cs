@@ -64,7 +64,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			{
 				// Set current SCB address before reading in SCB
 				SCBADR.Value = scb.SCBNEXT.Value;
-				// TMPADR.Value = SCBADR.Value;
+				TMPADR.Value = SCBADR.Value;
 
 				// "Since all of the SCBs and sprite data blocks are accessed by pointers, they may be located anywhere in RAM space. 
 				// Neither SCBs nor sprite data may be located in Mikey ROM."

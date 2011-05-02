@@ -12,7 +12,7 @@ namespace ConsoleClient
 		static void Main(string[] args)
 		{
 			string BootRomImageFilePath = @"D:\lynxboot.img";
-			string CartRomImageFilePath = @"D:\slimeworld.lnx";
+			string CartRomImageFilePath = @"D:\game.lnx";
 			Stream bootRomImageStream;
 			RomCart cartridge;
 

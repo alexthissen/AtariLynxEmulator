@@ -197,7 +197,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public void Update() 
 		{
-			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, "MikeyChipsetUpdate");
+			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, "Mikey::Update");
 			foreach (Timer timer in Timers)
 			{
 				timer.Update(device.SystemClock.CompatibleCycleCount);

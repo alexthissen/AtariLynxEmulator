@@ -52,7 +52,7 @@ namespace PaceWindows
 			
 			// Lynx related
 			string BootRomImageFilePath = @"D:\lynxboot.img";
-			string CartRomImageFilePath = @"D:\slimeworld.lnx";
+			string CartRomImageFilePath = @"D:\game.lnx";
 			Stream bootRomImageStream;
 			RomCart cartridge;
 
@@ -112,7 +112,14 @@ namespace PaceWindows
 			if (state.Buttons.Back == ButtonState.Pressed)
 				this.Exit();
 
-			emulator.Update(100000);
+			JoyStickStates joystick = JoyStickStates.None;
+			if (state.DPad.Down == ButtonState.Pressed) joystick |= JoyStickStates.Down;
+			if (state.DPad.Up == ButtonState.Pressed) joystick |= JoyStickStates.Up;
+			if (state.DPad.Left == ButtonState.Pressed) joystick |= JoyStickStates.Left;
+			if (state.DPad.Right == ButtonState.Pressed) joystick |= JoyStickStates.Right;
+
+			emulator.UpdateJoystickState(joystick);
+			emulator.Update(10000);
 
 			base.Update(gameTime);
 		}
