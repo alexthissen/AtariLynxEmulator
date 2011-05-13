@@ -39,26 +39,27 @@ namespace PaceWindows
 		/// </summary>
 		protected override void Initialize()
 		{
-			graphics.PreferredBackBufferWidth = 480;
-			graphics.PreferredBackBufferHeight = 306;
+			graphics.PreferredBackBufferWidth = 640;
+			graphics.PreferredBackBufferHeight = 408;
 			graphics.IsFullScreen = false;
 			graphics.ApplyChanges();
 
-			IsFixedTimeStep = false;
-			//TargetElapsedTime = TimeSpan.FromMilliseconds(166); // 60Hz
+			IsFixedTimeStep = true;
+			TargetElapsedTime = TimeSpan.FromMilliseconds(8); // 60Hz
 
 			lcdScreen = new Texture2D(graphics.GraphicsDevice, 160, 102);
 			Debug.WriteLine("SurfaceFormat: " + lcdScreen.Format.ToString());
 			
 			// Lynx related
 			string BootRomImageFilePath = @"D:\lynxboot.img";
-			string CartRomImageFilePath = @"D:\game.lnx";
+			//string CartRomImageFilePath = @"D:\roms\todds adventures in slimeworld.lnx";
+			string cartRomImageFilePath = @"d:\roms\blue lightning.lnx";
 			Stream bootRomImageStream;
 			RomCart cartridge;
 
 			bootRomImageStream = new FileStream(BootRomImageFilePath, FileMode.Open, FileAccess.Read);
 			LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
-			cartridge = romImage.LoadCart(CartRomImageFilePath);
+			cartridge = romImage.LoadCart(cartRomImageFilePath);
 
 			emulator.BootRomImage = bootRomImageStream;
 			emulator.Cartridge = cartridge;
@@ -119,7 +120,7 @@ namespace PaceWindows
 			if (state.DPad.Right == ButtonState.Pressed) joystick |= JoyStickStates.Right;
 
 			emulator.UpdateJoystickState(joystick);
-			emulator.Update(10000);
+			emulator.Update(50000);
 
 			base.Update(gameTime);
 		}
@@ -133,7 +134,7 @@ namespace PaceWindows
 			lcdScreen.SetData(emulator.LcdScreenDma, 0x0, 0x3FC0 * 4);
 
 			spriteBatch.Begin();
-			spriteBatch.Draw(lcdScreen, new Rectangle(0, 0, 480, 306), new Rectangle(0, 0, 160, 102), Color.White);
+			spriteBatch.Draw(lcdScreen, new Rectangle(0, 0, 640, 408), new Rectangle(0, 0, 160, 102), Color.White);
 			spriteBatch.DrawString(font, DateTime.Now.ToLongTimeString(), new Vector2(10, 10), Color.White);
 			spriteBatch.DrawString(font, emulator.SystemClock.CompatibleCycleCount.ToString("X16"), new Vector2(10, 40), Color.White);
 			spriteBatch.DrawString(font, gameTime.IsRunningSlowly.ToString(), new Vector2(10, 25), Color.White);

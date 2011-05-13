@@ -39,7 +39,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaceWindowsContent", "Clien
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Roms", "Roms", "{11B3F445-9BD3-45AD-BA93-654665D9F104}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\..\..\..\..\Alex\Desktop\collision.lnx = ..\..\..\..\..\..\Alex\Desktop\collision.lnx
+		..\..\..\..\Alex\Desktop\collision.lnx = ..\..\..\..\Alex\Desktop\collision.lnx
 	EndProjectSection
 EndProject
 Global

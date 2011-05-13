@@ -115,7 +115,7 @@ namespace AtariLynx.Tests
 		{
 			// Arrange
 			mmu.Poke(LynxAddresses.MAPCTL, 0);
-			ushort address = MikeyAddresses.INTSET;
+			ushort address = Mikey.Addresses.INTSET;
 
 			// Act
 			byte value = mmu.Peek(address);
@@ -148,7 +148,7 @@ namespace AtariLynx.Tests
 			byte value = mmu.Peek(0x1337);
 			mmu.Peek(0xfe00);
 			mmu.Peek(Suzy.Addresses.RCART0);
-			mmu.Peek(MikeyAddresses.INTSET);
+			mmu.Peek(Mikey.Addresses.INTSET);
 			mmu.Peek(VectorAddresses.IRQ_VECTOR);
 
 			Assert.AreEqual<byte>(value, ramValue, "Value from peek at RAM not correct.");

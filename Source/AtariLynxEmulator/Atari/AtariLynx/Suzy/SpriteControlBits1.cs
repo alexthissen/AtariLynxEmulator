@@ -6,6 +6,7 @@ using System.Diagnostics;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
+	[Serializable]
 	public class SpriteControlBits1
 	{
 		public byte ByteData { get; set; }

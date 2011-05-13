@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 using KillerApps.Emulation.Core;
 
 namespace KillerApps.Emulation.Atari.Lynx
@@ -15,6 +16,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		// "The SCBs are linked by pointers in 'Painters Order'."
 		public Word SCBNEXT;
+
 		public Word SPRDLINE;
 		public Word HPOSSTRT, VPOSSTRT;
 		public Word SPRHSIZ, SPRVSIZ;

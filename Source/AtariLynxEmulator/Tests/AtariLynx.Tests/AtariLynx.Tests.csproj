@@ -45,6 +45,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDependentAssemblyPaths Condition=" '$(VS100COMNTOOLS)' != '' " Include="$(VS100COMNTOOLS)..\IDE\PrivateAssemblies">
@@ -61,6 +62,7 @@
     <Compile Include="SpriteCollisionNumberTest.cs" />
     <Compile Include="SpriteControlBits0Test.cs" />
     <Compile Include="SpriteControlBits1Test.cs" />
+    <Compile Include="SpriteControlBlockTest.cs" />
     <Compile Include="SpriteDataUnpackerTest.cs" />
     <Compile Include="SpriteSystemControlTest.cs" />
     <Compile Include="StaticTimerControlTest.cs" />
@@ -80,6 +82,17 @@
       <Project>{714EA8D7-CD22-41B6-956B-C0B8076E7C30}</Project>
       <Name>Emulation.Core8Bit</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SpriteControlBlocks\AtariLogo.scb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TextFile1.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

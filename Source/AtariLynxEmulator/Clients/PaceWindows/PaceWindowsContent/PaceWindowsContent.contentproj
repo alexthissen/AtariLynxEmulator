@@ -46,13 +46,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Test.bmp">
-      <Name>Test</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="DefaultFont.spritefont">
       <Name>DefaultFont</Name>
       <Importer>FontDescriptionImporter</Importer>

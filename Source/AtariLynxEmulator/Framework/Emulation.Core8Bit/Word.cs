@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 namespace KillerApps.Emulation.Core
 {
 	[StructLayout(LayoutKind.Explicit)]
+	[Serializable]
 	public struct Word
 	{
 		[FieldOffset(0)]

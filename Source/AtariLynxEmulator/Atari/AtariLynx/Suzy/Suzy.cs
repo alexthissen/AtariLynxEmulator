@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using KillerApps.Emulation.Core;
 using System.Diagnostics;
+using KillerApps.Emulation.Atari.Lynx.Tooling;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
@@ -30,8 +31,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		internal Ram64KBMemory Ram;
 		private ILynxDevice device;
 
-		public SpriteControlBits0 SPRCTL0 { get; private set; }
-		public SpriteControlBits1 SPRCTL1 { get; private set; }
+		private SpriteContext context = new SpriteContext();
+
 		public SpriteProcessStart SPRGO { get; private set; }
 		public SpriteSystemControl SPRSYS { get; private set; }
 		public SpriteInitializationBits SPRINIT { get; private set; }
@@ -43,12 +44,12 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public byte[] MathABCD = new byte[4];
 		public byte[] MathNP = new byte[2];
 
-		public Word HOFF, VOFF;
-		public Word VIDBAS, COLLBAS;
-		public Word COLLOFF;
-		public Word HSIZOFF, VSIZOFF;
+		//public Word HOFF, VOFF;
+		//public Word VIDBAS, COLLBAS;
+		//public Word COLLOFF;
+		//public Word HSIZOFF, VSIZOFF;
 
-		private SpriteControlBlock SCB = new SpriteControlBlock();
+		private SpriteControlBlock SCB = null;
 		private SpriteEngine Engine = null;
 
 		private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
@@ -57,9 +58,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		{
 			device = lynx;
 			Ram = lynx.Ram;
-			
-			SPRCTL0 = new SpriteControlBits0(0);
-			SPRCTL1 = new SpriteControlBits1(0);
+
+			SCB = new SpriteControlBlock();
 			SPRGO = new SpriteProcessStart();
 			SPRSYS = new SpriteSystemControl();
 			SPRINIT = new SpriteInitializationBits(0);
@@ -259,7 +259,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public void Initialize()
 		{
-			Engine = new SpriteEngine(this, Ram.GetDirectAccess(), this.SCB);
+			Engine = new SpriteEngine(context, Ram.GetDirectAccess(), this.SCB);
 		}
 
 		public ulong RenderSprites()
@@ -268,7 +268,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 			SPRSYS.SpriteProcessStarted = true;
 
 			// Delegate to engine
-			device.SystemClock.CompatibleCycleCount += Engine.RenderSprites();
+			context.DontCollide = SPRSYS.DontCollide;
+			context.VStretch = SPRSYS.VStretch;
+			device.SystemClock.CompatibleCycleCount += (ulong)Engine.RenderSprites();
 			Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::RenderSprites");
 
 			// "When the engine finishes processing the sprite list, or if it has been requested 
@@ -301,36 +303,36 @@ namespace KillerApps.Emulation.Atari.Lynx
 					Engine.TILTACUM.HighByte = value;
 					break;
 				case Addresses.HOFFL:
-					HOFF.LowByte = value;
+					context.HOFF.LowByte = value;
 					// "Any CPU write to an LSB will set the MSB to 0."
-					HOFF.HighByte = 0;
+					context.HOFF.HighByte = 0;
 					break;
 				case Addresses.HOFFH:
-					HOFF.HighByte = value;
+					context.HOFF.HighByte = value;
 					break;
 				case Addresses.VOFFL:
-					VOFF.LowByte = value;
+					context.VOFF.LowByte = value;
 					// "Any CPU write to an LSB will set the MSB to 0."
-					VOFF.HighByte = 0;
+					context.VOFF.HighByte = 0;
 					break;
 				case Addresses.VOFFH:
-					VOFF.HighByte = value;
+					context.VOFF.HighByte = value;
 					break;
 				case Addresses.VIDBASL:
-					VIDBAS.LowByte = value;
+					context.VIDBAS.LowByte = value;
 					// "Any CPU write to an LSB will set the MSB to 0."
-					VIDBAS.HighByte = 0;
+					context.VIDBAS.HighByte = 0;
 					break;
 				case Addresses.VIDBASH:
-					VIDBAS.HighByte = value;
+					context.VIDBAS.HighByte = value;
 					break;
 				case Addresses.COLLBASL:
-					COLLBAS.LowByte = value;
+					context.COLLBAS.LowByte = value;
 					// "Any CPU write to an LSB will set the MSB to 0."
-					COLLBAS.HighByte = 0;
+					context.COLLBAS.HighByte = 0;
 					break;
 				case Addresses.COLLBASH:
-					COLLBAS.HighByte = value;
+					context.COLLBAS.HighByte = value;
 					break;
 				case Addresses.VIDADRL:
 					Engine.VIDADR.LowByte = value;
@@ -429,12 +431,12 @@ namespace KillerApps.Emulation.Atari.Lynx
 					Engine.SPRVPOS.HighByte = value;
 					break;
 				case Addresses.COLLOFFL:
-					COLLOFF.LowByte = value;
+					context.COLLOFF.LowByte = value;
 					// "Any CPU write to an LSB will set the MSB to 0."
-					COLLOFF.HighByte = 0;
+					context.COLLOFF.HighByte = 0;
 					break;
 				case Addresses.COLLOFFH:
-					COLLOFF.HighByte = value;
+					context.COLLOFF.HighByte = value;
 					break;
 				case Addresses.VSIZACUML:
 					Engine.VSIZACUM.LowByte = value;
@@ -445,20 +447,20 @@ namespace KillerApps.Emulation.Atari.Lynx
 					Engine.VSIZACUM.HighByte = value;
 					break;
 				case Addresses.HSIZOFFL:
-					HSIZOFF.LowByte = value;
+					context.HSIZOFF.LowByte = value;
 					// "Any CPU write to an LSB will set the MSB to 0."
-					HSIZOFF.HighByte = 0;
+					context.HSIZOFF.HighByte = 0;
 					break;
 				case Addresses.HSIZOFFH:
-					HSIZOFF.HighByte = value;
+					context.HSIZOFF.HighByte = value;
 					break;
 				case Addresses.VSIZOFFL:
-					VSIZOFF.LowByte = value;
+					context.VSIZOFF.LowByte = value;
 					// "Any CPU write to an LSB will set the MSB to 0."
-					VSIZOFF.HighByte = 0;
+					context.VSIZOFF.HighByte = 0;
 					break;
 				case Addresses.VSIZOFFH:
-					VSIZOFF.HighByte = value;
+					context.VSIZOFF.HighByte = value;
 					break;
 				case Addresses.SCBADRL:
 					Engine.SCBADR.LowByte = value;
@@ -594,14 +596,14 @@ namespace KillerApps.Emulation.Atari.Lynx
 				case Addresses.TMPADRH: return Engine.TMPADR.HighByte;
 				case Addresses.TILTACUML: return Engine.TILTACUM.LowByte;
 				case Addresses.TILTACUMH: return Engine.TILTACUM.HighByte;
-				case Addresses.HOFFL: return HOFF.LowByte;
-				case Addresses.HOFFH: return HOFF.HighByte;
-				case Addresses.VOFFL: return VOFF.LowByte;
-				case Addresses.VOFFH: return VOFF.HighByte;
-				case Addresses.VIDBASL: return VIDBAS.LowByte;
-				case Addresses.VIDBASH: return VIDBAS.HighByte;
-				case Addresses.COLLBASL: return COLLBAS.LowByte;
-				case Addresses.COLLBASH: return COLLBAS.HighByte;
+				case Addresses.HOFFL: return context.HOFF.LowByte;
+				case Addresses.HOFFH: return context.HOFF.HighByte;
+				case Addresses.VOFFL: return context.VOFF.LowByte;
+				case Addresses.VOFFH: return context.VOFF.HighByte;
+				case Addresses.VIDBASL: return context.VIDBAS.LowByte;
+				case Addresses.VIDBASH: return context.VIDBAS.HighByte;
+				case Addresses.COLLBASL: return context.COLLBAS.LowByte;
+				case Addresses.COLLBASH: return context.COLLBAS.HighByte;
 				case Addresses.VIDADRL: return Engine.VIDADR.LowByte;
 				case Addresses.VIDADRH: return Engine.VIDADR.HighByte;
 				case Addresses.COLLADRL: return Engine.COLLADR.LowByte;
@@ -626,14 +628,14 @@ namespace KillerApps.Emulation.Atari.Lynx
 				case Addresses.SPRDOFFH: return Engine.SPRDOFF.HighByte;
 				case Addresses.SPRVPOSL: return Engine.SPRVPOS.LowByte;
 				case Addresses.SPRVPOSH: return Engine.SPRVPOS.HighByte;
-				case Addresses.COLLOFFL: return COLLOFF.LowByte;
-				case Addresses.COLLOFFH: return COLLOFF.HighByte;
+				case Addresses.COLLOFFL: return context.COLLOFF.LowByte;
+				case Addresses.COLLOFFH: return context.COLLOFF.HighByte;
 				case Addresses.VSIZACUML: return Engine.VSIZACUM.LowByte;
 				case Addresses.VSIZACUMH: return Engine.VSIZACUM.HighByte;
-				case Addresses.HSIZOFFL: return HSIZOFF.LowByte;
-				case Addresses.HSIZOFFH: return HSIZOFF.HighByte;
-				case Addresses.VSIZOFFL: return VSIZOFF.LowByte;
-				case Addresses.VSIZOFFH: return VSIZOFF.HighByte;
+				case Addresses.HSIZOFFL: return context.HSIZOFF.LowByte;
+				case Addresses.HSIZOFFH: return context.HSIZOFF.HighByte;
+				case Addresses.VSIZOFFL: return context.VSIZOFF.LowByte;
+				case Addresses.VSIZOFFH: return context.VSIZOFF.HighByte;
 				case Addresses.SCBADRL: return Engine.SCBADR.LowByte;
 				case Addresses.SCBADRH: return Engine.SCBADR.HighByte;
 				case Addresses.PROCADRL: return Engine.PROCADR.LowByte;
@@ -717,8 +719,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 			SUZYBUSEN.ByteData = 0; // "reset = 0"
 
-			HSIZOFF.Value = 0x007f;
-			VSIZOFF.Value = 0x007f;
+			context.HSIZOFF.Value = 0x007f;
+			context.VSIZOFF.Value = 0x007f;
 
 			Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::Reset");
 		}

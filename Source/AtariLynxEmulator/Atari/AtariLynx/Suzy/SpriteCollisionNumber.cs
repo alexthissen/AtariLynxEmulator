@@ -6,6 +6,7 @@ using System.Diagnostics;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
+	[Serializable]
 	public class SpriteCollisionNumber
 	{
 		// "B7,B6 = 0"

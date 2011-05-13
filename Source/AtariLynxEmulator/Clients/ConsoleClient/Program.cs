@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using KillerApps.Emulation.Atari.Lynx;
 using System.IO;
+using KillerApps.Emulation.Atari.Lynx.Tooling;
 
 namespace ConsoleClient
 {
@@ -11,8 +12,12 @@ namespace ConsoleClient
 	{
 		static void Main(string[] args)
 		{
+			//SpriteControlBlock scb = new SpriteControlBlock();
+			//SpriteControlBlockVisualizer.TestShowVisualizer(scb);
+			//return;
+
 			string BootRomImageFilePath = @"D:\lynxboot.img";
-			string CartRomImageFilePath = @"D:\game.lnx";
+			string CartRomImageFilePath = @"D:\roms\chips challenge.lnx";
 			Stream bootRomImageStream;
 			RomCart cartridge;
 

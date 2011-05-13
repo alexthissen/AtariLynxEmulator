@@ -43,16 +43,16 @@ namespace AtariLynx.Tests
 			// Act
 			for (byte index = 0; index < 0x0F; index++)
 			{
-				mikey.Poke((ushort)(MikeyAddresses.GREEN0 + index), index);
-				mikey.Poke((ushort)(MikeyAddresses.BLUERED0 + index), (byte)((index << 4) + index));
+				mikey.Poke((ushort)(Mikey.Addresses.GREEN0 + index), index);
+				mikey.Poke((ushort)(Mikey.Addresses.BLUERED0 + index), (byte)((index << 4) + index));
 			}
 			
 			// Assert
 			for (byte index = 0; index < 0x0F; index++)
 			{
-				Assert.AreEqual<byte>(index, mikey.Peek((ushort)(MikeyAddresses.GREEN0 + index)));
-				Assert.AreEqual<byte>(index, (byte)(mikey.Peek((ushort)(MikeyAddresses.BLUERED0 + index)) >> 4));
-				Assert.AreEqual<byte>(index, (byte)(mikey.Peek((ushort)(MikeyAddresses.BLUERED0 + index)) & 0x0F));
+				Assert.AreEqual<byte>(index, mikey.Peek((ushort)(Mikey.Addresses.GREEN0 + index)));
+				Assert.AreEqual<byte>(index, (byte)(mikey.Peek((ushort)(Mikey.Addresses.BLUERED0 + index)) >> 4));
+				Assert.AreEqual<byte>(index, (byte)(mikey.Peek((ushort)(Mikey.Addresses.BLUERED0 + index)) & 0x0F));
 			}
 		}
 
@@ -66,8 +66,8 @@ namespace AtariLynx.Tests
 			// Act
 			for (byte index = 0; index < 0x0F; index++)
 			{
-				mikey.Poke((ushort)(MikeyAddresses.GREEN0 + index), index);
-				mikey.Poke((ushort)(MikeyAddresses.BLUERED0 + index), (byte)((index << 4) + index));
+				mikey.Poke((ushort)(Mikey.Addresses.GREEN0 + index), index);
+				mikey.Poke((ushort)(Mikey.Addresses.BLUERED0 + index), (byte)((index << 4) + index));
 			}
 
 			// Assert
