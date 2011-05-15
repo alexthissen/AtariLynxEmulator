@@ -12,12 +12,25 @@ namespace AtariLynx.Tests
 	/// Summary description for UnitTest1
 	/// </summary>
 	[TestClass]
+	[DeploymentItem(@"Roms\Collision.lnx")]
 	public class LynxHandheldTest
 	{
 		public const string BootRomImageFilePath = @"D:\lynxboot.img";
-		public const string CartRomImageFilePath = @"D:\slimeworld.lnx";
+		public const string CartRomImageFilePath = @"Collision.lnx";
 		Stream bootRomImageStream;
 		RomCart cartridge;
+
+		private TestContext testContextInstance;
+
+		/// <summary>
+		///Gets or sets the test context which provides
+		///information about and functionality for the current test run.
+		///</summary>
+		public TestContext TestContext
+		{
+			get { return testContextInstance; }
+			set { testContextInstance = value; }
+		}
 
 		#region Additional test attributes
 		//
@@ -35,7 +48,7 @@ namespace AtariLynx.Tests
 		[TestInitialize()]
 		public void TestInitialize() 
 		{
-			bootRomImageStream = new FileStream(BootRomImageFilePath, FileMode.Open, FileAccess.Read);
+			bootRomImageStream = new FileStream(Path.Combine(TestContext.TestDeploymentDir, BootRomImageFilePath), FileMode.Open, FileAccess.Read);
 			LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
 			cartridge = romImage.LoadCart(CartRomImageFilePath); 
 		}

@@ -7,8 +7,17 @@ using KillerApps.Emulation.Core;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
+	[Serializable]
 	public class SpriteControlBlock
 	{
+		public static Quadrant[] Quadrants = new Quadrant[4]
+			{
+				new Quadrant(1, 1, QuadrantOrder.DownRight),
+				new Quadrant(1, -1, QuadrantOrder.UpRight),
+				new Quadrant(-1, -1, QuadrantOrder.UpLeft),
+				new Quadrant(-1, 1, QuadrantOrder.DownLeft)
+			};
+
 		// "a 16 bit wide sprite control block register set"
 		public SpriteControlBits0 SPRCTL0 { get; private set; }
 		public SpriteControlBits1 SPRCTL1 { get; private set; }
@@ -30,18 +39,18 @@ namespace KillerApps.Emulation.Atari.Lynx
 			SPRCOLL = new SpriteCollisionNumber(0);
 		}
 
-		public QuadrantOrder StartQuadrant
+		public Quadrant StartQuadrant
 		{
 			get
 			{
-				QuadrantOrder quadrant;
+				Quadrant quadrant;
 				if (SPRCTL1.StartDrawingLeft)
 				{
-					quadrant = SPRCTL1.StartDrawingUp ? QuadrantOrder.UpLeft : QuadrantOrder.DownLeft;
+					quadrant = SPRCTL1.StartDrawingUp ? Quadrants[(int)QuadrantOrder.UpLeft] : Quadrants[(int)QuadrantOrder.DownLeft];
 				}
 				else
 				{
-					quadrant = SPRCTL1.StartDrawingUp ? QuadrantOrder.UpRight : QuadrantOrder.DownRight;
+					quadrant = SPRCTL1.StartDrawingUp ? Quadrants[(int)QuadrantOrder.UpRight] : Quadrants[(int)QuadrantOrder.DownRight];
 				}
 				return quadrant;
 			}

@@ -9,20 +9,20 @@ using KillerApps.Emulation.Processors;
 
 namespace KillerApps.Emulation.Atari.Lynx.Tooling
 {
-	public partial class SuzyVisualizerForm : Form
+	public partial class SpriteEngineVisualizerForm : Form
 	{
-		private Suzy suzy = null;
+		private SpriteEngine engine = null;
 
-		public SuzyVisualizerForm(Suzy suzy)
+		public SpriteEngineVisualizerForm(SpriteEngine engine)
 		{
 			InitializeComponent();
-			this.suzy = suzy;
+			this.engine = engine;
 		}
 
 		protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
-			spriteRenderControl.LynxMemory = suzy.Ram.GetDirectAccess();
+			spriteRenderControl.Engine = engine;
 		}
 	}
 }

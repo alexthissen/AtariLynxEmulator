@@ -9,7 +9,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 {
 	public class SpriteDataUnpacker
 	{
-		private ShiftRegister register;
+		private ShiftRegister register; 
 		private byte BitsPerPixel;
 		private bool totallyLiteral;
 		private byte[] data;

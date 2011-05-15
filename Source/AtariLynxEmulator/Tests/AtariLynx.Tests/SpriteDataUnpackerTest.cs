@@ -90,8 +90,8 @@ namespace AtariLynx.Tests
 			}
 
 			// Assert
-			Assert.AreEqual<int>(0x7a, totalPixelCount, "Total number of pixels is not correct.");
 			Assert.AreEqual<int>(4, quadrant, "Sprite data contains 4 quadrants.");
+			Assert.AreEqual<int>(256, totalPixelCount, "Total number of pixels is not correct.");
 		}
 	}
 }

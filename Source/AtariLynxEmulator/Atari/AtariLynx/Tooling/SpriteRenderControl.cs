@@ -21,15 +21,31 @@ namespace KillerApps.Emulation.Atari.Lynx.Tooling
 
 		public SpriteControlBlock SpriteControlBlock { get; set; }
 		public byte[] LynxMemory { get; set; }
-		
-		SpriteContext context = new SpriteContext();
-		SpriteControlBlock scb = new SpriteControlBlock();
-		SpriteEngine engine;
-		private ushort currentScb = 0x169e;
-	
+
+		private ushort VIDBAS = 0x0000;
+		private ushort SCBNEXT;
+		private byte backgroundColorIndex = 0x00;
+		private SpriteEngine engine;
+
 		public SpriteRenderControl()
 		{
 			InitializeComponent();
+		}
+
+		public SpriteEngine Engine
+		{
+			get { return engine; }
+			set
+			{
+				engine = value;
+				SCBNEXT = engine.SpriteControlBlock.SCBNEXT.Value;
+				UpdateInformationPanel();
+			}
+		}
+
+		private void UpdateInformationPanel()
+		{
+			scbNextLabel.Text = String.Format("SCBNEXT: {0:X4}", SCBNEXT);
 		}
 
 		public void SetDefaultColorMap()
@@ -58,24 +74,25 @@ namespace KillerApps.Emulation.Atari.Lynx.Tooling
 
 		protected void PrepareRenderEngine()
 		{
-			engine = new SpriteEngine(context, LynxMemory, scb, videoMemory);
 			SetDefaultColorMap();
-			engine.InitializeFromSpriteDataStructure(LynxMemory, currentScb);
+			Engine.InitializeFromSpriteDataStructure(SCBNEXT);
+			Engine.OverrideVideo(videoMemory, VIDBAS);
+		}
 
-			context.HOFF.Value = 0;
-			context.VOFF.Value = 0;
-			context.VIDBAS.Value = 0x0000;
+		private void ClearBackground()
+		{
+			for (int i = 0; i < videoMemory.Length; i++) videoMemory[i] = (byte)((backgroundColorIndex << 4) + backgroundColorIndex);
 		}
 
 		public void RenderSprite()
 		{
-			for (int i = 0; i < videoMemory.Length; i++) videoMemory[i] = 0x00;
-			engine.RenderSingleSprite();
+			ClearBackground();
+			Engine.RenderSingleSprite();
 
 			int counter = 0;
 			for (int index = 0; index < 160 * 102 / 2; index++)
 			{
-				byte source = videoMemory[context.VIDBAS.Value + index];
+				byte source = videoMemory[VIDBAS + index];
 				SetPixel(counter, (byte)(source >> 4)); counter += 3;
 				SetPixel(counter, (byte)(source & 0x0F)); counter += 3;
 			}
@@ -100,10 +117,26 @@ namespace KillerApps.Emulation.Atari.Lynx.Tooling
 
 		private void renderButton_Click(object sender, EventArgs e)
 		{
+			RefreshRendering();
+		}
+
+		private void RefreshRendering()
+		{
 			PrepareRenderEngine();
 
-			scb.SPRHSIZ.Value = (ushort)(horizontalSizeTrackBar.Value * 256);
-			scb.SPRVSIZ.Value = (ushort)(verticalSizeTrackBar.Value * 256);
+			Engine.SpriteControlBlock.SPRHSIZ.Value = (ushort)(horizontalSizeTrackBar.Value * 256);
+			Engine.SpriteControlBlock.SPRVSIZ.Value = (ushort)(verticalSizeTrackBar.Value * 256);
+
+			short currentValue = (short)Engine.SpriteControlBlock.VPOSSTRT.Value;
+			currentValue += (short)verticalPositionScrollBar.Value;
+			Engine.SpriteControlBlock.VPOSSTRT.Value = (ushort)currentValue;
+
+			currentValue = (short)Engine.SpriteControlBlock.HPOSSTRT.Value;
+			currentValue += (short)horizontalPositionScrollBar.Value;
+			Engine.SpriteControlBlock.HPOSSTRT.Value = (ushort)currentValue;
+
+			//Engine.SpriteControlBlock.SPRCTL0.VFlip = vFlipCheckBox.Checked;
+			//Engine.SpriteControlBlock.SPRCTL0.HFlip = hFlipCheckBox.Checked;
 
 			RenderSprite();
 		}
@@ -111,16 +144,44 @@ namespace KillerApps.Emulation.Atari.Lynx.Tooling
 		private void horizontalSizeTrackBar_ValueChanged(object sender, EventArgs e)
 		{
 			horizontalSizeLabel.Text = String.Format("Horizontal size: {0}", horizontalSizeTrackBar.Value);
+			RefreshRendering();
 		}
 
 		private void verticalSizeTrackBar_ValueChanged(object sender, EventArgs e)
 		{
 			verticalSizeLabel.Text = String.Format("Vertical size: {0}", verticalSizeTrackBar.Value);
+			RefreshRendering();
 		}
 
 		private void button1_Click(object sender, EventArgs e)
 		{
-			currentScb = scb.SCBNEXT.Value;
+			SCBNEXT = Engine.SpriteControlBlock.SCBNEXT.Value;
+			UpdateInformationPanel();
+		}
+
+		private void verticalPositionScrollBar_ValueChanged(object sender, EventArgs e)
+		{
+			RefreshRendering();
+		}
+
+		private void horizontalPositionScrollBar_Scroll(object sender, ScrollEventArgs e)
+		{
+			RefreshRendering();
+		}
+
+		private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			backgroundColorIndex = (byte)comboBox1.SelectedIndex;
+		}
+
+		private void vFlipCheckBox_CheckedChanged(object sender, EventArgs e)
+		{
+			RefreshRendering();
+		}
+
+		private void hFlipCheckBox_CheckedChanged(object sender, EventArgs e)
+		{
+			RefreshRendering();
 		}
 	}
 }

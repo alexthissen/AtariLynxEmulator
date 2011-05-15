@@ -8,6 +8,7 @@ using KillerApps.Emulation.Atari.Lynx;
 using KillerApps.Emulation.Atari.Lynx.Tooling;
 using KillerApps.Emulation.Core;
 using KillerApps.Emulation.Processors;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace AtariLynx.Tests
 {
@@ -60,20 +61,16 @@ namespace AtariLynx.Tests
 
 		[TestMethod]
 		[DeploymentItem(@"SpriteControlBlocks\AtariLogo.scb")]
-		[DeploymentItem(@"SpriteControlBlocks\AtariLogo.scb")]
+		[DeploymentItem(@"SpriteControlBlocks\BlueLightning.dmp")]
 		public void LoadSpriteControlBlock()
 		{
-			string filePath = Path.Combine(TestContext.TestDeploymentDir, "blue.dmp");
-			filePath = @"d:\blue.dmp";
+			string filePath = Path.Combine(TestContext.TestDeploymentDir, "BlueLightning.dmp");
 			FileStream stream = File.Open(filePath, FileMode.Open);
 			int scbSize = (int)stream.Length;			
 			byte[] memory = new byte[0x10000];
 			stream.Read(memory, 0, scbSize);
 
-			ILynxDevice lynx = new LynxDeviceStub(memory);
-			Suzy suzy = new Suzy(lynx);
-			SuzyVisualizerForm form = new SuzyVisualizerForm(suzy);
-			form.ShowDialog();
+			//SpriteEngine engine = new SpriteEngine(new SpriteContext(), memory, new SpriteControlBlock())
 
 			//byte[] video = GetVideoMemory();
 			//for (int i = 0; i < video.Length; i++)

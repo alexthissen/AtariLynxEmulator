@@ -1,6 +1,6 @@
 ﻿namespace KillerApps.Emulation.Atari.Lynx.Tooling
 {
-	partial class SuzyVisualizerForm
+	partial class SpriteEngineVisualizerForm
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -40,10 +40,11 @@
 			// 
 			this.tabControl1.Controls.Add(this.spritesTabPage);
 			this.tabControl1.Controls.Add(this.registersTabPage);
-			this.tabControl1.Location = new System.Drawing.Point(12, 12);
+			this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tabControl1.Location = new System.Drawing.Point(0, 0);
 			this.tabControl1.Name = "tabControl1";
 			this.tabControl1.SelectedIndex = 0;
-			this.tabControl1.Size = new System.Drawing.Size(571, 266);
+			this.tabControl1.Size = new System.Drawing.Size(645, 328);
 			this.tabControl1.TabIndex = 0;
 			// 
 			// spritesTabPage
@@ -52,7 +53,7 @@
 			this.spritesTabPage.Location = new System.Drawing.Point(4, 22);
 			this.spritesTabPage.Name = "spritesTabPage";
 			this.spritesTabPage.Padding = new System.Windows.Forms.Padding(3);
-			this.spritesTabPage.Size = new System.Drawing.Size(563, 240);
+			this.spritesTabPage.Size = new System.Drawing.Size(637, 302);
 			this.spritesTabPage.TabIndex = 0;
 			this.spritesTabPage.Text = "Sprites";
 			this.spritesTabPage.UseVisualStyleBackColor = true;
@@ -69,10 +70,13 @@
 			// 
 			// spriteRenderControl
 			// 
+			this.spriteRenderControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.spriteRenderControl.Location = new System.Drawing.Point(6, 6);
 			this.spriteRenderControl.LynxMemory = null;
 			this.spriteRenderControl.Name = "spriteRenderControl";
-			this.spriteRenderControl.Size = new System.Drawing.Size(543, 210);
+			this.spriteRenderControl.Size = new System.Drawing.Size(623, 288);
 			this.spriteRenderControl.SpriteControlBlock = null;
 			this.spriteRenderControl.TabIndex = 0;
 			// 
@@ -80,7 +84,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(595, 290);
+			this.ClientSize = new System.Drawing.Size(645, 328);
 			this.Controls.Add(this.tabControl1);
 			this.Name = "SuzyVisualizerForm";
 			this.Text = "Suzy Inspector";

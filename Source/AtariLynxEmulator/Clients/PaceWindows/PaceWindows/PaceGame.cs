@@ -51,13 +51,12 @@ namespace PaceWindows
 			Debug.WriteLine("SurfaceFormat: " + lcdScreen.Format.ToString());
 			
 			// Lynx related
-			string BootRomImageFilePath = @"D:\lynxboot.img";
-			//string CartRomImageFilePath = @"D:\roms\todds adventures in slimeworld.lnx";
-			string cartRomImageFilePath = @"d:\roms\blue lightning.lnx";
+			string bootRomImageFilePath = @"D:\lynxboot.img";
+			string cartRomImageFilePath = @"D:\Roms\Robotron 2084.lnx";
 			Stream bootRomImageStream;
 			RomCart cartridge;
 
-			bootRomImageStream = new FileStream(BootRomImageFilePath, FileMode.Open, FileAccess.Read);
+			bootRomImageStream = new FileStream(bootRomImageFilePath, FileMode.Open, FileAccess.Read);
 			LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
 			cartridge = romImage.LoadCart(cartRomImageFilePath);
 
@@ -66,7 +65,7 @@ namespace PaceWindows
 
 			emulator.Initialize();
 
-			this.Window.Title = "Portable Atari Console Entertainment emulator";
+			this.Window.Title = "Portable Color Entertainment System";
 			Window.AllowUserResizing = false;
 			
 			base.Initialize();

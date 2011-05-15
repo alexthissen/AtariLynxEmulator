@@ -18,9 +18,10 @@ namespace KillerApps.Emulation.Atari.Lynx.Tooling
 			if (objectProvider == null)
 				throw new ArgumentNullException("objectProvider");
 			 
-			Suzy suzy = (Suzy)objectProvider.GetObject();
+			SpriteEngine engine = (SpriteEngine)objectProvider.GetObject();
+			engine.Initialize();
 
-			using (SuzyVisualizerForm displayForm = new SuzyVisualizerForm(suzy))
+			using (SpriteEngineVisualizerForm displayForm = new SpriteEngineVisualizerForm(engine))
 			{
 				windowService.ShowDialog(displayForm);
 			}

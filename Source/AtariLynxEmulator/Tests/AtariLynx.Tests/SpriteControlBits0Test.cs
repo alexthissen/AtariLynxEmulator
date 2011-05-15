@@ -52,7 +52,7 @@ namespace AtariLynx.Tests
 
 			// Assert
 			Assert.IsTrue(scb0.HFlip, "Horizontal flip should not be set.");
-			Assert.IsTrue(scb0.VFlip, "Horizontal flip should be set.");
+			Assert.IsTrue(scb0.VFlip, "Vertical flip should be set.");
 			Assert.AreEqual<int>(4, scb0.BitsPerPixel, "Bits per pixel should be 4.");
 			Assert.AreEqual<SpriteTypes>(SpriteTypes.Shadow, scb0.SpriteType, "Sprite type should be Shadow.");
 		}
@@ -65,7 +65,7 @@ namespace AtariLynx.Tests
 
 			// Assert
 			Assert.IsFalse(scb0.HFlip, "Horizontal flip should not be set.");
-			Assert.IsFalse(scb0.VFlip, "Horizontal flip should be set.");
+			Assert.IsFalse(scb0.VFlip, "Vertical flip should not be set.");
 			Assert.AreEqual<int>(1, scb0.BitsPerPixel, "Bits per pixel should be 1.");
 			Assert.AreEqual<SpriteTypes>(SpriteTypes.BackgroundShadow, scb0.SpriteType, "Sprite type should be Background, shadow.");
 		}

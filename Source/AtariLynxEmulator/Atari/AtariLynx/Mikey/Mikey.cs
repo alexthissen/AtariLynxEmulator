@@ -20,8 +20,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private byte timerInterruptMask = 0;
 		private int lineAddress { get; set; }
 
-		public byte[] RedColorMap = new byte[0x10];
 		public byte[] GreenColorMap = new byte[0x10];
+		public byte[] RedColorMap = new byte[0x10];
 		public byte[] BlueColorMap = new byte[0x10];
 		public int[] ArgbColorMap = new int[0x10];
 

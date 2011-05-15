@@ -5,6 +5,9 @@ using System.Text;
 using System.Diagnostics;
 using KillerApps.Emulation.Core;
 using KillerApps.Emulation.Atari.Lynx.Tooling;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
@@ -12,15 +15,15 @@ namespace KillerApps.Emulation.Atari.Lynx
 	[Serializable]
 	public class SpriteEngine
 	{
-		public Word VIDADR, COLLADR;
-		public Word STRETCH;
-		public Word TILTACUM, TILT;
-		public Word SPRDOFF;
-		public Word SPRVPOS;
-		public Word HSIZACUM, VSIZACUM;
-		public Word TMPADR, SCBADR;
-		// "Each SCB also points to the sprite data block containing the image of interest. Many SCBs may point to one sprite data block."		
-		public Word PROCADR;
+		internal Word VIDADR, COLLADR;
+		internal Word STRETCH;
+		internal Word TILTACUM, TILT;
+		internal Word SPRDOFF;
+		internal Word SPRVPOS;
+		internal Word HSIZACUM, VSIZACUM;
+		internal Word TMPADR, SCBADR;
+		// "Each SCB also points to the sprite data block containing the image of interest. Many SCBs may point to one sprite data block."
+		internal Word PROCADR;
 
 		public bool StretchingEnabled { get; set; }
 		public bool SizingEnabled { get; set; }
@@ -32,14 +35,16 @@ namespace KillerApps.Emulation.Atari.Lynx
 		// a pixel byte builder, an 8 word deep pixel data FIFO, a data merger, 
 		// and assorted control logic."
 
-		byte[] ramMemory = null;
-		byte[] videoMemory = null; // For safe drawing
-		ShiftRegister shifter; // "a 12 bit shift register for unpacking the data"
+		private byte[] ramMemory = null;
+		private byte[] videoMemory = null; // For safe drawing
+		
 		// "16 nybble (8 byte) pen index palette specific to each sprite"
-		byte[] PenIndexPalette = new byte[16];
+		private byte[] PenIndexPalette = new byte[16];
 		// "... several 8 bit control registers, a 16 bit wide sprite control block register set"
-		SpriteControlBlock scb;
-		SpriteDataUnpacker unpacker;
+		private SpriteControlBlock scb;
+
+		[NonSerialized] private SpriteDataUnpacker unpacker;
+		[NonSerialized] private ShiftRegister shifter; // "a 12 bit shift register for unpacking the data"
 		private SpriteContext context;
 
 		public SpriteControlBlock SpriteControlBlock 
@@ -56,13 +61,25 @@ namespace KillerApps.Emulation.Atari.Lynx
 			this.context = context;
 			this.videoMemory = videoMemory;
 			this.ramMemory = ramMemory;
-			shifter = new ShiftRegister(12); // "a 12 bit shift register for unpacking the data"
-			unpacker = new SpriteDataUnpacker(shifter, ramMemory);
 			this.scb = scb;
 
 			TiltingEnabled = false;
 			StretchingEnabled = false;
 			SizingEnabled = false;
+
+			Initialize();
+		}
+
+		public void OverrideVideo(byte[] videoMemory, ushort videoBaseAddress)
+		{
+			this.videoMemory = videoMemory;
+			this.context.VIDBAS.Value = videoBaseAddress;
+		}
+
+		internal void Initialize()
+		{
+			shifter = new ShiftRegister(12); // "a 12 bit shift register for unpacking the data"
+			unpacker = new SpriteDataUnpacker(shifter, ramMemory);
 		}
 
 		public int RenderSprites() 
@@ -87,50 +104,12 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 				// Parse data to load sprite control block
 				// "Each occurrence of a sprite on the screen requires 1 SCB."
-				cyclesUsed += InitializeFromSpriteDataStructure(ramMemory, SCBADR.Value);
+				cyclesUsed += InitializeFromSpriteDataStructure(SCBADR.Value);
 
 				RenderSingleSprite();
 			}
 
 			return cyclesUsed; 
-		}
-
-		// "Each SCB contains certain elements in a certain order as required by the hardware"
-		public int InitializeFromSpriteDataStructure(byte[] memory, ushort address)
-		{
-			ushort startAddress = address;
-
-			scb.SPRCTL0.ByteData = memory[address++]; // "(1 byte)  8 bits of control (SPRCTLO)"
-			scb.SPRCTL1.ByteData = memory[address++]; // "(1 byte)  8 bits of control (SPRCTL1)"
-			scb.SPRCOLL.ByteData = memory[address++]; // "(1 byte)  4 bits of control (SPRCOLL)"
-			// "(2 bytes) 16 bits of pointer to next sprite SCB (0 last SCB)"
-			scb.SCBNEXT.Value = BitConverter.ToUInt16(memory, address); address += 2;
-
-			// "The processing of an actual sprite can be 'skipped' on a sprite by sprite basis."
-			if (!scb.SPRCTL1.SkipSprite)
-			{
-				// "(2 bytes) 16 bits of address of start of Sprite Data"
-				scb.SPRDLINE.Value = BitConverter.ToUInt16(memory, address); address += 2;
-				// "(2) 16 bits of starting H Pos"
-				scb.HPOSSTRT.Value = BitConverter.ToUInt16(memory, address); address += 2;
-				// "(2) 16 bits of starting V Pos"
-				scb.VPOSSTRT.Value = BitConverter.ToUInt16(memory, address); address += 2;
-				address += ParseReloadableDepth(memory, address);
-			}
-
-			// Read pen palette if necessary
-			// "The 8 bytes of pen palette are treated by the hardware as a separate block of data from 
-			// the previous group of bytes in the SCB. This means that the reloadability of some of the 
-			// previous bytes does not affect the reusability of the pen palette. 
-			// In addition, this means that when some of the bytes are not reloaded, the length of the 
-			// SCB will be smaller by the number of bytes not used."
-			if (scb.SPRCTL1.ReloadPalette)
-			{
-				ReloadPalette(memory, address);
-				address += 8;
-			}
-
-			return (address - startAddress) * Suzy.SPRITE_READWRITE_CYCLE;
 		}
 
 		public void RenderSingleSprite()
@@ -141,7 +120,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			PROCADR.Value = scb.SPRDLINE.Value; // Set current PROC address
 
 			// Prepare for unpacking data
-			QuadrantOrder quadrant = scb.StartQuadrant;
+			Quadrant quadrant = scb.StartQuadrant;
 			unpacker.Initialize(PROCADR.Value, scb.SPRCTL0.BitsPerPixel, scb.SPRCTL1.TotallyLiteral);
 
 			// Loop through all quadrants
@@ -149,8 +128,11 @@ namespace KillerApps.Emulation.Atari.Lynx
 			{
 				// Quadrant initialization
 				// Determine direction for vertical and horizontal drawing
-				int horizontalIncrease = ((quadrant == QuadrantOrder.DownRight || quadrant == QuadrantOrder.UpRight) ? 1 : -1);
-				int verticalIncrease = (quadrant == QuadrantOrder.UpRight || quadrant == QuadrantOrder.UpLeft) ? -1 : 1;
+				int horizontalIncrease = quadrant.HorizontalIncrease;
+				int verticalIncrease = quadrant.VerticalIncrease;
+
+				if (scb.SPRCTL0.VFlip) verticalIncrease = -verticalIncrease;
+				if (scb.SPRCTL0.HFlip) horizontalIncrease = -horizontalIncrease;
 
 				TILTACUM.Value = 0;
 				VSIZACUM.Value = (ushort)((verticalIncrease == 1) ? context.VSIZOFF.Value : 0);
@@ -163,6 +145,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 				scb.SPRDLINE.Value = PROCADR.Value;
 
 				// TODO: Fix squashed look by offsetting vertical offset by one
+				if (quadrant.VerticalIncrease != scb.StartQuadrant.VerticalIncrease)
+					sprvpos += quadrant.VerticalIncrease;
 
 				// Loop through all lines
 				while ((SPRDOFF.Value = unpacker.ReadOffsetToNextLine()) >= 2)
@@ -180,9 +164,11 @@ namespace KillerApps.Emulation.Atari.Lynx
 					scb.HPOSSTRT.Value += (ushort)((short)TILTACUM.Value >> 8);
 					TILTACUM.HighByte = 0;
 					HSIZACUM.Value = (ushort)((horizontalIncrease == 1) ? context.HSIZOFF.Value : 0);
-					ushort sprhpos = (ushort)((short)scb.HPOSSTRT.Value - context.HOFF.Value);
+					int sprhpos = (short)scb.HPOSSTRT.Value - context.HOFF.Value;
 
 					// TODO: Fix squashed look by offsetting 1 pixel on other directions
+					if (quadrant.HorizontalIncrease != scb.StartQuadrant.HorizontalIncrease)
+						sprhpos += quadrant.HorizontalIncrease;
 
 					// Draw row of pixels
 					foreach (byte pixelIndex in unpacker.PixelsInLine((byte)(SPRDOFF.Value - 1)))
@@ -213,7 +199,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 							}
 							vpos += verticalIncrease;
 						}
-						sprhpos += (ushort)(horizontalIncrease * pixelWidth);
+						sprhpos += horizontalIncrease * pixelWidth;
 					}
 					scb.SPRDLINE.Value += SPRDOFF.Value;
 					//SPRVPOS.Value = (ushort)((short)SPRVPOS.Value + verticalIncrease * pixelHeight);
@@ -232,6 +218,44 @@ namespace KillerApps.Emulation.Atari.Lynx
 				quadrant = GetNextQuadrant(quadrant);
 			}
 			while (quadrant != scb.StartQuadrant); // Never more than 4 quadrants
+		}
+
+		// "Each SCB contains certain elements in a certain order as required by the hardware"
+		public int InitializeFromSpriteDataStructure(ushort address)
+		{
+			ushort startAddress = address;
+
+			scb.SPRCTL0.ByteData = ramMemory[address++]; // "(1 byte)  8 bits of control (SPRCTLO)"
+			scb.SPRCTL1.ByteData = ramMemory[address++]; // "(1 byte)  8 bits of control (SPRCTL1)"
+			scb.SPRCOLL.ByteData = ramMemory[address++]; // "(1 byte)  4 bits of control (SPRCOLL)"
+			// "(2 bytes) 16 bits of pointer to next sprite SCB (0 last SCB)"
+			scb.SCBNEXT.Value = BitConverter.ToUInt16(ramMemory, address); address += 2;
+
+			// "The processing of an actual sprite can be 'skipped' on a sprite by sprite basis."
+			if (!scb.SPRCTL1.SkipSprite)
+			{
+				// "(2 bytes) 16 bits of address of start of Sprite Data"
+				scb.SPRDLINE.Value = BitConverter.ToUInt16(ramMemory, address); address += 2;
+				// "(2) 16 bits of starting H Pos"
+				scb.HPOSSTRT.Value = BitConverter.ToUInt16(ramMemory, address); address += 2;
+				// "(2) 16 bits of starting V Pos"
+				scb.VPOSSTRT.Value = BitConverter.ToUInt16(ramMemory, address); address += 2;
+				address += ParseReloadableDepth(ramMemory, address);
+			}
+
+			// Read pen palette if necessary
+			// "The 8 bytes of pen palette are treated by the hardware as a separate block of data from 
+			// the previous group of bytes in the SCB. This means that the reloadability of some of the 
+			// previous bytes does not affect the reusability of the pen palette. 
+			// In addition, this means that when some of the bytes are not reloaded, the length of the 
+			// SCB will be smaller by the number of bytes not used."
+			if (scb.SPRCTL1.ReloadPalette)
+			{
+				ReloadPalette(ramMemory, address);
+				address += 8;
+			}
+
+			return (address - startAddress) * Suzy.SPRITE_READWRITE_CYCLE;
 		}
 
 		public void ProcessPixel(ushort address, byte pixel, bool left)
@@ -354,6 +378,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public void WritePixel(ushort address, byte pixel, bool left)
 		{
+			if (address < context.VIDBAS.Value || address >= (context.VIDBAS.Value + 160 * 102 / 2))
+				throw new LynxException("Writing outside of video memory area.");
+
 			byte value = videoMemory[address];
 			if (left)
 			{
@@ -373,9 +400,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 			//cycles_used += 2 * SPR_RDWR_CYC;
 		}
 
-		private QuadrantOrder GetNextQuadrant(QuadrantOrder current)
+		private Quadrant GetNextQuadrant(Quadrant current)
 		{
-			return (current == QuadrantOrder.DownLeft) ? QuadrantOrder.DownRight : ++current;
+			QuadrantOrder order = (current.Order == QuadrantOrder.DownLeft) ? QuadrantOrder.DownRight : current.Order + 1;
+			return SpriteControlBlock.Quadrants[(int)order];
 		}
 
 		private ushort ParseReloadableDepth(byte[] memory, ushort address)

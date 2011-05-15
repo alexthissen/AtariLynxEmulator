@@ -41,18 +41,18 @@ namespace AtariLynx.Tests
 			Mikey mikey = new Mikey(device.Object);
 
 			// Act
-			for (byte index = 0; index < 0x0F; index++)
+			for (byte index = 0; index <= 0x0F; index++)
 			{
 				mikey.Poke((ushort)(Mikey.Addresses.GREEN0 + index), index);
 				mikey.Poke((ushort)(Mikey.Addresses.BLUERED0 + index), (byte)((index << 4) + index));
 			}
 			
 			// Assert
-			for (byte index = 0; index < 0x0F; index++)
+			for (byte index = 0; index <= 0x0F; index++)
 			{
-				Assert.AreEqual<byte>(index, mikey.Peek((ushort)(Mikey.Addresses.GREEN0 + index)));
-				Assert.AreEqual<byte>(index, (byte)(mikey.Peek((ushort)(Mikey.Addresses.BLUERED0 + index)) >> 4));
-				Assert.AreEqual<byte>(index, (byte)(mikey.Peek((ushort)(Mikey.Addresses.BLUERED0 + index)) & 0x0F));
+				Assert.AreEqual<byte>((byte)(16 * index), mikey.Peek((ushort)(Mikey.Addresses.GREEN0 + index)));
+				Assert.AreEqual<byte>((byte)(16 * index), (byte)(mikey.Peek((ushort)(Mikey.Addresses.BLUERED0 + index)) >> 4));
+				Assert.AreEqual<byte>((byte)(16 * index), (byte)(mikey.Peek((ushort)(Mikey.Addresses.BLUERED0 + index)) & 0x0F));
 			}
 		}
 
@@ -64,18 +64,18 @@ namespace AtariLynx.Tests
 			Mikey mikey = new Mikey(device.Object);
 
 			// Act
-			for (byte index = 0; index < 0x0F; index++)
+			for (byte index = 0; index <= 0x0F; index++)
 			{
 				mikey.Poke((ushort)(Mikey.Addresses.GREEN0 + index), index);
 				mikey.Poke((ushort)(Mikey.Addresses.BLUERED0 + index), (byte)((index << 4) + index));
 			}
 
 			// Assert
-			for (byte index = 0; index < 0x0F; index++)
+			for (byte index = 0; index <= 0x0F; index++)
 			{
-				Assert.AreEqual<byte>(index, mikey.GreenColorMap[index], "Green map not set correctly.");
-				Assert.AreEqual<byte>(index, mikey.BlueColorMap[index], "Blue map not set correctly.");
-				Assert.AreEqual<byte>(index, mikey.RedColorMap[index], "Red color map not set correctly.");
+				Assert.AreEqual<byte>((byte)(16 * index), mikey.GreenColorMap[index], "Green map not set correctly.");
+				Assert.AreEqual<byte>((byte)(16 * index), mikey.BlueColorMap[index], "Blue map not set correctly.");
+				Assert.AreEqual<byte>((byte)(16 * index), mikey.RedColorMap[index], "Red color map not set correctly.");
 			}
 		}
 	}

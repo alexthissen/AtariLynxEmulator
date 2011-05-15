@@ -26,6 +26,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public bool VFlip
 		{
 			get { return (ByteData & VFlipMask) == VFlipMask; }
+			set { ByteData &= VFlipMask ^ 0xFF; ByteData |= VFlipMask; }
 		}
 
 		// "Sprites can be horizontally and/or vertically flipped."
@@ -33,6 +34,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public bool HFlip 
 		{
 			get { return (ByteData & HFlipMask) == HFlipMask; }
+			set { ByteData &= HFlipMask ^ 0xFF; ByteData |= HFlipMask; }
 		}
 		
 		// "B7,B6 = bits/pixel-1 (1,2,3,4)"
@@ -41,7 +43,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			get { return (byte)((ByteData >> 6) + 1); }
 		}
 
-		private const byte HFlipMask = 0x10;
-		private const byte VFlipMask = 0x08;
+		private const byte HFlipMask = 0x20;
+		private const byte VFlipMask = 0x10;
 	}
 }

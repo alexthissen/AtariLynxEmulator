@@ -112,13 +112,13 @@
     <Compile Include="Tooling\SpriteRenderControl.Designer.cs">
       <DependentUpon>SpriteRenderControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Tooling\SuzyVisualizerForm.cs">
+    <Compile Include="Tooling\SpriteEngineVisualizerForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Tooling\SuzyVisualizerForm.Designer.cs">
-      <DependentUpon>SuzyVisualizerForm.cs</DependentUpon>
+    <Compile Include="Tooling\SpriteEngineVisualizerForm.Designer.cs">
+      <DependentUpon>SpriteEngineVisualizerForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Tooling\SuzyControlBlockVisualizer.cs" />
+    <Compile Include="Tooling\SpriteEngineVisualizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Framework\Emulation.6502\Emulation.6502.csproj">
@@ -134,8 +134,8 @@
     <EmbeddedResource Include="Tooling\SpriteRenderControl.resx">
       <DependentUpon>SpriteRenderControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tooling\SuzyVisualizerForm.resx">
-      <DependentUpon>SuzyVisualizerForm.cs</DependentUpon>
+    <EmbeddedResource Include="Tooling\SpriteEngineVisualizerForm.resx">
+      <DependentUpon>SpriteEngineVisualizerForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
