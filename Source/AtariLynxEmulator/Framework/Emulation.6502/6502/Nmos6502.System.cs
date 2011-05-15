@@ -141,7 +141,7 @@ namespace KillerApps.Emulation.Processors
 			Memory.Poke(Address, Data);
 
 			// Increase data, write data to address 
-			SystemClock.CycleCount += MemoryWriteCycle + 1;
+			//SystemClock.CycleCount += MemoryWriteCycle + 1;
 			UpdateNegativeZeroFlags(Data);
 		}
 
@@ -155,7 +155,7 @@ namespace KillerApps.Emulation.Processors
 			Memory.Poke(Address, Data);
 
 			// Increase data, Write data to address
-			SystemClock.CycleCount += MemoryWriteCycle + 1;
+			//SystemClock.CycleCount += MemoryWriteCycle + 1;
 			UpdateNegativeZeroFlags(Data);
 		}
 

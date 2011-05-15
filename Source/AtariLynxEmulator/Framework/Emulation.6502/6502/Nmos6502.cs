@@ -101,7 +101,7 @@ namespace KillerApps.Emulation.Processors
 			SP &= 0xff;
 
 			// Write data and increase stack pointer
-			SystemClock.CycleCount += MemoryWriteCycle + 1;
+			//SystemClock.CycleCount += MemoryWriteCycle + 1;
 		}
 
 		internal byte PullFromStack()
@@ -111,7 +111,7 @@ namespace KillerApps.Emulation.Processors
 			
 			// Increase stack pointer and fetch data
 			// TODO: Find out if extra cycle is a clock or memory read cycle
-			SystemClock.CycleCount += MemoryReadCycle + 2;
+			//SystemClock.CycleCount += MemoryReadCycle + 2;
 			return Memory.Peek((ushort)(SP + 0x0100)); 
 		}
 
@@ -158,7 +158,7 @@ namespace KillerApps.Emulation.Processors
 
 			// Fetch opcode
 			Opcode = Memory.Peek(PC);
-			SystemClock.CycleCount += MemoryReadCycle;
+			//SystemClock.CycleCount += MemoryReadCycle;
 			
 			// Lookup on timings that Keith Wilkins has made
 			SystemClock.CompatibleCycleCount += 1 + timings[Opcode] * MemoryReadCycle;
@@ -172,7 +172,7 @@ namespace KillerApps.Emulation.Processors
 		protected void FetchData()
 		{
 			Data = Memory.Peek(Address);
-			SystemClock.CycleCount += MemoryReadCycle;
+			//SystemClock.CycleCount += MemoryReadCycle;
 		}
 
 		protected virtual void ExecuteOpcode()

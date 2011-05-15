@@ -70,7 +70,7 @@ namespace KillerApps.Emulation.Processors
 		public void STZ()
 		{
 			Memory.Poke(Address, 0);
-			SystemClock.CycleCount += MemoryWriteCycle;
+			//SystemClock.CycleCount += MemoryWriteCycle;
 		}
 
 		/// <summary>
@@ -79,7 +79,7 @@ namespace KillerApps.Emulation.Processors
 		public void WAI()
 		{
 			IsAsleep = true;
-			SystemClock.CycleCount += 2;
+			//SystemClock.CycleCount += 2;
 		}
 
 		/// <summary>
@@ -94,7 +94,7 @@ namespace KillerApps.Emulation.Processors
 		public void STP()
 		{
 			IsAsleep = true;
-			SystemClock.CycleCount += 2;
+			//SystemClock.CycleCount += 2;
 		}
 
 		/// <summary>

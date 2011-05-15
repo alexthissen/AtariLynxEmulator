@@ -73,9 +73,8 @@ namespace AtariLynx.Tests
 			// Assert
 			for (byte index = 0; index <= 0x0F; index++)
 			{
-				Assert.AreEqual<byte>((byte)(16 * index), mikey.GreenColorMap[index], "Green map not set correctly.");
-				Assert.AreEqual<byte>((byte)(16 * index), mikey.BlueColorMap[index], "Blue map not set correctly.");
-				Assert.AreEqual<byte>((byte)(16 * index), mikey.RedColorMap[index], "Red color map not set correctly.");
+				Assert.AreEqual<byte>(index, mikey.GreenColorMap[index], "Green map not set correctly.");
+				Assert.AreEqual<byte>((byte)((index << 4) + index), mikey.BlueRedColorMap[index], "BlueRed map not set correctly.");
 			}
 		}
 	}

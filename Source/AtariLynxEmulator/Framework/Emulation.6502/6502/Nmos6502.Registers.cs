@@ -35,7 +35,7 @@ namespace KillerApps.Emulation.Processors
 		public void LDX()
 		{
 			X = Memory.Peek(Address);
-			SystemClock.CycleCount += MemoryReadCycle;
+			//SystemClock.CycleCount += MemoryReadCycle;
 
 			UpdateNegativeZeroFlags(X);
 		}
@@ -50,7 +50,7 @@ namespace KillerApps.Emulation.Processors
 		public void LDY()
 		{
 			Y = Memory.Peek(Address);
-			SystemClock.CycleCount += MemoryReadCycle;
+			//SystemClock.CycleCount += MemoryReadCycle;
 
 			UpdateNegativeZeroFlags(Y);
 		}
@@ -61,7 +61,7 @@ namespace KillerApps.Emulation.Processors
 		public void STX()
 		{
 			Memory.Poke(Address, X);
-			SystemClock.CycleCount += MemoryWriteCycle;
+			//SystemClock.CycleCount += MemoryWriteCycle;
 		}
 
 		/// <summary>
@@ -70,7 +70,7 @@ namespace KillerApps.Emulation.Processors
 		public void STY()
 		{
 			Memory.Poke(Address, Y);
-			SystemClock.CycleCount += MemoryWriteCycle;
+			//SystemClock.CycleCount += MemoryWriteCycle;
 		}
 
 		/// <summary>
@@ -201,7 +201,7 @@ namespace KillerApps.Emulation.Processors
 		public void STA()
 		{
 			Memory.Poke(Address, A);
-			SystemClock.CycleCount += MemoryWriteCycle;
+			//SystemClock.CycleCount += MemoryWriteCycle;
 		}
 	}
 }

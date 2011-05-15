@@ -22,7 +22,7 @@ namespace KillerApps.Emulation.Processors
 			UpdateNegativeZeroFlags(Data);
 			Memory.Poke(Address, Data);
 			// Update data and write to address
-			SystemClock.CycleCount += MemoryWriteCycle + 1;
+			//SystemClock.CycleCount += MemoryWriteCycle + 1;
 		}
 
 		/// <summary>
@@ -38,7 +38,7 @@ namespace KillerApps.Emulation.Processors
 		{
 			C = (A & 0x80) == 0x80;
 			A <<= 1;
-			SystemClock.CycleCount += 1;
+			//SystemClock.CycleCount += 1;
 			UpdateNegativeZeroFlags(A);
 		}
 
@@ -57,7 +57,7 @@ namespace KillerApps.Emulation.Processors
 			Data &= 0x7f;
 			Memory.Poke(Address, Data);
 			// Update data and write to address
-			SystemClock.CycleCount += MemoryWriteCycle + 1;
+			//SystemClock.CycleCount += MemoryWriteCycle + 1;
 			UpdateNegativeZeroFlags(Data);
 		}
 
@@ -74,7 +74,7 @@ namespace KillerApps.Emulation.Processors
 			A >>= 1;
 			A &= 0x7f;
 			// Update data 
-			SystemClock.CycleCount += 1;
+			//SystemClock.CycleCount += 1;
 			UpdateNegativeZeroFlags(A);
 		}
 
@@ -95,7 +95,7 @@ namespace KillerApps.Emulation.Processors
 			Memory.Poke(Address, Data);
 
 			// Update data and write to address
-			SystemClock.CycleCount += MemoryWriteCycle + 1;
+			//SystemClock.CycleCount += MemoryWriteCycle + 1;
 			UpdateNegativeZeroFlags(Data);
 		}
 
@@ -114,7 +114,7 @@ namespace KillerApps.Emulation.Processors
 			A |= c ? (byte)1 : (byte)0;
 
 			// Update data 
-			SystemClock.CycleCount += 1;
+			//SystemClock.CycleCount += 1;
 			UpdateNegativeZeroFlags(A);
 		}
 
@@ -135,7 +135,7 @@ namespace KillerApps.Emulation.Processors
 			Data |= c ? (byte)0x80 : (byte)0x00;
 			Memory.Poke(Address, Data);
 			// Update data and write to address
-			SystemClock.CycleCount += MemoryWriteCycle + 1;
+			//SystemClock.CycleCount += MemoryWriteCycle + 1;
 			UpdateNegativeZeroFlags(Data);
 		}
 
@@ -154,7 +154,7 @@ namespace KillerApps.Emulation.Processors
 			A &= 0x7f;
 			A |= c ? (byte)0x80 : (byte)0x00;
 			// Update data 
-			SystemClock.CycleCount += 1;
+			//SystemClock.CycleCount += 1;
 			UpdateNegativeZeroFlags(A);
 		}
 	}

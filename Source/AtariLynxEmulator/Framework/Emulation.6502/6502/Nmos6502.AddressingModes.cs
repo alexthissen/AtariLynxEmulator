@@ -16,7 +16,7 @@ namespace KillerApps.Emulation.Processors
 			PC += 2;
 			
 			// Fetch low byte, high byte
-			SystemClock.CycleCount += 2 * MemoryReadCycle;
+			//SystemClock.CycleCount += 2 * MemoryReadCycle;
 		}
 
 		// ($abcd)
@@ -41,7 +41,7 @@ namespace KillerApps.Emulation.Processors
 			Address |= (ushort)(Memory.Peek(address) << 8);
 
 			// Fetch low byte, high byte of indirect address, low byte, high byte of direct address
-			SystemClock.CycleCount += 4 * MemoryReadCycle;
+			//SystemClock.CycleCount += 4 * MemoryReadCycle;
 		}
 
 		// $abcd,X
@@ -54,7 +54,7 @@ namespace KillerApps.Emulation.Processors
 			// Fetch low byte, high byte
 			// Addition of X to low byte is performed during fetch of high byte
 			// TODO: Increase clock cycles by one if page boundary is crossed
-			SystemClock.CycleCount += 2 * MemoryReadCycle;
+			//SystemClock.CycleCount += 2 * MemoryReadCycle;
 		}
 
 		// $abcd,Y
@@ -67,7 +67,7 @@ namespace KillerApps.Emulation.Processors
 			// Fetch low byte, high byte
 			// Addition of Y to low byte is performed during fetch of high byte
 			// TODO: Increase clock cycles by one if page boundary is crossed
-			SystemClock.CycleCount += 2 * MemoryReadCycle;
+			//SystemClock.CycleCount += 2 * MemoryReadCycle;
 		}
 
 		// #42
@@ -85,7 +85,7 @@ namespace KillerApps.Emulation.Processors
 			Address = (ushort)Memory.Peek(PC++);
 
 			// Fetch low byte
-			SystemClock.CycleCount += MemoryReadCycle;
+			//SystemClock.CycleCount += MemoryReadCycle;
 		}
 
 		// $ZP,X
@@ -97,7 +97,7 @@ namespace KillerApps.Emulation.Processors
 			Address &= 0x00ff;
 			
 			// Fetch low byte plus addition
-			SystemClock.CycleCount += MemoryReadCycle + 1;
+			//SystemClock.CycleCount += MemoryReadCycle + 1;
 		}
 
 		// $ZP,Y
@@ -109,7 +109,7 @@ namespace KillerApps.Emulation.Processors
 			Address &= 0x00ff;
 			
 			// Fetch low byte plus addition
-			SystemClock.CycleCount += MemoryReadCycle + 1;
+			//SystemClock.CycleCount += MemoryReadCycle + 1;
 		}
 
 		// ($ZP,X)
@@ -127,7 +127,7 @@ namespace KillerApps.Emulation.Processors
 			// Fetch low byte, perform addition (1 clock cycle), fetch low byte, high byte
 			// Addition can only be performed after address is fetched and before indirection is made,
 			// so an additional clock cycle is spent
-			SystemClock.CycleCount += 3 * MemoryReadCycle + 1;
+			//SystemClock.CycleCount += 3 * MemoryReadCycle + 1;
 		}
 
 		// ($ZP), Y
@@ -143,7 +143,7 @@ namespace KillerApps.Emulation.Processors
 			// Fetch low byte zp, low byte, high byte
 			// Addition is performed on low byte during fetch of high byte, so no clock cycle is spent
 			// TODO: Increase clock cycles by one if page boundary is crossed
-			SystemClock.CycleCount += 3 * MemoryReadCycle;
+			//SystemClock.CycleCount += 3 * MemoryReadCycle;
 		}
 	}
 }

@@ -16,7 +16,7 @@ namespace KillerApps.Emulation.Processors
 
 			// Fetch low byte, high byte, low byte, high byte
 			// Additional clock cycle for fixing 6502 bug
-			SystemClock.CycleCount += 4 * MemoryReadCycle + 1;
+			//SystemClock.CycleCount += 4 * MemoryReadCycle + 1;
 		}
 
 		// Indirect zero page ($zp)
@@ -27,7 +27,7 @@ namespace KillerApps.Emulation.Processors
 			Address = Memory.PeekWord(Address);
 
 			// Fetch low byte, low byte, high byte
-			SystemClock.CycleCount += 3 * MemoryReadCycle;
+			//SystemClock.CycleCount += 3 * MemoryReadCycle;
 		}
 
 		// Absolute Indexed Indirect ($abcd,X)
@@ -40,7 +40,7 @@ namespace KillerApps.Emulation.Processors
 
 			// Fetch low byte, high byte, low byte, high byte
 			// Additional clock cycle to fix page crossing?
-			SystemClock.CycleCount += 4 * MemoryReadCycle + 1;
+			//SystemClock.CycleCount += 4 * MemoryReadCycle + 1;
 		}
 	}
 }

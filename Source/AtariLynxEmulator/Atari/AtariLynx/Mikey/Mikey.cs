@@ -21,9 +21,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private int lineAddress { get; set; }
 
 		public byte[] GreenColorMap = new byte[0x10];
-		public byte[] RedColorMap = new byte[0x10];
-		public byte[] BlueColorMap = new byte[0x10];
-		public int[] ArgbColorMap = new int[0x10];
+		public byte[] BlueRedColorMap = new byte[0x10];
+		public uint[] ArgbColorMap = new uint[0x10];
 
 		public SystemControlBits1 SYSCTL1 { get; set; }
 		public ParallelData IODAT { get; set; }
@@ -48,7 +47,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		
 		private ushort currentLynxDmaAddress;
 		private int currentLcdDmaCounter;
-		private byte[] LcdScreenDma;
+		private uint[] LcdScreenDma;
 		private byte[] VideoMemoryDma;
 		private byte currentLine;
 		
@@ -65,6 +64,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// TODO: Another hack to avoid rendering when timer 2 has only just started
 			currentLcdDmaCounter = -1;
 			VideoMemoryDma = device.Ram.GetDirectAccess();
+			for (int index = 0; index <= 0x0F; index++) ArgbColorMap[index] = 0xFF000000;
 		}
 
 		private void InitializeTimers()
@@ -171,10 +171,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		private void SetPixel(byte source)
 		{
-			LcdScreenDma[currentLcdDmaCounter++] = RedColorMap[source];
-			LcdScreenDma[currentLcdDmaCounter++] = GreenColorMap[source];
-			LcdScreenDma[currentLcdDmaCounter++] = BlueColorMap[source];
-			LcdScreenDma[currentLcdDmaCounter++] = 0xFF;
+			LcdScreenDma[currentLcdDmaCounter++] = ArgbColorMap[source];
 		}
 
 		public void Reset()
@@ -379,11 +376,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 			if (address >= Mikey.Addresses.BLUERED0)
 			{
 				int index = address - Mikey.Addresses.BLUERED0;
-				BlueColorMap[index] = (byte)(value & 0xF0);
-				RedColorMap[index] = (byte)((value & 0x0F) << 4);
-				//ArgbColorMap[index] = 0; //&= 0xFF0000FF;
-				//ArgbColorMap[index] |= (value & 0xF0) << 8;
-				//ArgbColorMap[index] |= (value & 0x0F) << 28;
+				BlueRedColorMap[index] = value;
+				ArgbColorMap[index] &= 0xFF00FF00;
+				ArgbColorMap[index] |= (uint)((value & 0xF0) << 16); // Blue
+				ArgbColorMap[index] |= (uint)((value & 0x0F) << 4); // Red
 				return;
 			}
 
@@ -391,9 +387,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 			if (address >= Mikey.Addresses.GREEN0)
 			{
 				int index = address - Mikey.Addresses.GREEN0;
-				GreenColorMap[index] = (byte)((value & 0x0F) << 4);
-				//ArgbColorMap[index] &=  
-				//ArgbColorMap[index] |= (value & 0x0F) << 20;
+				GreenColorMap[index] = value;
+				ArgbColorMap[index] &= 0xFFFF00FF;
+				ArgbColorMap[index] |= (uint)((value & 0x0F) << 12);
 				return;
 			}
 
@@ -446,7 +442,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			if (address >= Mikey.Addresses.BLUERED0)
 			{
 				int index = address - Mikey.Addresses.BLUERED0;
-				return (byte)((BlueColorMap[index] << 4) + RedColorMap[index]);
+				return BlueRedColorMap[index];
 			}
 
 			if (address >= Mikey.Addresses.GREEN0)

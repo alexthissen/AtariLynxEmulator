@@ -264,15 +264,18 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public ulong RenderSprites()
 		{
-			// Start rendering sprites
+			Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::RenderSprites");
+
+			if (!SUZYBUSEN.BusEnabled || !SPRGO.SpriteProcessEnabled) return 0;
+			
+				// Start rendering sprites
 			SPRSYS.SpriteProcessStarted = true;
 
 			// Delegate to engine
 			context.DontCollide = SPRSYS.DontCollide;
 			context.VStretch = SPRSYS.VStretch;
 			device.SystemClock.CompatibleCycleCount += (ulong)Engine.RenderSprites();
-			Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::RenderSprites");
-
+			
 			// "When the engine finishes processing the sprite list, or if it has been requested 
 			// to stop at the end of the current sprite, or if it has been forced off by 
 			// writing a 00 to SPRGO, the SPRITESEN flip flop will be reset."

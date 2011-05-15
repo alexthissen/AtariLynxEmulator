@@ -47,12 +47,12 @@ namespace PaceWindows
 			IsFixedTimeStep = true;
 			TargetElapsedTime = TimeSpan.FromMilliseconds(8); // 60Hz
 
-			lcdScreen = new Texture2D(graphics.GraphicsDevice, 160, 102);
+			lcdScreen = new Texture2D(graphics.GraphicsDevice, 160, 102, false, SurfaceFormat.Color);
 			Debug.WriteLine("SurfaceFormat: " + lcdScreen.Format.ToString());
 			
 			// Lynx related
 			string bootRomImageFilePath = @"D:\lynxboot.img";
-			string cartRomImageFilePath = @"D:\Roms\Robotron 2084.lnx";
+			string cartRomImageFilePath = @"D:\Roms\warbirds.lnx";
 			Stream bootRomImageStream;
 			RomCart cartridge;
 
@@ -130,7 +130,7 @@ namespace PaceWindows
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Draw(GameTime gameTime)
 		{
-			lcdScreen.SetData(emulator.LcdScreenDma, 0x0, 0x3FC0 * 4);
+			lcdScreen.SetData(emulator.LcdScreenDma, 0x0, 0x3FC0);
 
 			spriteBatch.Begin();
 			spriteBatch.Draw(lcdScreen, new Rectangle(0, 0, 640, 408), new Rectangle(0, 0, 160, 102), Color.White);
