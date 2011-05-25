@@ -83,7 +83,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			}
 
 			// Timer 6 is not part of a group and does not have a timer linked to it
-			Timers[5].PreviousTimer = null;
+			Timers[6].PreviousTimer = null;
 
 			// "Two of the timers will be used for the video frame rate generator."
 			Timers[0].Expired += new EventHandler<TimerExpirationEventArgs>(RenderLine);
@@ -114,7 +114,13 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private void DisplayEndOfFrame(object sender, TimerExpirationEventArgs e) 
 		{
 			// Pick up current video start address
-			currentLynxDmaAddress = (ushort)(VideoDisplayStartAddress.Value & 0xFFFC);
+			// "The hardware address in Mikey (DISPADDR) is the backup value for the actual address counter. 
+			// The backup value is transferred to the address counter at the very start of the third line of 
+			// vertical blanking."
+			//currentLynxDmaAddress = (ushort)(VideoDisplayStartAddress.Value & 0xFFFC);
+			
+			// "The value in the register is the start (upper left corner) of the display buffer in normal 
+			// mode and the end (lower right corner) of the display buffer in FLIP mode"
 			if (DISPCTL.Flip)
 			{
 				currentLynxDmaAddress += 3;
@@ -126,7 +132,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		
 		private void RenderLine(object sender, TimerExpirationEventArgs e) 
 		{
-			// TODO: Implementation of Keith does not always trigger IRQ when DMA is not enabled, display bits (?) or display current have not been set
+			// TODO: Implementation of Keith does not always trigger IRQ when DMA is not enabled, 
+			// display bits (?) or display current have not been set
 			if (!DISPCTL.EnableVideoDma) return;
 
 			int backupValue = Timers[2].BackupValue;
@@ -143,6 +150,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 				currentLine--;
 				return;
 			}
+			if (currentLine == (backupValue -3))
+				currentLynxDmaAddress = (ushort)(VideoDisplayStartAddress.Value & 0xFFFC);
 
 			if (currentLine > 0) currentLine--;
 			if (currentLcdDmaCounter < 0) return;
@@ -372,8 +381,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 					break;
 			}
 
+			if (address > Mikey.Addresses.BLUEREDF) return;
+
 			// Blue and red color map
-			if (address >= Mikey.Addresses.BLUERED0)
+			if (address >= Mikey.Addresses.BLUERED0 && address <= Mikey.Addresses.BLUEREDF)
 			{
 				int index = address - Mikey.Addresses.BLUERED0;
 				BlueRedColorMap[index] = value;
@@ -398,6 +409,29 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public byte Peek(ushort address)
 		{
+			// Timer addresses can be handled separately
+			if (address >= Mikey.Addresses.HTIMBKUP && address <= Mikey.Addresses.TIM7CTLB)
+			{
+				int offset = address - Mikey.Addresses.HTIMBKUP;
+				int index = offset >> 2; // Divide by 4 to get index of timer
+				Timer timer = Timers[index];
+
+				switch (offset % 4)
+				{
+					case 0: // Backup value
+						return timer.BackupValue;
+
+					case 1: // Static control
+						return timer.StaticControlBits.ByteData;
+
+					case 2: // Current value
+						return timer.CurrentValue;
+
+					case 3: // Dynamic control bits
+						return timer.DynamicControlBits.ByteData;
+				}
+			}
+
 			switch (address)
 			{
 				case Mikey.Addresses.INTSET:

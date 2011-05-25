@@ -63,13 +63,22 @@ namespace KillerApps.Emulation.Atari.Lynx
 			
 			if (totallyLiteral)
 			{
-				for (int index = 0; index < ((offsetToNextLine * 8) / BitsPerPixel); index++)
+				int repeatCount = (offsetToNextLine * 8) / BitsPerPixel;
+				for (int index = 0; index < repeatCount - 1; index++)
 				{
 					yield return register.GetBits(BitsPerPixel);
 				}
+
+				// "There is a bug in the hardware that requires that the last meaningful bit of the
+				// data packet at the end of a scan line does not occur in the last bit of a byte (bit 0)."
+				// Only return last pixel if value is not zero
+				byte value = register.GetBits(BitsPerPixel);
+				if (value != 0x00) yield return value;
+
+				// All done
 				yield break;
 			}
-			else
+			else // Packed or literal packets
 			{
 				// Continue only if there are enough bits left
 				while (register.BitsLeft >= 5)
@@ -85,7 +94,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 							// "A data Packet header of '00000' is used as an additional detector of the end of the line of sprite data."
 							// "... There appears to be a bug with it."
 							// TODO: Find out what bug is
-							if (repeatCount == 0) yield break;
+							if (repeatCount == 1) yield break;
 							if (!register.TryGetBits(BitsPerPixel, out value)) yield break;
 
 							for (int count = 0; count < repeatCount; count++)

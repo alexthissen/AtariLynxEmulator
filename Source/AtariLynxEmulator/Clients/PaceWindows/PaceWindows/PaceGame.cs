@@ -42,17 +42,18 @@ namespace PaceWindows
 			graphics.PreferredBackBufferWidth = 640;
 			graphics.PreferredBackBufferHeight = 408;
 			graphics.IsFullScreen = false;
+			//graphics.GraphicsDevice.SamplerStates[0] = new SamplerState() { Filter = TextureFilter.Point };
 			graphics.ApplyChanges();
 
 			IsFixedTimeStep = true;
-			TargetElapsedTime = TimeSpan.FromMilliseconds(8); // 60Hz
+			TargetElapsedTime = TimeSpan.FromMilliseconds(6); // 60Hz
 
 			lcdScreen = new Texture2D(graphics.GraphicsDevice, 160, 102, false, SurfaceFormat.Color);
 			Debug.WriteLine("SurfaceFormat: " + lcdScreen.Format.ToString());
 			
 			// Lynx related
 			string bootRomImageFilePath = @"D:\lynxboot.img";
-			string cartRomImageFilePath = @"D:\Roms\warbirds.lnx";
+			string cartRomImageFilePath = @"D:\roms\todds adventures in slimeworld.lnx";
 			Stream bootRomImageStream;
 			RomCart cartridge;
 
@@ -108,6 +109,7 @@ namespace PaceWindows
 		protected override void Update(GameTime gameTime)
 		{
 			GamePadState state = GamePad.GetState(PlayerIndex.One);
+			
 			// Allows the game to exit
 			if (state.Buttons.Back == ButtonState.Pressed)
 				this.Exit();
@@ -117,8 +119,12 @@ namespace PaceWindows
 			if (state.DPad.Up == ButtonState.Pressed) joystick |= JoyStickStates.Up;
 			if (state.DPad.Left == ButtonState.Pressed) joystick |= JoyStickStates.Left;
 			if (state.DPad.Right == ButtonState.Pressed) joystick |= JoyStickStates.Right;
-
+			if (state.Buttons.A == ButtonState.Pressed) joystick |= JoyStickStates.Outside;
+			if (state.Buttons.B == ButtonState.Pressed) joystick |= JoyStickStates.Inside;
+			if (state.Buttons.X == ButtonState.Pressed) joystick |= JoyStickStates.Option1;
+			if (state.Buttons.Y == ButtonState.Pressed) joystick |= JoyStickStates.Option2;
 			emulator.UpdateJoystickState(joystick);
+
 			emulator.Update(50000);
 
 			base.Update(gameTime);
@@ -134,9 +140,9 @@ namespace PaceWindows
 
 			spriteBatch.Begin();
 			spriteBatch.Draw(lcdScreen, new Rectangle(0, 0, 640, 408), new Rectangle(0, 0, 160, 102), Color.White);
-			spriteBatch.DrawString(font, DateTime.Now.ToLongTimeString(), new Vector2(10, 10), Color.White);
+			//spriteBatch.DrawString(font, DateTime.Now.ToLongTimeString(), new Vector2(10, 10), Color.White);
 			spriteBatch.DrawString(font, emulator.SystemClock.CompatibleCycleCount.ToString("X16"), new Vector2(10, 40), Color.White);
-			spriteBatch.DrawString(font, gameTime.IsRunningSlowly.ToString(), new Vector2(10, 25), Color.White);
+			//spriteBatch.DrawString(font, gameTime.IsRunningSlowly.ToString(), new Vector2(10, 25), Color.White);
 			spriteBatch.End();
 
 			base.Draw(gameTime);

@@ -578,6 +578,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 				case Addresses.SPRSYS:
 					SPRSYS.ByteData = value;
+					JOYSTICK.LeftHanded = SPRSYS.LeftHanded;
 					break;
 
 				case Addresses.SUZYBUSEN:

@@ -86,7 +86,8 @@ namespace KillerApps.Emulation.Atari.Lynx.Tooling
 
 		public void RenderSprite()
 		{
-			ClearBackground();
+			if (clearCheckBox.Checked) ClearBackground();
+			
 			Engine.RenderSingleSprite();
 
 			int counter = 0;
@@ -124,8 +125,8 @@ namespace KillerApps.Emulation.Atari.Lynx.Tooling
 		{
 			PrepareRenderEngine();
 
-			Engine.SpriteControlBlock.SPRHSIZ.Value = (ushort)(horizontalSizeTrackBar.Value * 256);
-			Engine.SpriteControlBlock.SPRVSIZ.Value = (ushort)(verticalSizeTrackBar.Value * 256);
+			//Engine.SpriteControlBlock.SPRHSIZ.Value = (ushort)(horizontalSizeTrackBar.Value * 256);
+			//Engine.SpriteControlBlock.SPRVSIZ.Value = (ushort)(verticalSizeTrackBar.Value * 256);
 
 			short currentValue = (short)Engine.SpriteControlBlock.VPOSSTRT.Value;
 			currentValue += (short)verticalPositionScrollBar.Value;

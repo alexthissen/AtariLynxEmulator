@@ -7,11 +7,11 @@ namespace KillerApps.Emulation.Atari.Lynx
 {
 	public class Joystick
 	{
-		private byte state;
+		private JoyStickStates state;
 
 		public byte Value 
 		{
-			get { return state; } 
+			get { return (byte)state; } 
 		}
 		
 		public bool LeftHanded { private get; set; }
@@ -20,15 +20,16 @@ namespace KillerApps.Emulation.Atari.Lynx
 		{
 			set
 			{
-				state = 0x00;
-				if ((value & JoyStickStates.Up) == JoyStickStates.Up) state |= (byte)(LeftHanded ? 0x80 : 0x40);
-				if ((value & JoyStickStates.Down) == JoyStickStates.Down) state |= (byte)(LeftHanded ? 0x40 : 0x80);
-				if ((value & JoyStickStates.Left) == JoyStickStates.Left) state |= (byte)(LeftHanded ? 0x20 : 0x10);
-				if ((value & JoyStickStates.Right) == JoyStickStates.Right) state |= (byte)(LeftHanded ? 0x10 : 0x20);
-				if ((value & JoyStickStates.Option1) == JoyStickStates.Option1) state |= 0x08;
-				if ((value & JoyStickStates.Option2) == JoyStickStates.Option2) state |= 0x04;
-				if ((value & JoyStickStates.Inside) == JoyStickStates.Inside) state |= 0x02;
-				if ((value & JoyStickStates.Outside) == JoyStickStates.Outside) state |= 0x01;
+				if (LeftHanded) state = value;
+				//state = 0x00;
+				//if ((value & JoyStickStates.Up) == JoyStickStates.Up) state |= (byte)(LeftHanded ? 0x80 : 0x40);
+				//if ((value & JoyStickStates.Down) == JoyStickStates.Down) state |= (byte)(LeftHanded ? 0x40 : 0x80);
+				//if ((value & JoyStickStates.Left) == JoyStickStates.Left) state |= (byte)(LeftHanded ? 0x20 : 0x10);
+				//if ((value & JoyStickStates.Right) == JoyStickStates.Right) state |= (byte)(LeftHanded ? 0x10 : 0x20);
+				//if ((value & JoyStickStates.Option1) == JoyStickStates.Option1) state |= 0x08;
+				//if ((value & JoyStickStates.Option2) == JoyStickStates.Option2) state |= 0x04;
+				//if ((value & JoyStickStates.Inside) == JoyStickStates.Inside) state |= 0x02;
+				//if ((value & JoyStickStates.Outside) == JoyStickStates.Outside) state |= 0x01;
 			}
 		}
 	}

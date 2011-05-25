@@ -75,7 +75,11 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private ulong ExecuteCpu()
 		{
 			ulong executedCycles = Cpu.Execute(1);
-			if (Cpu.IsAsleep) SystemClock.CompatibleCycleCount = NextTimerEvent;
+			if (Cpu.IsAsleep)
+			{
+				executedCycles += NextTimerEvent - SystemClock.CompatibleCycleCount;
+				SystemClock.CompatibleCycleCount = NextTimerEvent;
+			}
 			return executedCycles;
 		}
 
@@ -94,7 +98,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 		
 		public void UpdateJoystickState(JoyStickStates state)
 		{
-			this.Suzy.JOYSTICK.LeftHanded = this.Suzy.SPRSYS.LeftHanded;
 			this.Suzy.JOYSTICK.State = state;
 		}
 	}

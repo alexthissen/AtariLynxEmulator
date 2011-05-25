@@ -43,6 +43,7 @@
 			this.comboBox1 = new System.Windows.Forms.ComboBox();
 			this.vFlipCheckBox = new System.Windows.Forms.CheckBox();
 			this.hFlipCheckBox = new System.Windows.Forms.CheckBox();
+			this.clearCheckBox = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.horizontalSizeTrackBar)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.spritePictureBox)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.verticalSizeTrackBar)).BeginInit();
@@ -204,10 +205,21 @@
 			this.hFlipCheckBox.UseVisualStyleBackColor = true;
 			this.hFlipCheckBox.CheckedChanged += new System.EventHandler(this.hFlipCheckBox_CheckedChanged);
 			// 
+			// clearCheckBox
+			// 
+			this.clearCheckBox.AutoSize = true;
+			this.clearCheckBox.Location = new System.Drawing.Point(486, 64);
+			this.clearCheckBox.Name = "clearCheckBox";
+			this.clearCheckBox.Size = new System.Drawing.Size(85, 17);
+			this.clearCheckBox.TabIndex = 16;
+			this.clearCheckBox.Text = "Clear screen";
+			this.clearCheckBox.UseVisualStyleBackColor = true;
+			// 
 			// SpriteRenderControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this.clearCheckBox);
 			this.Controls.Add(this.hFlipCheckBox);
 			this.Controls.Add(this.vFlipCheckBox);
 			this.Controls.Add(this.comboBox1);
@@ -249,5 +261,6 @@
 		private System.Windows.Forms.ComboBox comboBox1;
 		private System.Windows.Forms.CheckBox vFlipCheckBox;
 		private System.Windows.Forms.CheckBox hFlipCheckBox;
+		private System.Windows.Forms.CheckBox clearCheckBox;
 	}
 }

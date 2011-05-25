@@ -34,9 +34,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 		}
 		
 		// "B3,B2,B1,B0 = number"
-		public int Number 
+		public byte Number 
 		{ 
-			get { return (ByteData & 0x0f); }
+			get { return (byte)(ByteData & 0x0f); }
 			set 
 			{
 				Debug.WriteLineIf(value > 0x0f, "Collision number should be 0 to 15.");
