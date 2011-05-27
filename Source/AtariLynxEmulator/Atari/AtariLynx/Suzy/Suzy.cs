@@ -91,35 +91,16 @@ namespace KillerApps.Emulation.Atari.Lynx
 		// To initialize the accumulator, write a '0' to K and M (This will put 0 in J and L). 
 		// The write to 'M' will clear the accumulator overflow bit. Note that you can actually initialize 
 		// the accumulator to any value by writing to all 4 bytes (J,K,L,M)."
+		int signAB = 0, signCD = 0, signEFGH = 0;
+		
 		public ulong Multiply16By16()
 		{
 			uint EFGH;
 			SPRSYS.MathWarning = false;
 			SPRSYS.MathInProcess = true;
-			int signAB = 0, signCD = 0, signEFGH = 0;
-
+			
 			ushort AB = (ushort)((MathABCD[3] << 8) + MathABCD[2]);
 			ushort CD = (ushort)((MathABCD[1] << 8) + MathABCD[0]);
-			
-			if (SPRSYS.SignedMath)
-			{
-				Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::Multiply16By16 - Signed math multiply operation.");
-				
-				// "When signed multiply is enabled, the hardware will convert the number provided by the CPU 
-				// into a positive number and save the sign of the original number."
-				AB = ConvertSignedMathValue(AB, out signAB);
-				CD = ConvertSignedMathValue(CD, out signCD);
-
-				// "The conversion that is performed on the CPU provided starting numbers is done when the 
-				// upper byte is sent by the CPU."
-
-				// "The resultant positive number is placed in the same Suzy location as the original number 
-				// and therefore the original number is lost."
-				MathABCD[2] = (byte)(AB & 0xff);
-				MathABCD[3] = (byte)(AB >> 8);
-				MathABCD[0] = (byte)(CD & 0xff);
-				MathABCD[1] = (byte)(CD >> 8); 
-			}
 
 			EFGH = (uint)AB * (uint)CD;
 
@@ -484,8 +465,29 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 				case Addresses.MATHA:
 					MathABCD[3] = value;
+					signAB = 0;
+
+					// "The conversion that is performed on the CPU provided starting numbers is done when the 
+					// upper byte is sent by the CPU."
+					// Starting numbers meaning AB and CD
+					if (SPRSYS.SignedMath)
+					{
+						Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::Multiply16By16 - Signed math multiply operation.");
+
+						// "When signed multiply is enabled, the hardware will convert the number provided by the CPU 
+						// into a positive number and save the sign of the original number."
+						ushort AB = (ushort)((MathABCD[3] << 8) + MathABCD[2]);
+						AB = ConvertSignedMathValue(AB, out signAB);
+
+						// "The resultant positive number is placed in the same Suzy location as the original number 
+						// and therefore the original number is lost."
+						MathABCD[2] = (byte)(AB & 0xff);
+						MathABCD[3] = (byte)(AB >> 8);
+					}
+
 					// "Writing to A will start a 16 bit multiply."
 					Multiply16By16();
+
 					// TODO: Add clock cycles for multiplication when switching from compatible to precise clock count
 					//device.SystemClock.CompatibleCycleCount += Multiply16By16();
 					break;
@@ -496,6 +498,24 @@ namespace KillerApps.Emulation.Atari.Lynx
 					break;
 				case Addresses.MATHC:
 					MathABCD[1] = value;
+					signCD = 0;
+					// "The conversion that is performed on the CPU provided starting numbers is done when the 
+					// upper byte is sent by the CPU."
+					// Starting numbers meaning AB and CD
+					if (SPRSYS.SignedMath)
+					{
+						Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::Multiply16By16 - Signed math multiply operation.");
+
+						// "When signed multiply is enabled, the hardware will convert the number provided by the CPU 
+						// into a positive number and save the sign of the original number."
+						ushort CD = (ushort)((MathABCD[1] << 8) + MathABCD[0]);
+						CD = ConvertSignedMathValue(CD, out signCD);
+
+						// "The resultant positive number is placed in the same Suzy location as the original number 
+						// and therefore the original number is lost."
+						MathABCD[0] = (byte)(CD & 0xff);
+						MathABCD[1] = (byte)(CD >> 8);
+					}
 					break;
 				case Addresses.MATHD:
 					MathABCD[0] = value;
@@ -685,7 +705,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 					break;
 
 				case Addresses.JOYSTICK:
-					// Set lefthandedness first
+					// Set left-handedness first
 					JOYSTICK.LeftHanded = SPRSYS.LeftHanded;
 					value = JOYSTICK.Value;
 					break;

@@ -17,5 +17,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 		ulong NextTimerEvent { get; set; }
 		Ram64KBMemory Ram { get; }
 		RomBootMemory Rom { get; }
+		bool NewVideoFrameAvailable { get; set; }
 	}
 }

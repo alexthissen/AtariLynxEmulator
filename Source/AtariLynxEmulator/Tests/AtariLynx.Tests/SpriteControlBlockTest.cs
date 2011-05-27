@@ -353,6 +353,8 @@ namespace AtariLynx.Tests
 
 	public class LynxDeviceStub : ILynxDevice
 	{
+		public bool NewVideoFrameAvailable { get; set; }
+
 		public RomCart Cartridge
 		{
 			get

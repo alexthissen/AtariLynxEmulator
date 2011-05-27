@@ -113,21 +113,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 		
 		private void DisplayEndOfFrame(object sender, TimerExpirationEventArgs e) 
 		{
-			// Pick up current video start address
-			// "The hardware address in Mikey (DISPADDR) is the backup value for the actual address counter. 
-			// The backup value is transferred to the address counter at the very start of the third line of 
-			// vertical blanking."
-			//currentLynxDmaAddress = (ushort)(VideoDisplayStartAddress.Value & 0xFFFC);
-			
-			// "The value in the register is the start (upper left corner) of the display buffer in normal 
-			// mode and the end (lower right corner) of the display buffer in FLIP mode"
-			if (DISPCTL.Flip)
-			{
-				currentLynxDmaAddress += 3;
-			}
-
 			currentLcdDmaCounter = 0;
 			currentLine = Timers[2].BackupValue;
+
+			device.NewVideoFrameAvailable = true;
 		}
 		
 		private void RenderLine(object sender, TimerExpirationEventArgs e) 
@@ -150,8 +139,21 @@ namespace KillerApps.Emulation.Atari.Lynx
 				currentLine--;
 				return;
 			}
-			if (currentLine == (backupValue -3))
+			if (currentLine == (backupValue - 3))
+			{
+				// Pick up current video start address
+				// "The hardware address in Mikey (DISPADDR) is the backup value for the actual address counter. 
+				// The backup value is transferred to the address counter at the very start of the third line of 
+				// vertical blanking."
 				currentLynxDmaAddress = (ushort)(VideoDisplayStartAddress.Value & 0xFFFC);
+
+				// "The value in the register is the start (upper left corner) of the display buffer in normal 
+				// mode and the end (lower right corner) of the display buffer in FLIP mode"
+				if (DISPCTL.Flip)
+				{
+					currentLynxDmaAddress += 3;
+				}
+			}
 
 			if (currentLine > 0) currentLine--;
 			if (currentLcdDmaCounter < 0) return;

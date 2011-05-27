@@ -8,19 +8,22 @@ namespace KillerApps.Emulation.Atari.Lynx
 	public class Joystick
 	{
 		private JoyStickStates state;
+		public bool LeftHanded { private get; set; }
 
 		public byte Value 
 		{
-			get { return (byte)state; } 
+			get 
+			{
+				return (byte)state;
+			} 
 		}
-		
-		public bool LeftHanded { private get; set; }
-
+				
 		public JoyStickStates State
 		{
 			set
 			{
-				if (LeftHanded) state = value;
+				state = value;
+
 				//state = 0x00;
 				//if ((value & JoyStickStates.Up) == JoyStickStates.Up) state |= (byte)(LeftHanded ? 0x80 : 0x40);
 				//if ((value & JoyStickStates.Down) == JoyStickStates.Down) state |= (byte)(LeftHanded ? 0x40 : 0x80);

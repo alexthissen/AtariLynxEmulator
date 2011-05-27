@@ -26,6 +26,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public bool CartridgePowerOn { get; set; }
 		public ulong NextTimerEvent { get; set; }
+		public bool NewVideoFrameAvailable { get; set; }
 
 		private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
 

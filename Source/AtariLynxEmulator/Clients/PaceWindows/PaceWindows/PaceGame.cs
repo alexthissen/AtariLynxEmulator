@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Media;
 using KillerApps.Emulation.Atari.Lynx;
 using System.Diagnostics;
 using System.IO;
+using Microsoft.Xna.Framework.Storage;
 
 namespace PaceWindows
 {
@@ -23,12 +24,53 @@ namespace PaceWindows
 		SpriteBatch spriteBatch;
 		LynxHandheld emulator;
 		Texture2D lcdScreen;
+		SpriteFont font;
+
+		Stream bootRomImageStream;
+		StorageDevice storage = null;
+		RomCart cartridge;
 
 		public PaceGame()
 		{
 			graphics = new GraphicsDeviceManager(this);
 			Content.RootDirectory = "Content";
 			emulator = new LynxHandheld();
+			Components.Add(new GamerServicesComponent(this));
+		}
+
+		private void EndShowSelector(IAsyncResult result)
+		{
+			storage = StorageDevice.EndShowSelector(result);
+			if (storage != null && storage.IsConnected)
+			{
+				DoOpenFile(storage);
+			}
+		}
+
+		private void DoOpenFile(StorageDevice storage)
+		{
+			IAsyncResult result = storage.BeginOpenContainer("Roms", null, null);
+
+			// Wait for the WaitHandle to become signaled.
+			result.AsyncWaitHandle.WaitOne();
+
+			StorageContainer container = storage.EndOpenContainer(result);
+
+			// Close wait handle
+			result.AsyncWaitHandle.Close();
+
+			bootRomImageStream = container.OpenFile("lynxboot.img", FileMode.Open, FileAccess.Read);
+			OpenGameCart(container, "Todds adventures in Slimeworld.lnx");
+			container.Dispose();
+		}
+
+		private void OpenGameCart(StorageContainer container, string cartRomImageFileName)
+		{
+			LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
+			using (Stream stream = container.OpenFile(cartRomImageFileName, FileMode.Open, FileAccess.Read))
+			{
+				cartridge = romImage.LoadCart(stream);
+			}
 		}
 
 		/// <summary>
@@ -42,33 +84,24 @@ namespace PaceWindows
 			graphics.PreferredBackBufferWidth = 640;
 			graphics.PreferredBackBufferHeight = 408;
 			graphics.IsFullScreen = false;
-			//graphics.GraphicsDevice.SamplerStates[0] = new SamplerState() { Filter = TextureFilter.Point };
 			graphics.ApplyChanges();
 
 			IsFixedTimeStep = true;
 			TargetElapsedTime = TimeSpan.FromMilliseconds(6); // 60Hz
 
 			lcdScreen = new Texture2D(graphics.GraphicsDevice, 160, 102, false, SurfaceFormat.Color);
-			Debug.WriteLine("SurfaceFormat: " + lcdScreen.Format.ToString());
-			
+
+			IAsyncResult result = StorageDevice.BeginShowSelector(EndShowSelector, "Storage for Player One");
+			result.AsyncWaitHandle.WaitOne();
+
 			// Lynx related
-			string bootRomImageFilePath = @"D:\lynxboot.img";
-			string cartRomImageFilePath = @"D:\roms\todds adventures in slimeworld.lnx";
-			Stream bootRomImageStream;
-			RomCart cartridge;
-
-			bootRomImageStream = new FileStream(bootRomImageFilePath, FileMode.Open, FileAccess.Read);
-			LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
-			cartridge = romImage.LoadCart(cartRomImageFilePath);
-
 			emulator.BootRomImage = bootRomImageStream;
 			emulator.Cartridge = cartridge;
-
 			emulator.Initialize();
 
-			this.Window.Title = "Portable Color Entertainment System";
+			Window.Title = "Portable Color Entertainment System";
 			Window.AllowUserResizing = false;
-			
+
 			base.Initialize();
 		}
 
@@ -85,13 +118,11 @@ namespace PaceWindows
 			{
 				ram[i] = 0x00;
 			}
-			
-			// TODO: use this.Content to load your game content here
+
+			// Use this.Content to load your game content here
 			font = Content.Load<SpriteFont>("DefaultFont");
 		}
 
-		SpriteFont font;
-		
 		/// <summary>
 		/// UnloadContent will be called once per game and is the place to unload
 		/// all content.
@@ -108,26 +139,33 @@ namespace PaceWindows
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Update(GameTime gameTime)
 		{
-			GamePadState state = GamePad.GetState(PlayerIndex.One);
-			
+			KeyboardState keyboard = Keyboard.GetState(PlayerIndex.One);
+			GamePadState gamePad = GamePad.GetState(PlayerIndex.One);
+
 			// Allows the game to exit
-			if (state.Buttons.Back == ButtonState.Pressed)
+			if (gamePad.Buttons.Back == ButtonState.Pressed)
 				this.Exit();
 
-			JoyStickStates joystick = JoyStickStates.None;
-			if (state.DPad.Down == ButtonState.Pressed) joystick |= JoyStickStates.Down;
-			if (state.DPad.Up == ButtonState.Pressed) joystick |= JoyStickStates.Up;
-			if (state.DPad.Left == ButtonState.Pressed) joystick |= JoyStickStates.Left;
-			if (state.DPad.Right == ButtonState.Pressed) joystick |= JoyStickStates.Right;
-			if (state.Buttons.A == ButtonState.Pressed) joystick |= JoyStickStates.Outside;
-			if (state.Buttons.B == ButtonState.Pressed) joystick |= JoyStickStates.Inside;
-			if (state.Buttons.X == ButtonState.Pressed) joystick |= JoyStickStates.Option1;
-			if (state.Buttons.Y == ButtonState.Pressed) joystick |= JoyStickStates.Option2;
+			JoyStickStates joystick = GetJoystickInput(keyboard, gamePad);
 			emulator.UpdateJoystickState(joystick);
-
 			emulator.Update(50000);
 
 			base.Update(gameTime);
+		}
+
+		private JoyStickStates GetJoystickInput(KeyboardState keyboard, GamePadState gamePad)
+		{
+			JoyStickStates joystick = JoyStickStates.None;
+			if (gamePad.DPad.Down == ButtonState.Pressed || keyboard.IsKeyDown(Keys.Down)) joystick |= JoyStickStates.Down;
+			if (gamePad.DPad.Up == ButtonState.Pressed || keyboard.IsKeyDown(Keys.Up)) joystick |= JoyStickStates.Up;
+			if (gamePad.DPad.Left == ButtonState.Pressed || keyboard.IsKeyDown(Keys.Left)) joystick |= JoyStickStates.Left;
+			if (gamePad.DPad.Right == ButtonState.Pressed || keyboard.IsKeyDown(Keys.Right)) joystick |= JoyStickStates.Right;
+			if (gamePad.Buttons.A == ButtonState.Pressed || keyboard.IsKeyDown(Keys.Z)) joystick |= JoyStickStates.Outside;
+			if (gamePad.Buttons.B == ButtonState.Pressed || keyboard.IsKeyDown(Keys.X)) joystick |= JoyStickStates.Inside;
+			if (gamePad.Buttons.X == ButtonState.Pressed || keyboard.IsKeyDown(Keys.D1)) joystick |= JoyStickStates.Option1;
+			if (gamePad.Buttons.Y == ButtonState.Pressed || keyboard.IsKeyDown(Keys.D2)) joystick |= JoyStickStates.Option2;
+
+			return joystick;
 		}
 
 		/// <summary>
@@ -136,13 +174,17 @@ namespace PaceWindows
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Draw(GameTime gameTime)
 		{
-			lcdScreen.SetData(emulator.LcdScreenDma, 0x0, 0x3FC0);
+			if (emulator.NewVideoFrameAvailable)
+			{
+				lcdScreen.SetData(emulator.LcdScreenDma, 0x0, 0x3FC0);
+				emulator.NewVideoFrameAvailable = false;
+			}
 
-			spriteBatch.Begin();
+			spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null);
 			spriteBatch.Draw(lcdScreen, new Rectangle(0, 0, 640, 408), new Rectangle(0, 0, 160, 102), Color.White);
-			//spriteBatch.DrawString(font, DateTime.Now.ToLongTimeString(), new Vector2(10, 10), Color.White);
+			spriteBatch.DrawString(font, DateTime.Now.ToLongTimeString(), new Vector2(10, 10), Color.White);
 			spriteBatch.DrawString(font, emulator.SystemClock.CompatibleCycleCount.ToString("X16"), new Vector2(10, 40), Color.White);
-			//spriteBatch.DrawString(font, gameTime.IsRunningSlowly.ToString(), new Vector2(10, 25), Color.White);
+			spriteBatch.DrawString(font, gameTime.IsRunningSlowly.ToString(), new Vector2(10, 25), Color.White);
 			spriteBatch.End();
 
 			base.Draw(gameTime);
