@@ -97,7 +97,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, String.Format("LynxHandheld::SynchronizeTime: Current time is {0}", SystemClock.CompatibleCycleCount));
 		}
 		
-		public void UpdateJoystickState(JoyStickStates state)
+		public void UpdateJoystickState(JoystickStates state)
 		{
 			this.Suzy.JOYSTICK.State = state;
 		}

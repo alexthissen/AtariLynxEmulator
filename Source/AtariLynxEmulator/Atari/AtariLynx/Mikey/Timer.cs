@@ -24,7 +24,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			set
 			{
 				staticControlBits = value;
-				TimerLogic = TimerLogicFactory.CreateTimerLogic(this, staticControlBits);
+				TimerLogic = TimerLogicFactory.CreateTimerLogic(this, staticControlBits, TimerLogic);
 			}
 		}
 
@@ -86,12 +86,13 @@ namespace KillerApps.Emulation.Atari.Lynx
 		}
 
 		public void Start(ulong cycleCount)
-		{ 
-			// Delegate down to internal logic
-			TimerLogic.Start(cycleCount);
-			
+		{
 			// Starting a timer will force an update
 			//Update(cycleCount);
+			//TimerLogic.UpdateCurrentValue(cycleCount);
+
+			// Delegate down to internal logic
+			TimerLogic.Start(cycleCount);
 		}
 	}
 }

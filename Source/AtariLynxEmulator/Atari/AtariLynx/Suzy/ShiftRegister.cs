@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Diagnostics.Contracts;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
@@ -31,7 +29,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public bool TryGetBits(int bitCount, out byte value)
 		{
-			Contract.Assert(bitCount >= 0 && bitCount <= 8);
+			//Contract.Assert(bitCount >= 0 && bitCount <= 8);
 
 			value = 0;
 			if (counter < bitCount)

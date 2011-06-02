@@ -73,5 +73,11 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// For now use Wilkins logic and predict new timer event from current system cycle count
 			return (ulong)(value > Owner.CurrentValue ? 1 : ((Owner.CurrentValue + 1 - value) << Multiplier)) + currentCycleCount;
 		}
+
+		internal void InitializeFrom(ClockedTimerLogic currentTimerLogic)
+		{
+			if (currentTimerLogic == null) return;
+			this.CycleCountCurrentValue = currentTimerLogic.CycleCountCurrentValue;
+		}
 	}
 }

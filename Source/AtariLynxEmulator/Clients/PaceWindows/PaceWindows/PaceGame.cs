@@ -25,6 +25,7 @@ namespace PaceWindows
 		LynxHandheld emulator;
 		Texture2D lcdScreen;
 		SpriteFont font;
+		ContentManager romContent;
 
 		Stream bootRomImageStream;
 		StorageDevice storage = null;
@@ -32,10 +33,13 @@ namespace PaceWindows
 
 		public PaceGame()
 		{
-			graphics = new GraphicsDeviceManager(this);
-			Content.RootDirectory = "Content";
-			emulator = new LynxHandheld();
 			Components.Add(new GamerServicesComponent(this));
+			Components.Add(new FrameRateCounter(this));
+			Content.RootDirectory = "Content";
+
+			emulator = new LynxHandheld();
+			graphics = new GraphicsDeviceManager(this);
+			romContent = new ResourceContentManager(Services, Roms.ResourceManager);
 		}
 
 		private void EndShowSelector(IAsyncResult result)
@@ -60,7 +64,7 @@ namespace PaceWindows
 			result.AsyncWaitHandle.Close();
 
 			bootRomImageStream = container.OpenFile("lynxboot.img", FileMode.Open, FileAccess.Read);
-			OpenGameCart(container, "Todds adventures in Slimeworld.lnx");
+			OpenGameCart(container, "APB.lnx");
 			container.Dispose();
 		}
 
@@ -91,12 +95,13 @@ namespace PaceWindows
 
 			lcdScreen = new Texture2D(graphics.GraphicsDevice, 160, 102, false, SurfaceFormat.Color);
 
-			IAsyncResult result = StorageDevice.BeginShowSelector(EndShowSelector, "Storage for Player One");
-			result.AsyncWaitHandle.WaitOne();
+			//IAsyncResult result = StorageDevice.BeginShowSelector(EndShowSelector, "Storage for Player One");
+			//result.AsyncWaitHandle.WaitOne();
 
 			// Lynx related
-			emulator.BootRomImage = bootRomImageStream;
-			emulator.Cartridge = cartridge;
+			emulator.BootRomImage = new MemoryStream(Roms.LYNXBOOT);
+			LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
+			emulator.Cartridge = romImage.LoadCart(new MemoryStream(Roms.Collision));
 			emulator.Initialize();
 
 			Window.Title = "Portable Color Entertainment System";
@@ -146,24 +151,24 @@ namespace PaceWindows
 			if (gamePad.Buttons.Back == ButtonState.Pressed)
 				this.Exit();
 
-			JoyStickStates joystick = GetJoystickInput(keyboard, gamePad);
+			JoystickStates joystick = GetJoystickInput(keyboard, gamePad);
 			emulator.UpdateJoystickState(joystick);
 			emulator.Update(50000);
 
 			base.Update(gameTime);
 		}
 
-		private JoyStickStates GetJoystickInput(KeyboardState keyboard, GamePadState gamePad)
+		private JoystickStates GetJoystickInput(KeyboardState keyboard, GamePadState gamePad)
 		{
-			JoyStickStates joystick = JoyStickStates.None;
-			if (gamePad.DPad.Down == ButtonState.Pressed || keyboard.IsKeyDown(Keys.Down)) joystick |= JoyStickStates.Down;
-			if (gamePad.DPad.Up == ButtonState.Pressed || keyboard.IsKeyDown(Keys.Up)) joystick |= JoyStickStates.Up;
-			if (gamePad.DPad.Left == ButtonState.Pressed || keyboard.IsKeyDown(Keys.Left)) joystick |= JoyStickStates.Left;
-			if (gamePad.DPad.Right == ButtonState.Pressed || keyboard.IsKeyDown(Keys.Right)) joystick |= JoyStickStates.Right;
-			if (gamePad.Buttons.A == ButtonState.Pressed || keyboard.IsKeyDown(Keys.Z)) joystick |= JoyStickStates.Outside;
-			if (gamePad.Buttons.B == ButtonState.Pressed || keyboard.IsKeyDown(Keys.X)) joystick |= JoyStickStates.Inside;
-			if (gamePad.Buttons.X == ButtonState.Pressed || keyboard.IsKeyDown(Keys.D1)) joystick |= JoyStickStates.Option1;
-			if (gamePad.Buttons.Y == ButtonState.Pressed || keyboard.IsKeyDown(Keys.D2)) joystick |= JoyStickStates.Option2;
+			JoystickStates joystick = JoystickStates.None;
+			if (gamePad.DPad.Down == ButtonState.Pressed || keyboard.IsKeyDown(Keys.Down)) joystick |= JoystickStates.Down;
+			if (gamePad.DPad.Up == ButtonState.Pressed || keyboard.IsKeyDown(Keys.Up)) joystick |= JoystickStates.Up;
+			if (gamePad.DPad.Left == ButtonState.Pressed || keyboard.IsKeyDown(Keys.Left)) joystick |= JoystickStates.Left;
+			if (gamePad.DPad.Right == ButtonState.Pressed || keyboard.IsKeyDown(Keys.Right)) joystick |= JoystickStates.Right;
+			if (gamePad.Buttons.A == ButtonState.Pressed || keyboard.IsKeyDown(Keys.Z)) joystick |= JoystickStates.Outside;
+			if (gamePad.Buttons.B == ButtonState.Pressed || keyboard.IsKeyDown(Keys.X)) joystick |= JoystickStates.Inside;
+			if (gamePad.Buttons.X == ButtonState.Pressed || keyboard.IsKeyDown(Keys.D1)) joystick |= JoystickStates.Option1;
+			if (gamePad.Buttons.Y == ButtonState.Pressed || keyboard.IsKeyDown(Keys.D2)) joystick |= JoystickStates.Option2;
 
 			return joystick;
 		}
@@ -182,9 +187,8 @@ namespace PaceWindows
 
 			spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null);
 			spriteBatch.Draw(lcdScreen, new Rectangle(0, 0, 640, 408), new Rectangle(0, 0, 160, 102), Color.White);
-			spriteBatch.DrawString(font, DateTime.Now.ToLongTimeString(), new Vector2(10, 10), Color.White);
-			spriteBatch.DrawString(font, emulator.SystemClock.CompatibleCycleCount.ToString("X16"), new Vector2(10, 40), Color.White);
-			spriteBatch.DrawString(font, gameTime.IsRunningSlowly.ToString(), new Vector2(10, 25), Color.White);
+			spriteBatch.DrawString(font, emulator.SystemClock.CompatibleCycleCount.ToString("X16"), new Vector2(10, 50), Color.White);
+			spriteBatch.DrawString(font, gameTime.IsRunningSlowly.ToString(), new Vector2(10, 65), Color.White);
 			spriteBatch.End();
 
 			base.Draw(gameTime);

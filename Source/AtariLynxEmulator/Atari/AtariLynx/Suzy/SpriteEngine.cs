@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 using KillerApps.Emulation.Core;
-using KillerApps.Emulation.Atari.Lynx.Tooling;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
+using KillerApps.Emulation.Atari.Lynx.Tooling;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
@@ -37,18 +37,20 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		private byte[] ramMemory = null;
 		private byte[] videoMemory = null; // For safe drawing
-		
+
 		// "16 nybble (8 byte) pen index palette specific to each sprite"
 		private byte[] PenIndexPalette = new byte[16];
 		// "... several 8 bit control registers, a 16 bit wide sprite control block register set"
 		private SpriteControlBlock scb;
 
-		[NonSerialized] private SpriteDataUnpacker unpacker;
-		[NonSerialized] private ShiftRegister shifter; // "a 12 bit shift register for unpacking the data"
+		[NonSerialized]
+		private SpriteDataUnpacker unpacker;
+		[NonSerialized]
+		private ShiftRegister shifter; // "a 12 bit shift register for unpacking the data"
 		private SpriteContext context;
 		private byte highestCollision;
 
-		public SpriteControlBlock SpriteControlBlock 
+		public SpriteControlBlock SpriteControlBlock
 		{
 			get { return scb; }
 		}
@@ -83,7 +85,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			unpacker = new SpriteDataUnpacker(shifter, ramMemory);
 		}
 
-		public int RenderSprites() 
+		public int RenderSprites()
 		{
 			int cyclesUsed = 0;
 
@@ -135,7 +137,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			}
 
 			//return cyclesUsed;
-			return 10000; 
+			return 10000;
 		}
 
 		public void RenderSingleSprite()
@@ -171,15 +173,16 @@ namespace KillerApps.Emulation.Atari.Lynx
 				scb.SPRDLINE.Value = PROCADR.Value;
 
 				// Fix squashed look by offsetting vertical offset by one
-				if (quadrant.VerticalIncrease != scb.StartQuadrant.VerticalIncrease)
-					sprvpos += quadrant.VerticalIncrease;
+				if (verticalIncrease != scb.StartQuadrant.VerticalIncrease)
+					sprvpos += verticalIncrease;
 
 				// Loop through all lines
+				byte pixelHeight = 0;
 				while ((SPRDOFF.Value = unpacker.ReadOffsetToNextLine()) >= 2)
 				{
 					// Vertical scaling
 					VSIZACUM.Value += scb.SPRVSIZ.Value;
-					byte pixelHeight = VSIZACUM.HighByte;
+					pixelHeight = VSIZACUM.HighByte;
 					VSIZACUM.HighByte = 0;
 
 					VIDADR.Value = (ushort)(context.VIDBAS.Value + (SPRVPOS.Value * (Suzy.SCREEN_WIDTH / 2)));
@@ -187,55 +190,69 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 					// TODO: Check visibility
 
-					scb.HPOSSTRT.Value += (ushort)((short)TILTACUM.Value >> 8);
-					TILTACUM.HighByte = 0;
-					HSIZACUM.Value = (ushort)((horizontalIncrease == 1) ? context.HSIZOFF.Value : 0);
-					int sprhpos = (short)scb.HPOSSTRT.Value - (short)context.HOFF.Value;
-
-					// Fix squashed look by offsetting 1 pixel on other directions
-					if (quadrant.HorizontalIncrease != scb.StartQuadrant.HorizontalIncrease)
-						sprhpos += quadrant.HorizontalIncrease;
-
-					// Draw row of pixels
-					foreach (byte pixelIndex in unpacker.PixelsInLine((byte)(SPRDOFF.Value - 1)))
+					for (int v = 0; v < pixelHeight; v++)
 					{
-						HSIZACUM.Value += scb.SPRHSIZ.Value;
-						byte pixelWidth = HSIZACUM.HighByte;
-						HSIZACUM.HighByte = 0;
+						// Stop vertical loop if outside of screen bounds
+						if (verticalIncrease == 1 && sprvpos >= Suzy.SCREEN_HEIGHT) break;
+						if (verticalIncrease == -1 && sprvpos < 0) break;
+						//if (sprvpos < 0 || sprvpos >= Suzy.SCREEN_HEIGHT) break;
 
-						// Draw pixel
-						byte pixelValue = PenIndexPalette[pixelIndex];
-						int vpos = sprvpos;
-
-						for (int v = 0; v < pixelHeight; v++)
+						if (sprvpos >= 0 && sprvpos < Suzy.SCREEN_HEIGHT)
 						{
-							// Stop vertical loop if outside of screen bounds
-							if (vpos < 0 || vpos >= Suzy.SCREEN_HEIGHT) break;
+							scb.HPOSSTRT.Value += (ushort)((short)TILTACUM.Value >> 8);
+							TILTACUM.HighByte = 0;
+							HSIZACUM.Value = (ushort)((horizontalIncrease == 1) ? context.HSIZOFF.Value : 0);
+							int sprhpos = (short)scb.HPOSSTRT.Value - (short)context.HOFF.Value;
 
-							int hpos = sprhpos;
-							for (int h = 0; h < pixelWidth; h++)
+							// Fix squashed look by offsetting 1 pixel on other directions
+							if (horizontalIncrease != scb.StartQuadrant.HorizontalIncrease)
+								sprhpos += horizontalIncrease;
+
+							// Draw row of pixels
+							foreach (byte pixelIndex in unpacker.PixelsInLine((byte)(SPRDOFF.Value - 1)))
 							{
-								// Stop horizontal loop if outside of screen bounds
-								if (hpos < 0 || hpos >= Suzy.SCREEN_WIDTH) break;
+								HSIZACUM.Value += scb.SPRHSIZ.Value;
+								byte pixelWidth = HSIZACUM.HighByte;
+								HSIZACUM.HighByte = 0;
 
-								// TODO: Process pixel based on sprite type
-								ProcessPixel((ushort)(VIDADR.Value + (hpos + vpos * Suzy.SCREEN_WIDTH) / 2), pixelValue, hpos % 2 == 0);
-								//ProcessCollision((ushort)(COLLADR.Value + (hpos + vpos * Suzy.SCREEN_WIDTH) / 2), scb.SPRCOLL.Number, hpos % 2 == 0);
+								// Draw pixel
+								byte pixelValue = PenIndexPalette[pixelIndex];
 
-								hpos += horizontalIncrease;
+								for (int h = 0; h < pixelWidth; h++)
+								{
+									// Stop horizontal loop if outside of screen bounds
+									if (sprhpos >= 0 && sprhpos < Suzy.SCREEN_WIDTH)
+									{
+										// Process pixel based on sprite type
+										ProcessPixel((ushort)(VIDADR.Value + (sprhpos + sprvpos * Suzy.SCREEN_WIDTH) / 2), pixelValue, sprhpos % 2 == 0);
+										ProcessCollision((ushort)(COLLADR.Value + (sprhpos + sprvpos * Suzy.SCREEN_WIDTH) / 2), scb.SPRCOLL.Number, sprhpos % 2 == 0);
+									}
+									sprhpos += horizontalIncrease;
+								}
 							}
-							vpos += verticalIncrease;
 						}
-						sprhpos += horizontalIncrease * pixelWidth;
+						sprvpos += verticalIncrease;
 					}
-					scb.SPRDLINE.Value += SPRDOFF.Value;
-					//SPRVPOS.Value = (ushort)((short)SPRVPOS.Value + verticalIncrease * pixelHeight);
-					sprvpos += verticalIncrease * pixelHeight;
-
-					if (StretchingEnabled) scb.SPRHSIZ.Value += STRETCH.Value;
-					if (context.VStretch) scb.SPRVSIZ.Value += (ushort)(STRETCH.Value * pixelHeight);
-					if (TiltingEnabled) TILTACUM.Value += TILT.Value;
+					unpacker.MoveToNextLine((byte)(SPRDOFF.Value - 1));
 				}
+
+				// "The horizontal size of a sprite can be modified every time a scan line is processed. 
+				// This allows for 'stretching' a sprite and in conjunction with 'tilt' can be useful in creating 
+				// arbitrary polygons."
+				if (StretchingEnabled) scb.SPRHSIZ.Value += STRETCH.Value;
+
+				// "The vertical size of a sprite can be modified every time a scan line is processed. 
+				// This allows for 'stretching' a sprite vertically. The vertical stretch factor is the same 
+				// as the horizontal stretch factor.										
+				// "Vertical stretching can be enabled on a sprite by sprite basis."
+				if (context.VStretch) scb.SPRVSIZ.Value += (ushort)(STRETCH.Value * pixelHeight);
+
+				// "The horizontal position of a sprite can be modified every time a scan line is processed. 
+				// This allows for 'tilting' a sprite and in conjunction with 'stretch' can be useful in 
+				// creating arbitrary polygons."
+				if (TiltingEnabled) TILTACUM.Value += TILT.Value;
+
+				scb.SPRDLINE.Value += SPRDOFF.Value;
 
 				// Check if all quadrant rendering is done
 				if (SPRDOFF.Value == 0) break;
@@ -288,13 +305,13 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public void ProcessCollision(ushort address, byte pixel, bool left)
 		{
 			if (scb.SPRCOLL.DontCollide || context.DontCollide) return;
-			
+
 			switch (scb.SPRCTL0.SpriteType)
 			{
 				case SpriteTypes.BackgroundShadow:
 					if (pixel != 0x0E) WriteCollision(address, scb.SPRCOLL.Number, left);
 					break;
-				
+
 				case SpriteTypes.Boundary:
 				case SpriteTypes.Normal:
 					if (pixel != 0x00)
@@ -392,7 +409,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// TODO: Increase cycle count
 			//cycles_used += SPR_RDWR_CYC;
 			return value;
-		} 
+		}
 
 		private void WriteCollision(ushort address, byte pixel, bool left)
 		{
@@ -458,7 +475,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 				case ReloadableDepth.HVST:
 					TiltingEnabled = true;
-          // "(2 bytes) 16 bits of tilt value"
+					// "(2 bytes) 16 bits of tilt value"
 					TILT.Value = BitConverter.ToUInt16(memory, address + 6);
 					bytesRead += 2;
 					goto case ReloadableDepth.HVS;

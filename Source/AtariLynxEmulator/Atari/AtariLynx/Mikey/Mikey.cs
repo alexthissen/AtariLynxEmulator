@@ -221,6 +221,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 				// Make wakeup time next timer event if earlier than first timer
 				if (device.NextTimerEvent > device.Cpu.ScheduledWakeUpTime) device.NextTimerEvent = device.Cpu.ScheduledWakeUpTime;
 			}
+			//if (device.SystemClock.CompatibleCycleCount >= 0x627d982)
+			//  Trace.WriteLine(String.Format("Time={0:D12}, NextTimer={1:D12}", device.SystemClock.CompatibleCycleCount, device.NextTimerEvent));
 		}
 
 		public void Poke(ushort address, byte value)
@@ -272,10 +274,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 					// "Read is a poll, write will reset the int that corresponds to a set bit."
 					value ^= 0xff;
 					timerInterruptStatusRegister &= value;
-					
+
 					// TODO: Keith Wilkins has fix below for Championship Rally here. Is it still necessary?
 					//device.Cpu.SignalInterrupt(...)
-					//ForceTimerUpdate();
+					ForceTimerUpdate();
 					return;
 
 				case Mikey.Addresses.INTSET:
@@ -406,7 +408,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 				return;
 			}
 
-			Debug.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Mikey::Poke: Unknown address {0:X$} specified (value {1:X2}).", address,value));
+			if (address >= 0xFD20 && address <= 0xFD3F)
+				return;
+
+			Trace.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Mikey::Poke: Unknown address ${0:X4} specified (value={1:X2}).", address,value));
 		}
 
 		public byte Peek(ushort address)
@@ -433,6 +438,11 @@ namespace KillerApps.Emulation.Atari.Lynx
 						return timer.DynamicControlBits.ByteData;
 				}
 			}
+
+
+			// TODO: Fix when audio is really implemented
+			if (address >= 0xFD20 && address <= 0xFD3F)
+				return 0;
 
 			switch (address)
 			{
@@ -468,27 +478,27 @@ namespace KillerApps.Emulation.Atari.Lynx
 				case Mikey.Addresses.DISPADRH:
 				case Mikey.Addresses.SYSCTL1:
 				case Mikey.Addresses.DISPCTL:
-					Debug.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Mikey::Peek - Write-only address {0:X4} used.", address));
+					Debug.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Mikey::Peek - Write-only address ${0:X4} used.", address));
 					return 0xFF;
 
 				default:
 					break;
 			}
 
-			if (address >= Mikey.Addresses.BLUERED0)
+			if (address >= Mikey.Addresses.BLUERED0 && address <= Mikey.Addresses.BLUEREDF)
 			{
 				int index = address - Mikey.Addresses.BLUERED0;
 				return BlueRedColorMap[index];
 			}
 
-			if (address >= Mikey.Addresses.GREEN0)
+			if (address >= Mikey.Addresses.GREEN0 && address <= Mikey.Addresses.GREENF)
 			{
 				int index = address - Mikey.Addresses.GREEN0;
 				return GreenColorMap[index];
 			}
 
-			Debug.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Mikey::Peek -  Unknown address {0:X4} specified.", address));
-			return 0xff;
+			Trace.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Mikey::Peek -  Unknown address ${0:X4} specified.", address));
+			return 0x00;
 		}
 	}
 }

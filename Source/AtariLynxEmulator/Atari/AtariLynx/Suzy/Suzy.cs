@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using KillerApps.Emulation.Core;
 using System.Diagnostics;
-using KillerApps.Emulation.Atari.Lynx.Tooling;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
@@ -606,6 +605,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 					break;
 
 				default:
+					Trace.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Suzy::Poke: Unknown address ${0:X4} specified (value={1:X2}).", address, value));
 					break;
 			}
 		}
@@ -706,7 +706,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 				case Addresses.JOYSTICK:
 					// Set left-handedness first
-					JOYSTICK.LeftHanded = SPRSYS.LeftHanded;
 					value = JOYSTICK.Value;
 					break;
 
@@ -723,6 +722,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 					break;
 
 				default:
+					Trace.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Suzy::Peek -  Unknown address ${0:X4} specified.", address));
 					break;
 			}
 

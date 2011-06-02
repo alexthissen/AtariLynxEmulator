@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using KillerApps.Emulation.Atari.Lynx;
 using System.IO;
-using KillerApps.Emulation.Atari.Lynx.Tooling;
 
 namespace ConsoleClient
 {

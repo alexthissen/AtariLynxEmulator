@@ -7,14 +7,17 @@ namespace KillerApps.Emulation.Atari.Lynx
 {
 	public class TimerLogicFactory
 	{
-		public static ITimerLogic CreateTimerLogic(Timer owner, StaticTimerControl control)
+		public static ITimerLogic CreateTimerLogic(Timer owner, StaticTimerControl control, ITimerLogic currentTimerLogic)
 		{
 			if (control.SourcePeriod == ClockSelect.Linking)
 			{
 				return new LinkingTimerLogic(owner);
 			}
 
-			return new ClockedTimerLogic(owner);
+			// 
+			ClockedTimerLogic timer = new ClockedTimerLogic(owner);
+			timer.InitializeFrom(currentTimerLogic as ClockedTimerLogic);
+			return timer;
 		}
 	}
 }

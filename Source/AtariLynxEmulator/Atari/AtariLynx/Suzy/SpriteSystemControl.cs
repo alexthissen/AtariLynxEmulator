@@ -50,7 +50,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		// Read and write
 		public bool VStretch { get; set; } // "B4 = Vstretch. 1=stretch the v. 0 =Don't play with it, it will grow by itself."
-		public bool LeftHanded { get; set; } // "83 = Lefthand, 0=normal handed"
+		public bool LeftHanded { get; set; } // "B3 = Lefthand, 0=normal handed"
 
 		// "Continue sprite processing by setting the Sprite Process Start Bit. Either setting or 
 		// clearing the SPSB will clear this stop request."

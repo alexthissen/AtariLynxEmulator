@@ -11,6 +11,8 @@ namespace KillerApps.Emulation.Processors
 		/// Test and Reset Bit
 		/// </summary>
 		/// <remarks>
+		/// Logically AND together the complement of the value in the accumulator with the data at the 
+		/// effective address specified by the operand. Store the result at the memory location
 		/// TSB, like TRB, has the same effect on the Z flag that a BIT instruction does. 
 		/// Specifically, it is based on whether the result of a bitwise AND of the accumulator with the 
 		/// contents of the memory location specified in the operand is zero. 
@@ -19,8 +21,7 @@ namespace KillerApps.Emulation.Processors
 		public void TRB()
 		{
 			FetchData();
-			Data &= A;
-			UpdateZeroFlag(Data);
+			UpdateZeroFlag((byte)(Data & A));
 			Data &= (byte)(A ^ 0xff);
 			Memory.Poke(Address, Data);
 		}
@@ -29,6 +30,8 @@ namespace KillerApps.Emulation.Processors
 		/// Test and Set Bits
 		/// </summary>
 		/// <remarks>
+		/// Logically OR together the value in the accumulator with the data at the effective address 
+		/// specified by the operand. Store the result at the memory location.
 		/// TSB, like TRB, has the same effect on the Z flag that a BIT instruction does. 
 		/// Specifically, it is based on whether the result of a bitwise AND of the accumulator with the 
 		/// contents of the memory location specified in the operand is zero. 

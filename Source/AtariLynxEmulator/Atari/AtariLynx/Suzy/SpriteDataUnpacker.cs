@@ -55,11 +55,15 @@ namespace KillerApps.Emulation.Atari.Lynx
 			} 
 		}
 
+		public void MoveToNextLine(byte offsetToNextLine)
+		{
+			address += offsetToNextLine;
+		}
+
 		public IEnumerable<byte> PixelsInLine(byte offsetToNextLine)
 		{
 			// Transfer data to register for shifting
 			register.Initialize(new ArraySegment<byte>(data, address, offsetToNextLine));
-			address += offsetToNextLine;
 			
 			if (totallyLiteral)
 			{
