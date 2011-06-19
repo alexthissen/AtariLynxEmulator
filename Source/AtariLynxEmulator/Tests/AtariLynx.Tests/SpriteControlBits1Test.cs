@@ -52,7 +52,7 @@ namespace AtariLynx.Tests
     {
     	SpriteControlBits1 sprctl1 = new SpriteControlBits1(0x00);
 
-			Assert.IsTrue(sprctl1.ReloadPalette, "Palette should be marked for reload.");
+			Assert.IsFalse(sprctl1.ReusePalette, "Palette should be marked for reuse.");
 			Assert.IsFalse(sprctl1.SkipSprite, "Sprite should be marked as Skip.");
 			Assert.AreEqual<ReloadableDepth>(ReloadableDepth.None, sprctl1.ReloadableDepth, "Reloadable depth should be None.");
 			Assert.AreEqual<SizingAlgorithm>(SizingAlgorithm.Adder, sprctl1.SizingAlgorithm, "Sizing algorithm should be Adder.");
@@ -65,7 +65,7 @@ namespace AtariLynx.Tests
 		{
 			SpriteControlBits1 sprctl1 = new SpriteControlBits1(0xFF);
 
-			Assert.IsFalse(sprctl1.ReloadPalette, "Palette should be marked for reload.");
+			Assert.IsTrue(sprctl1.ReusePalette, "Palette should be marked for reload.");
 			Assert.IsTrue(sprctl1.SkipSprite, "Sprite should be marked as Skip.");
 			Assert.AreEqual<ReloadableDepth>(ReloadableDepth.HVST, sprctl1.ReloadableDepth, "Reloadable depth should be HSizeVSizeStretchTilt.");
 			Assert.AreEqual<SizingAlgorithm>(SizingAlgorithm.Shifter, sprctl1.SizingAlgorithm, "Sizing algorithm should be Shifter.");

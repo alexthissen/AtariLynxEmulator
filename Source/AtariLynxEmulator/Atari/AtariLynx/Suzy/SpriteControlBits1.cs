@@ -41,9 +41,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 		}
 
 		// "B3 = Palette re-load. 0=reload the palette, 1 use existing palette."
-		public bool ReloadPalette
+		public bool ReusePalette
 		{
-			get { return (ByteData & ReloadPaletteMask) != ReloadPaletteMask; }
+			get { return (ByteData & ReloadPaletteMask) == ReloadPaletteMask; }
 		}
 
 		// "The processing of an actual sprite can be 'skipped' on a sprite by sprite basis."

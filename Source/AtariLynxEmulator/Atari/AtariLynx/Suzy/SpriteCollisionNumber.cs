@@ -9,6 +9,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 	[Serializable]
 	public class SpriteCollisionNumber
 	{
+		// "The other 3 are currently ignored by the hardware, but ought to be set to '0' for future compatibility."
 		// "B7,B6 = 0"
 		// "B4 = 0"
 		public byte ByteData 
@@ -26,13 +27,15 @@ namespace KillerApps.Emulation.Atari.Lynx
 			this.ByteData = sprcoll;
 		}
 
+		// "One of the upper 4 bits is used by the hardware to disable collision activity for this sprite."
 		// "B5 = dont collide. 1=dont collide with this sprite."
 		public bool DontCollide 
 		{
 			get { return (ByteData & DontCollideMask) == DontCollideMask; }
 			set { if (value) ByteData |= DontCollideMask; else ByteData &= (DontCollideMask ^ 0xFF); }
 		}
-		
+
+		// "The software must assign this collision number for each use of each sprite."
 		// "B3,B2,B1,B0 = number"
 		public byte Number 
 		{ 
@@ -45,6 +48,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 		}
 
 		private const byte DontCollideMask = 0x20;
-private  byte byteData;
+		private byte byteData;
 	}
 }

@@ -126,7 +126,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 						case SpriteTypes.Shadow:
 							{
 								ushort collisionDepository = (ushort)(SCBADR.Value + context.COLLOFF.Value);
-								ramMemory[collisionDepository] = highestCollision;
+								videoMemory[collisionDepository] = highestCollision;
 							}
 							break;
 						default:
@@ -173,7 +173,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 				scb.SPRDLINE.Value = PROCADR.Value;
 
 				// Fix squashed look by offsetting vertical offset by one
-				if (verticalIncrease != scb.StartQuadrant.VerticalIncrease)
+				if (quadrant.VerticalIncrease != scb.StartQuadrant.VerticalIncrease)
 					sprvpos += verticalIncrease;
 
 				// Loop through all lines
@@ -195,7 +195,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 						// Stop vertical loop if outside of screen bounds
 						if (verticalIncrease == 1 && sprvpos >= Suzy.SCREEN_HEIGHT) break;
 						if (verticalIncrease == -1 && sprvpos < 0) break;
-						//if (sprvpos < 0 || sprvpos >= Suzy.SCREEN_HEIGHT) break;
 
 						if (sprvpos >= 0 && sprvpos < Suzy.SCREEN_HEIGHT)
 						{
@@ -205,7 +204,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 							int sprhpos = (short)scb.HPOSSTRT.Value - (short)context.HOFF.Value;
 
 							// Fix squashed look by offsetting 1 pixel on other directions
-							if (horizontalIncrease != scb.StartQuadrant.HorizontalIncrease)
+							if (quadrant.HorizontalIncrease != scb.StartQuadrant.HorizontalIncrease)
 								sprhpos += horizontalIncrease;
 
 							// Draw row of pixels
@@ -232,27 +231,27 @@ namespace KillerApps.Emulation.Atari.Lynx
 							}
 						}
 						sprvpos += verticalIncrease;
+
+						// "The horizontal size of a sprite can be modified every time a scan line is processed. 
+						// This allows for 'stretching' a sprite and in conjunction with 'tilt' can be useful in creating 
+						// arbitrary polygons."
+						if (StretchingEnabled) scb.SPRHSIZ.Value += STRETCH.Value;
+
+						// "The horizontal position of a sprite can be modified every time a scan line is processed. 
+						// This allows for 'tilting' a sprite and in conjunction with 'stretch' can be useful in 
+						// creating arbitrary polygons."
+						if (TiltingEnabled) TILTACUM.Value += TILT.Value;
 					}
+
 					unpacker.MoveToNextLine((byte)(SPRDOFF.Value - 1));
+					scb.SPRDLINE.Value += SPRDOFF.Value;
+
+					// "The vertical size of a sprite can be modified every time a scan line is processed. 
+					// This allows for 'stretching' a sprite vertically. The vertical stretch factor is the same 
+					// as the horizontal stretch factor.										
+					// "Vertical stretching can be enabled on a sprite by sprite basis."
+					if (context.VStretch) scb.SPRVSIZ.Value += (ushort)(STRETCH.Value * pixelHeight);
 				}
-
-				// "The horizontal size of a sprite can be modified every time a scan line is processed. 
-				// This allows for 'stretching' a sprite and in conjunction with 'tilt' can be useful in creating 
-				// arbitrary polygons."
-				if (StretchingEnabled) scb.SPRHSIZ.Value += STRETCH.Value;
-
-				// "The vertical size of a sprite can be modified every time a scan line is processed. 
-				// This allows for 'stretching' a sprite vertically. The vertical stretch factor is the same 
-				// as the horizontal stretch factor.										
-				// "Vertical stretching can be enabled on a sprite by sprite basis."
-				if (context.VStretch) scb.SPRVSIZ.Value += (ushort)(STRETCH.Value * pixelHeight);
-
-				// "The horizontal position of a sprite can be modified every time a scan line is processed. 
-				// This allows for 'tilting' a sprite and in conjunction with 'stretch' can be useful in 
-				// creating arbitrary polygons."
-				if (TiltingEnabled) TILTACUM.Value += TILT.Value;
-
-				scb.SPRDLINE.Value += SPRDOFF.Value;
 
 				// Check if all quadrant rendering is done
 				if (SPRDOFF.Value == 0) break;
@@ -285,18 +284,18 @@ namespace KillerApps.Emulation.Atari.Lynx
 				// "(2) 16 bits of starting V Pos"
 				scb.VPOSSTRT.Value = BitConverter.ToUInt16(ramMemory, address); address += 2;
 				address += ParseReloadableDepth(ramMemory, address);
-			}
 
-			// Read pen palette if necessary
-			// "The 8 bytes of pen palette are treated by the hardware as a separate block of data from 
-			// the previous group of bytes in the SCB. This means that the reloadability of some of the 
-			// previous bytes does not affect the reusability of the pen palette. 
-			// In addition, this means that when some of the bytes are not reloaded, the length of the 
-			// SCB will be smaller by the number of bytes not used."
-			if (scb.SPRCTL1.ReloadPalette)
-			{
-				ReloadPalette(ramMemory, address);
-				address += 8;
+				// Read pen palette if necessary
+				// "The 8 bytes of pen palette are treated by the hardware as a separate block of data from 
+				// the previous group of bytes in the SCB. This means that the reloadability of some of the 
+				// previous bytes does not affect the reusability of the pen palette. 
+				// In addition, this means that when some of the bytes are not reloaded, the length of the 
+				// SCB will be smaller by the number of bytes not used."
+				if (!scb.SPRCTL1.ReusePalette)
+				{
+					ReloadPalette(ramMemory, address);
+					address += 8;
+				}
 			}
 
 			return (address - startAddress) * Suzy.SPRITE_READWRITE_CYCLE;
@@ -468,6 +467,11 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private ushort ParseReloadableDepth(byte[] memory, ushort address)
 		{
 			ushort bytesRead = 0;
+			TiltingEnabled = StretchingEnabled = SizingEnabled = false;
+			TILT.Value = 0;
+			STRETCH.Value = 0;
+			//scb.SPRHSIZ.Value = scb.SPRVSIZ.Value = 0;
+
 			switch (scb.SPRCTL1.ReloadableDepth)
 			{
 				case ReloadableDepth.None:
