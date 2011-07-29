@@ -7,7 +7,6 @@ using KillerApps.Emulation.Core;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
-	[Serializable]
 	public class SpriteControlBlock
 	{
 		public static Quadrant[] Quadrants = new Quadrant[4]

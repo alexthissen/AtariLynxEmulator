@@ -51,7 +51,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private SpriteControlBlock SCB = null;
 		private SpriteEngine Engine = null;
 
-		private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
+		//private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
 
 		public Suzy(ILynxDevice lynx)
 		{
@@ -127,7 +127,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 				{
 					// "... and an accumulator overflow bit."
 					SPRSYS.LastCarry = true;
-					Debug.WriteLineIf(GeneralSwitch.TraceWarning, "Suzy::Multiply16By16() - Overflow detected");
+					//Debug.WriteLineIf(GeneralSwitch.TraceWarning, "Suzy::Multiply16By16() - Overflow detected");
 				}
 				else
 				{
@@ -199,7 +199,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			ushort NP = (ushort)((MathNP[1] << 8) + MathNP[0]);
 			if (NP != 0)
 			{
-				Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::Divide32By16() - Unsigned math");
+				//Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::Divide32By16() - Unsigned math");
 				uint ABCD, JKLM;
 				uint EFGH = BitConverter.ToUInt32(MathEFGH, 0);
 				ABCD = EFGH / NP;
@@ -215,7 +215,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			}
 			else
 			{
-				Debug.WriteLineIf(GeneralSwitch.TraceWarning, "Suzy::Divide32By16() - Divide by zero detected");
+				//Debug.WriteLineIf(GeneralSwitch.TraceWarning, "Suzy::Divide32By16() - Divide by zero detected");
 
 				// "The number in the dividend as a result of a divide by zero is 'FFFFFFFF (BigNum)."
 				for (int index = 0; index < 4; index++)
@@ -244,7 +244,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public ulong RenderSprites()
 		{
-			Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::RenderSprites");
+			//Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::RenderSprites");
 
 			if (!SUZYBUSEN.BusEnabled || !SPRGO.SpriteProcessEnabled) return 0;
 			
@@ -471,7 +471,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 					// Starting numbers meaning AB and CD
 					if (SPRSYS.SignedMath)
 					{
-						Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::Multiply16By16 - Signed math multiply operation.");
+						//Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::Multiply16By16 - Signed math multiply operation.");
 
 						// "When signed multiply is enabled, the hardware will convert the number provided by the CPU 
 						// into a positive number and save the sign of the original number."
@@ -503,7 +503,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 					// Starting numbers meaning AB and CD
 					if (SPRSYS.SignedMath)
 					{
-						Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::Multiply16By16 - Signed math multiply operation.");
+						//Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::Multiply16By16 - Signed math multiply operation.");
 
 						// "When signed multiply is enabled, the hardware will convert the number provided by the CPU 
 						// into a positive number and save the sign of the original number."
@@ -605,7 +605,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 					break;
 
 				default:
-					Trace.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Suzy::Poke: Unknown address ${0:X4} specified (value={1:X2}).", address, value));
+					//Trace.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Suzy::Poke: Unknown address ${0:X4} specified (value={1:X2}).", address, value));
 					break;
 			}
 		}
@@ -714,7 +714,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 				case Addresses.SPRCTL0:
 				case Addresses.SPRCTL1:
 				case Addresses.SUZYBUSEN:
-					Debug.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Suzy::Peek - Peeking at write-only address ${0:X4}", address));
+					//Debug.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Suzy::Peek - Peeking at write-only address ${0:X4}", address));
 					break;
 
 				case Addresses.SPRSYS:
@@ -722,7 +722,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 					break;
 
 				default:
-					Trace.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Suzy::Peek -  Unknown address ${0:X4} specified.", address));
+					//Trace.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Suzy::Peek -  Unknown address ${0:X4} specified.", address));
 					break;
 			}
 
@@ -746,7 +746,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			context.HSIZOFF.Value = 0x007f;
 			context.VSIZOFF.Value = 0x007f;
 
-			Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::Reset");
+			//Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::Reset");
 		}
 	}
 }

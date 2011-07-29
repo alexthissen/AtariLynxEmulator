@@ -5,7 +5,6 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using KillerApps.Emulation.Atari.Lynx;
-using KillerApps.Emulation.Atari.Lynx.Tooling;
 using KillerApps.Emulation.Core;
 using KillerApps.Emulation.Processors;
 using System.Runtime.Serialization.Formatters.Binary;

@@ -50,7 +50,7 @@ namespace AtariLynx.Tests
 		{
 			bootRomImageStream = new FileStream(Path.Combine(TestContext.TestDeploymentDir, BootRomImageFilePath), FileMode.Open, FileAccess.Read);
 			LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
-			cartridge = romImage.LoadCart(CartRomImageFilePath); 
+			//cartridge = romImage.LoadCart(CartRomImageFilePath); 
 		}
 
 		//

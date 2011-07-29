@@ -63,8 +63,8 @@ namespace KillerApps.Emulation.Processors
 		protected const ulong MemoryReadCycle = 5;
 		protected const ulong MemoryWriteCycle = 5;
 
-		private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
 #if DEVELOP
+		private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
 		Disassembler6500 disassembler = new Disassembler6500();
 		StringBuilder builder = new StringBuilder();
 #endif
@@ -163,7 +163,6 @@ namespace KillerApps.Emulation.Processors
 			// Lookup on timings that Keith Wilkins has made
 			SystemClock.CompatibleCycleCount += 1 + timings[Opcode] * MemoryReadCycle;
 
-			if (test) Trace.WriteLine(String.Format("PC={0:X4}, Opcode={1:X2}, A={2:X2}, X={3:X2}, Y={4:X2}", PC, Opcode, A, X, Y));
 			PC++;
 			ExecuteOpcode();
 
@@ -455,7 +454,5 @@ namespace KillerApps.Emulation.Processors
 			1, 5, 1, 1, 2, 2, 4, 4, 1, 1, 1, 1, 3, 3, 5, 4,
 			1, 4, 4, 1, 3, 3, 5, 4, 1, 3, 3, 1, 3, 3, 6, 4
 		};
-
-		private bool test = false;
 	}
 }

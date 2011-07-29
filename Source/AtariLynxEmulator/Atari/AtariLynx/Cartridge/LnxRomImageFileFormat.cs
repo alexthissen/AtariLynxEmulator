@@ -33,7 +33,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		{
 			RomCart cart = null;
 
-			using (BinaryReader reader = new BinaryReader(stream, Encoding.ASCII))
+			using (BinaryReader reader = new BinaryReader(stream, Encoding.UTF8))
 			{
 				// TODO: Handle incorrect file format more elegantly
 
@@ -43,8 +43,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 				Bank0Size = reader.ReadUInt16();
 				Bank1Size = reader.ReadUInt16();
 				Version = reader.ReadUInt16();
-				Title = Encoding.ASCII.GetString(reader.ReadBytes(TitleLength)).TrimEnd('\0');
-				Manufacturer = Encoding.ASCII.GetString(reader.ReadBytes(ManufacturerLength)).TrimEnd('\0');
+				Title = Encoding.UTF8.GetString(reader.ReadBytes(TitleLength), 0, TitleLength).TrimEnd('\0');
+				Manufacturer = Encoding.UTF8.GetString(reader.ReadBytes(ManufacturerLength), 0, ManufacturerLength).TrimEnd('\0');
 				Rotation = (CartRotation)reader.ReadByte();
 				Spare = reader.ReadBytes(5);
 
@@ -55,16 +55,16 @@ namespace KillerApps.Emulation.Atari.Lynx
 			return cart;
 		}
 
-		public RomCart LoadCart(string location)
-		{
-			RomCart cart = null;
+		//public RomCart LoadCart(string location)
+		//{
+		//  RomCart cart = null;
 
-			using (FileStream stream = new FileStream(location, FileMode.Open, FileAccess.Read))
-			{
-				cart = LoadCart(stream);
-			}
+		//  using (FileStream stream = new FileStream(location, FileMode.Open, FileAccess.Read))
+		//  {
+		//    cart = LoadCart(stream);
+		//  }
 
-			return cart;
-		}
+		//  return cart;
+		//}
 	}
 }

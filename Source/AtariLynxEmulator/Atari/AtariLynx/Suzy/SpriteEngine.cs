@@ -5,14 +5,9 @@ using System.Text;
 using System.Diagnostics;
 using KillerApps.Emulation.Core;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Serialization;
-using KillerApps.Emulation.Atari.Lynx.Tooling;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
-	[DebuggerVisualizer(typeof(SuzyVisualizer))]
-	[Serializable]
 	public class SpriteEngine
 	{
 		internal Word VIDADR, COLLADR;
@@ -43,9 +38,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		// "... several 8 bit control registers, a 16 bit wide sprite control block register set"
 		private SpriteControlBlock scb;
 
-		[NonSerialized]
 		private SpriteDataUnpacker unpacker;
-		[NonSerialized]
 		private ShiftRegister shifter; // "a 12 bit shift register for unpacking the data"
 		private SpriteContext context;
 		private byte highestCollision;
@@ -109,12 +102,14 @@ namespace KillerApps.Emulation.Atari.Lynx
 				// "Each occurrence of a sprite on the screen requires 1 SCB."
 				cyclesUsed += InitializeFromSpriteDataStructure(SCBADR.Value);
 
+				// "At the start of painting a particular sprite, a hardware register called fred is cleared to 0."
 				highestCollision = 0;
 
 				RenderSingleSprite();
 
-				// Write the collision depositary if required
-
+				// "At the end of the processing of this particular sprite, the number in fred will be written out to the 
+				// collision depository. If more than one collideable object was hit, the number in fred will be the 
+				// HIGHEST of all of the collision numbers detected."
 				if (!this.SpriteControlBlock.SPRCOLL.DontCollide && !this.context.DontCollide)
 				{
 					switch (SpriteControlBlock.SPRCTL0.SpriteType)
@@ -303,22 +298,30 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public void ProcessCollision(ushort address, byte pixel, bool left)
 		{
+			if (address < context.COLLBAS.Value || address >= (context.COLLBAS.Value + 160 * 102 / 2))
+				throw new LynxException("Writing outside of video memory area.");
+
 			if (scb.SPRCOLL.DontCollide || context.DontCollide) return;
 
 			switch (scb.SPRCTL0.SpriteType)
 			{
 				case SpriteTypes.BackgroundShadow:
-					if (pixel != 0x0E) WriteCollision(address, scb.SPRCOLL.Number, left);
+					if (!scb.SPRCOLL.DontCollide && !context.DontCollide && pixel != 0x0E)
+						WriteCollision(address, scb.SPRCOLL.Number, left);
 					break;
 
 				case SpriteTypes.Boundary:
 				case SpriteTypes.Normal:
 					if (pixel != 0x00)
 					{
-						// Read collision and set collision number if necessary
-						byte collision = ReadPixel(address, left);
+						byte collision = ReadCollision(address, left);
+
+						// "In the course of painting this particular sprite, as each pixel is painted, the corresponding 
+						// 'cell' in the collision buffer is read (actually done in bursts of 8 pixels). 
+						// If the number read from the collision buffer cell is larger than the number currently in fred, ..."
 						if (collision > highestCollision)
 						{
+							// "... then this larger number will be stored in fred."
 							highestCollision = collision;
 						}
 						WriteCollision(address, scb.SPRCOLL.Number, left);
@@ -326,12 +329,27 @@ namespace KillerApps.Emulation.Atari.Lynx
 					break;
 
 				case SpriteTypes.ExclusiveOrShadow:
+					if (pixel != 0x00 && pixel != 0x0E)
+					{
+						if (!scb.SPRCOLL.DontCollide && !context.DontCollide && pixel != 0x0E)
+						{
+							// Read collision and set collision number if necessary
+							byte collision = ReadCollision(address, left);
+							if (collision > highestCollision)
+							{
+								highestCollision = collision;
+							}
+							WriteCollision(address, scb.SPRCOLL.Number, left);
+						}
+					}
+					break;
+
 				case SpriteTypes.Shadow:
 				case SpriteTypes.BoundaryShadow:
 					if (pixel != 0x00 && pixel != 0x0E)
 					{
 						// Read collision and set collision number if necessary
-						byte collision = ReadPixel(address, left);
+						byte collision = ReadCollision(address, left);
 						if (collision > highestCollision)
 						{
 							highestCollision = collision;
@@ -345,7 +363,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 				default:
 					break;
 			}
-
 		}
 
 		public void ProcessPixel(ushort address, byte pixel, bool left)
@@ -393,6 +410,31 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		private byte ReadPixel(ushort address, bool left)
 		{
+			if (address < context.VIDBAS.Value || address >= (context.VIDBAS.Value + 160 * 102 / 2))
+				throw new LynxException("Writing outside of video memory area.");
+
+			byte value = videoMemory[address];
+			if (left)
+			{
+				// Upper nibble screen read
+				value >>= 4;
+			}
+			else
+			{
+				// Lower nibble screen read
+				value &= 0x0f;
+			}
+
+			// TODO: Increase cycle count
+			//cycles_used += SPR_RDWR_CYC;
+			return value;
+		}
+
+		private byte ReadCollision(ushort address, bool left)
+		{
+			if (address < context.COLLBAS.Value || address >= (context.COLLBAS.Value + 160 * 102 / 2))
+				throw new LynxException("Writing outside of video memory area.");
+
 			byte value = videoMemory[address];
 			if (left)
 			{

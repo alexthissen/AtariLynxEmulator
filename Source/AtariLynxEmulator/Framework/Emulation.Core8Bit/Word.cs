@@ -8,15 +8,22 @@ using System.Diagnostics;
 namespace KillerApps.Emulation.Core
 {
 	[DebuggerDisplay("Word ({Value})")]
-	[StructLayout(LayoutKind.Explicit)]
-	[Serializable]
 	public struct Word
 	{
-		[FieldOffset(0)]
-		public ushort Value;
-		[FieldOffset(0)]
+		public ushort Value
+		{
+			get 
+			{
+				return (ushort)((HighByte << 8) + LowByte); 
+			}
+			set
+			{
+				LowByte = (byte)(value & 0x00FF);
+				HighByte = (byte)((value & 0xFF00) >> 8);
+			}
+		}
+
 		public byte LowByte;
-		[FieldOffset(1)]
 		public byte HighByte;
 	}
 }

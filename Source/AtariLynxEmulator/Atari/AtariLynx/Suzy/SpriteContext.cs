@@ -6,7 +6,6 @@ using KillerApps.Emulation.Core;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
-	[Serializable]
 	public class SpriteContext
 	{
 		public Word HOFF, VOFF;

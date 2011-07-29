@@ -34,7 +34,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		// Timers
 		public Timer[] Timers = new Timer[8];
 		
-		private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
+		//private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
 
 		private const byte Timer0Mask = 0x01; // "B0 = timer 0 (horizontal line timer)"
 		private const byte Timer1Mask = 0x02; // "B1 = timer 1"
@@ -104,7 +104,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 				timerInterruptStatusRegister |= e.InterruptMask;
 
 				// Trigger a maskable interrupt
-				Debug.WriteLineIf(GeneralSwitch.TraceInfo, String.Format("Mikie::Update() - Timer IRQ Triggered at {0:X8}", device.SystemClock.CompatibleCycleCount));
+				//Debug.WriteLineIf(GeneralSwitch.TraceInfo, String.Format("Mikie::Update() - Timer IRQ Triggered at {0:X8}", device.SystemClock.CompatibleCycleCount));
 				device.Cpu.SignalInterrupt(InterruptType.Irq);
 			}
 		}
@@ -205,7 +205,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public void Update() 
 		{
-			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, "Mikey::Update");
+			//Debug.WriteLineIf(GeneralSwitch.TraceVerbose, "Mikey::Update");
 			foreach (Timer timer in Timers)
 			{
 				timer.Update(device.SystemClock.CompatibleCycleCount);
@@ -303,8 +303,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 				case Mikey.Addresses.IODAT:
 					IODAT.ByteData = value;
 
-					Debug.WriteLineIf(((IODIR & 0x08) == 0) & GeneralSwitch.TraceInfo, "MikeyChipsetPoke(IODAT): Rest is not set to output.");
-					Debug.WriteLineIf(((IODIR & 0x02) == 0) & GeneralSwitch.TraceInfo, "MikeyChipsetPoke(IODAT): CartAddressData is not set to output.");
+					//Debug.WriteLineIf(((IODIR & 0x08) == 0) & GeneralSwitch.TraceInfo, "MikeyChipsetPoke(IODAT): Rest is not set to output.");
+					//Debug.WriteLineIf(((IODIR & 0x02) == 0) & GeneralSwitch.TraceInfo, "MikeyChipsetPoke(IODAT): CartAddressData is not set to output.");
 
 					// "One is that it is the data pin for the shifter that holds the cartridge address."
 					device.Cartridge.CartAddressData(IODAT.CartAddressData);
@@ -378,7 +378,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 				case Mikey.Addresses.MAGRDY1:
 				case Mikey.Addresses.AUDIN:
 				case Mikey.Addresses.MIKEYHREV:
-					Debug.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Mikey::Poke - Read-only address {0:X4} used (value {1:X2}).", address, value));
+					//Debug.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Mikey::Poke - Read-only address {0:X4} used (value {1:X2}).", address, value));
 					break;
 
 				default:
@@ -411,7 +411,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			if (address >= 0xFD20 && address <= 0xFD3F)
 				return;
 
-			Trace.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Mikey::Poke: Unknown address ${0:X4} specified (value={1:X2}).", address,value));
+			//Trace.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Mikey::Poke: Unknown address ${0:X4} specified (value={1:X2}).", address,value));
 		}
 
 		public byte Peek(ushort address)
@@ -478,7 +478,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 				case Mikey.Addresses.DISPADRH:
 				case Mikey.Addresses.SYSCTL1:
 				case Mikey.Addresses.DISPCTL:
-					Debug.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Mikey::Peek - Write-only address ${0:X4} used.", address));
+					//Debug.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Mikey::Peek - Write-only address ${0:X4} used.", address));
 					return 0xFF;
 
 				default:
@@ -497,7 +497,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 				return GreenColorMap[index];
 			}
 
-			Trace.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Mikey::Peek -  Unknown address ${0:X4} specified.", address));
+			//Trace.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Mikey::Peek -  Unknown address ${0:X4} specified.", address));
 			return 0x00;
 		}
 	}

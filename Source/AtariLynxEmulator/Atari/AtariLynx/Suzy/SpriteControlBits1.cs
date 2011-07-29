@@ -6,7 +6,6 @@ using System.Diagnostics;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
-	[Serializable]
 	public class SpriteControlBits1
 	{
 		public byte ByteData { get; set; }
@@ -29,7 +28,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			get 
 			{
 				SizingAlgorithm algorithm = ((ByteData & SizingAlgorithmMask) == SizingAlgorithmMask) ? SizingAlgorithm.Shifter : SizingAlgorithm.Adder;
-				Debug.WriteLineIf(algorithm == SizingAlgorithm.Shifter, "Warning: Shifter algorithm is broken.");
+				//Debug.WriteLineIf(algorithm == SizingAlgorithm.Shifter, "Warning: Shifter algorithm is broken.");
 				return algorithm;
 			}
 		}

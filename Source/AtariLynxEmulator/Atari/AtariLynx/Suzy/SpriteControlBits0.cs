@@ -5,7 +5,6 @@ using System.Text;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
-	[Serializable]
 	public class SpriteControlBits0
 	{
 		public SpriteControlBits0(byte sprctl0)

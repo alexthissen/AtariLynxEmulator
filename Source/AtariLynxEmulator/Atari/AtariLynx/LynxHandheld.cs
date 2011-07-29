@@ -28,7 +28,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public ulong NextTimerEvent { get; set; }
 		public bool NewVideoFrameAvailable { get; set; }
 
-		private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
+		//private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
 
 		public void Initialize()
 		{
@@ -89,12 +89,12 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// Mikey is only source of interrupts. It contains all timers (regular, audio and UART)
 			if (SystemClock.CompatibleCycleCount >= NextTimerEvent) 
 				Mikey.Update();
-			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, "LynxHandheld::GenerateInterrupts");
+			//Debug.WriteLineIf(GeneralSwitch.TraceVerbose, "LynxHandheld::GenerateInterrupts");
 		}
 
 		private void SynchronizeTime()
 		{
-			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, String.Format("LynxHandheld::SynchronizeTime: Current time is {0}", SystemClock.CompatibleCycleCount));
+			//Debug.WriteLineIf(GeneralSwitch.TraceVerbose, String.Format("LynxHandheld::SynchronizeTime: Current time is {0}", SystemClock.CompatibleCycleCount));
 		}
 		
 		public void UpdateJoystickState(JoystickStates state)

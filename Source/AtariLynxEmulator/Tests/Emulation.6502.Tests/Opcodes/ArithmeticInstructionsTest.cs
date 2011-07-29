@@ -69,7 +69,47 @@ namespace KillerApps.Emulation.Processors.Tests
 		}
 
 		[TestMethod]
-		public void ADCShouldSetZeroIfAccZero()
+		public void ADCShouldAddCorrectlyForDecimal()
+		{
+			cpu.A = 0x09;
+			cpu.C = true;
+			cpu.D = true;
+			byte[] instructions = new byte[]
+				{
+					0x69, 0x02 // ADC #$20
+				};
+			InitializeMemory(instructions);
+
+			//Act
+			cpu.Execute(1);
+
+			// Assert
+			Assert.AreEqual<byte>(0x12, cpu.A, "Accumulator should contain original value + memory + carry flag (if set).");
+			Assert.IsFalse(cpu.C, "Carry flag should only be set by ADC if overflow in bit 7.");			
+		}
+
+		[TestMethod]
+		public void ADCShouldOverflowCorrectlyForDecimal()
+		{
+			cpu.A = 0x90;
+			cpu.C = false;
+			cpu.D = true;
+			byte[] instructions = new byte[]
+				{
+					0x69, 0x20 // ADC #$20
+				};
+			InitializeMemory(instructions);
+
+			//Act
+			cpu.Execute(1);
+
+			// Assert
+			Assert.AreEqual<byte>(0x10, cpu.A, "Accumulator should contain original value + memory + carry flag (if set).");
+			Assert.IsTrue(cpu.C, "Carry flag should only be set by ADC if overflow in bit 7.");
+		}
+
+		[TestMethod]
+		public void ADCShouldSetZeroIfAccumulatorZero()
 		{
 			cpu.A = 0x00;
 			cpu.Z = false;
@@ -84,7 +124,7 @@ namespace KillerApps.Emulation.Processors.Tests
 
 			// Assert
 			Assert.AreEqual<byte>(0x00, cpu.A, "Accumulator should contain original value + memory + carry flag (if set).");
-			Assert.IsTrue(cpu.Z, "Zero flag should be set by ADC if Acc is zero after addition.");
+			Assert.IsTrue(cpu.Z, "Zero flag should be set by ADC if accumulator is zero after addition.");
 		}
 
 		[TestMethod]

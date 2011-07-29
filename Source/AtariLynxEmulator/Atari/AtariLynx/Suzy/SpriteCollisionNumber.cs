@@ -6,7 +6,6 @@ using System.Diagnostics;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
-	[Serializable]
 	public class SpriteCollisionNumber
 	{
 		// "The other 3 are currently ignored by the hardware, but ought to be set to '0' for future compatibility."
@@ -42,7 +41,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			get { return (byte)(ByteData & 0x0f); }
 			set 
 			{
-				Debug.WriteLineIf(value > 0x0f, "Collision number should be 0 to 15.");
+				//Debug.WriteLineIf(value > 0x0f, "Collision number should be 0 to 15.");
 				ByteData |= (byte)(value & 0x0f);
 			}
 		}

@@ -60,6 +60,7 @@
     <Compile Include="Opcodes\StackInstructionsTest.cs" />
     <Compile Include="Opcodes\FlagInstructionsTest.cs" />
     <Compile Include="Opcodes\SystemFunctionsTest.cs" />
+    <Compile Include="WordTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Framework\Emulation.6502\Emulation.6502.csproj">

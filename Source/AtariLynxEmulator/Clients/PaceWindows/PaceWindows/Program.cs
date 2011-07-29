@@ -1,6 +1,6 @@
 using System;
 
-namespace PaceWindows
+namespace KillerApps.Gaming.Atari
 {
 #if WINDOWS || XBOX
     static class Program
@@ -10,7 +10,7 @@ namespace PaceWindows
         /// </summary>
         static void Main(string[] args)
         {
-            using (PaceGame game = new PaceGame())
+            using (PcesGame game = new PcesGame())
             {
                 game.Run();
             }

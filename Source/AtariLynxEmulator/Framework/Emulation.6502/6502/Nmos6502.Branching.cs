@@ -22,7 +22,7 @@ namespace KillerApps.Emulation.Processors
 				//SystemClock.CycleCount += MemoryReadCycle;
 				PC++;
 				PC = (ushort)(PC + offset);
-				Debug.WriteLineIf(GeneralSwitch.TraceInfo, String.Format("BCC taking branch to ${0:X4}", PC));
+				//Debug.WriteLineIf(GeneralSwitch.TraceInfo, String.Format("BCC taking branch to ${0:X4}", PC));
 			}
 			else
 			{
@@ -46,7 +46,7 @@ namespace KillerApps.Emulation.Processors
 				//SystemClock.CycleCount += MemoryReadCycle;
 				PC++;
 				PC = (ushort)(PC + offset);
-				Debug.WriteLineIf(GeneralSwitch.TraceInfo, String.Format("BCS taking branch to ${0:X4}", PC));
+				//Debug.WriteLineIf(GeneralSwitch.TraceInfo, String.Format("BCS taking branch to ${0:X4}", PC));
 			}
 			else
 			{
@@ -69,7 +69,7 @@ namespace KillerApps.Emulation.Processors
 				//SystemClock.CycleCount += MemoryReadCycle;
 				PC++;
 				PC = (ushort)(PC + offset);
-				Debug.WriteLineIf(GeneralSwitch.TraceInfo, String.Format("BEQ taking branch to ${0:X4}", PC));
+				//Debug.WriteLineIf(GeneralSwitch.TraceInfo, String.Format("BEQ taking branch to ${0:X4}", PC));
 			}
 			else
 			{
@@ -89,7 +89,7 @@ namespace KillerApps.Emulation.Processors
 				//SystemClock.CycleCount += MemoryReadCycle;
 				PC++;
 				PC = (ushort)(PC + offset);
-				Debug.WriteLineIf(GeneralSwitch.TraceInfo, String.Format("BMI taking branch to ${0:X4}", PC));
+				//Debug.WriteLineIf(GeneralSwitch.TraceInfo, String.Format("BMI taking branch to ${0:X4}", PC));
 			}
 			else
 			{
@@ -112,7 +112,7 @@ namespace KillerApps.Emulation.Processors
 				sbyte offset = (sbyte)Memory.Peek(PC);
 				PC++;
 				PC = (ushort)(PC + offset);
-				Debug.WriteLineIf(GeneralSwitch.TraceInfo, String.Format("BNE taking branch to ${0:X4}", PC));
+				//Debug.WriteLineIf(GeneralSwitch.TraceInfo, String.Format("BNE taking branch to ${0:X4}", PC));
 			}
 			else
 			{
@@ -136,7 +136,7 @@ namespace KillerApps.Emulation.Processors
 				//SystemClock.CycleCount += MemoryReadCycle;
 				PC++;
 				PC = (ushort)(PC + offset);
-				Debug.WriteLineIf(GeneralSwitch.TraceInfo, String.Format("BPL taking branch to ${0:X4}", PC));
+				//Debug.WriteLineIf(GeneralSwitch.TraceInfo, String.Format("BPL taking branch to ${0:X4}", PC));
 			}
 			else
 			{
@@ -160,7 +160,7 @@ namespace KillerApps.Emulation.Processors
 				//SystemClock.CycleCount += MemoryReadCycle;
 				PC++;
 				PC = (ushort)(PC + offset);
-				Debug.WriteLineIf(GeneralSwitch.TraceInfo, String.Format("BVC taking branch to ${0:X4}", PC));
+				//Debug.WriteLineIf(GeneralSwitch.TraceInfo, String.Format("BVC taking branch to ${0:X4}", PC));
 			}
 			else
 			{
@@ -184,7 +184,7 @@ namespace KillerApps.Emulation.Processors
 				//SystemClock.CycleCount += MemoryReadCycle;
 				PC++;
 				PC = (ushort)(PC + offset);
-				Debug.WriteLineIf(GeneralSwitch.TraceInfo, String.Format("BVS taking branch to ${0:X4}", PC));
+				//Debug.WriteLineIf(GeneralSwitch.TraceInfo, String.Format("BVS taking branch to ${0:X4}", PC));
 			}
 			else
 			{

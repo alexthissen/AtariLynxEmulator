@@ -34,7 +34,7 @@ namespace KillerApps.Emulation.Processors
 				}
 				if ((~(A ^ Data) & (A ^ hi) & 0x80) == 0x80) V = true;
 				if (hi > 0x90) hi += 0x60;
-				if ((hi & 0xff00) == 0xf00) C = true;
+				if ((hi & 0xff00) != 0) C = true;
 				A = (byte)((lo & 0x0f) + (hi & 0xf0));
 			}
 			else
@@ -43,7 +43,7 @@ namespace KillerApps.Emulation.Processors
 				int sum = A + Data + c;
 				V = false;
 				C = false;
-				if ((~(A ^ Data) & (A ^ sum) & 0x80) == 0x80) V = true;
+				if ((~(A ^ Data) & (A ^ sum) & 0x80) != 0x0) V = true;
 				if ((sum & 0xff00) != 0) C = true;
 				A = (byte)(sum & 0xff); // LX: Cap result to never be bigger than 0xff value
 			}
@@ -63,9 +63,9 @@ namespace KillerApps.Emulation.Processors
 				V = false;
 				C = false;
 				if (((A ^ Data) & (A ^ sum) & 0x80) != 0) V = true;
-				if ((lo & 0xf0) == 0xf0) lo -= 6;
-				if ((lo & 0x80) == 0x80) hi -= 0x10;
-				if ((hi & 0x0f00) == 0x0f00) hi -= 0x60;
+				if ((lo & 0xf0) != 0) lo -= 6;
+				if ((lo & 0x80) != 0) hi -= 0x10;
+				if ((hi & 0x0f00) != 0) hi -= 0x60;
 				if ((sum & 0xff00) == 0) C = true;
 				A = (byte)((lo & 0x0f) + (hi & 0xf0));
 			}

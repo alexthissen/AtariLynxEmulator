@@ -18,11 +18,12 @@ namespace ConsoleClient
 			string BootRomImageFilePath = @"D:\lynxboot.img";
 			string CartRomImageFilePath = @"D:\roms\chips challenge.lnx";
 			Stream bootRomImageStream;
-			RomCart cartridge;
+			RomCart cartridge = null;
 
 			bootRomImageStream = new FileStream(BootRomImageFilePath, FileMode.Open, FileAccess.Read);
 			LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
-			cartridge = romImage.LoadCart(CartRomImageFilePath); 
+			// TODO: Remove comment below
+			//cartridge = romImage.LoadCart(CartRomImageFilePath); 
 
 			LynxHandheld handheld = new LynxHandheld();
 			handheld.BootRomImage = bootRomImageStream;
