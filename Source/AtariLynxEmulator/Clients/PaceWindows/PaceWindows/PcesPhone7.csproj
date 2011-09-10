@@ -150,7 +150,16 @@
       <XnaPlatformSpecific>true</XnaPlatformSpecific>
     </None>
     <None Include="Resources\collision.lnx" />
+    <None Include="Resources\demo01.o" />
+    <None Include="Resources\demo02.o" />
+    <None Include="Resources\demo03.o" />
+    <None Include="Resources\demo04.o" />
+    <None Include="Resources\demo05.o" />
+    <None Include="Resources\IRQ Test.lnx" />
+    <None Include="Resources\lite.o" />
     <None Include="Resources\LYNXBOOT.IMG" />
+    <None Include="Resources\Mode7.lnx" />
+    <None Include="Resources\Wuerfel.lnx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Xna.Framework">

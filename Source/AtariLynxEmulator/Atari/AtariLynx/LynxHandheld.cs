@@ -49,8 +49,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 			Cpu = new Cmos65SC02(Mmu, SystemClock);
 
 			Mikey.Initialize();
-
-			Reset();
 		}
 
 		public void Reset()

@@ -30,8 +30,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		// a pixel byte builder, an 8 word deep pixel data FIFO, a data merger, 
 		// and assorted control logic."
 
-		private byte[] ramMemory = null;
-		private byte[] videoMemory = null; // For safe drawing
+		internal byte[] ramMemory = null;
+		internal byte[] videoMemory = null; // For safe drawing
 
 		// "16 nybble (8 byte) pen index palette specific to each sprite"
 		private byte[] PenIndexPalette = new byte[16];
@@ -40,7 +40,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		private SpriteDataUnpacker unpacker;
 		private ShiftRegister shifter; // "a 12 bit shift register for unpacking the data"
-		private SpriteContext context;
+		internal SpriteContext context;
 		private byte highestCollision;
 
 		public SpriteControlBlock SpriteControlBlock
@@ -121,7 +121,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 						case SpriteTypes.Shadow:
 							{
 								ushort collisionDepository = (ushort)(SCBADR.Value + context.COLLOFF.Value);
-								videoMemory[collisionDepository] = highestCollision;
+								ramMemory[collisionDepository] = highestCollision;
 							}
 							break;
 						default:
@@ -132,7 +132,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			}
 
 			//return cyclesUsed;
-			return 10000;
+			return 0;
 		}
 
 		public void RenderSingleSprite()
@@ -219,7 +219,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 									{
 										// Process pixel based on sprite type
 										ProcessPixel((ushort)(VIDADR.Value + (sprhpos + sprvpos * Suzy.SCREEN_WIDTH) / 2), pixelValue, sprhpos % 2 == 0);
-										ProcessCollision((ushort)(COLLADR.Value + (sprhpos + sprvpos * Suzy.SCREEN_WIDTH) / 2), scb.SPRCOLL.Number, sprhpos % 2 == 0);
+										ProcessCollision((ushort)(COLLADR.Value + (sprhpos + sprvpos * Suzy.SCREEN_WIDTH) / 2), pixelValue, sprhpos % 2 == 0);
 									}
 									sprhpos += horizontalIncrease;
 								}

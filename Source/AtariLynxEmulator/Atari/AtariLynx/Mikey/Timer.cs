@@ -9,7 +9,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 	public class Timer
 	{
 		public byte InterruptMask { get; private set; }
-		public byte BackupValue { get; internal set; }
+		public byte BackupValue { get; set; } // TODO: Revert setter to internal
 		public event EventHandler<TimerExpirationEventArgs> Expired;
 		internal ITimerLogic TimerLogic;
 		private StaticTimerControl staticControlBits;
@@ -48,8 +48,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 		/// 
 		/// </summary>
 		/// <returns>Number of system cycles used by work in timer interrupt</returns>
-		public void Update(ulong currentCycleCount)
+		public ulong Update(ulong currentCycleCount)
 		{
+			ulong cyclesInterrupt = 0;
+
 			// Only enabled and not-done timers should predict expiration time
 			ExpirationTime = ulong.MaxValue;
 			if (StaticControlBits.EnableCount && (StaticControlBits.EnableReload || !DynamicControlBits.TimerDone))
@@ -64,15 +66,18 @@ namespace KillerApps.Emulation.Atari.Lynx
 				// When timer value has expired it will borrow out
 				if (expired)
 				{
-					Expire();
+					cyclesInterrupt = Expire();
 				}
 
 				ExpirationTime = TimerLogic.PredictExpirationTime(currentCycleCount);
 			}
+			return cyclesInterrupt;
 		}
 
-		protected virtual void Expire()
+		protected virtual ulong Expire()
 		{
+			ulong cyclesInterrupt = 0;
+
 			// "It is set on time out, reset with the reset timer done bit (xxx1, B6)"
 			DynamicControlBits.TimerDone = true; // !StaticControlBits.ResetTimerDone;
 			DynamicControlBits.BorrowOut = true;
@@ -81,8 +86,14 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// Reload if neccessary
 			CurrentValue = StaticControlBits.EnableReload ? BackupValue : (byte)0;
 
-			if (Expired != null) 
-				Expired(this, new TimerExpirationEventArgs() { InterruptMask = this.InterruptMask });
+			if (Expired != null)
+			{
+				TimerExpirationEventArgs args = new TimerExpirationEventArgs(this.InterruptMask);
+				Expired(this, args);
+				cyclesInterrupt = args.CyclesInterrupt;
+			}
+			
+			return cyclesInterrupt;
 		}
 
 		public void Start(ulong cycleCount)

@@ -262,7 +262,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			SPRGO.SpriteProcessEnabled = false;
 			SPRSYS.SpriteProcessStarted = false;	
 
-			return 0; 
+			return 10000; 
 		}
 
 		public void Poke(ushort address, byte value)
@@ -746,6 +746,12 @@ namespace KillerApps.Emulation.Atari.Lynx
 			context.HSIZOFF.Value = 0x007f;
 			context.VSIZOFF.Value = 0x007f;
 
+			MathABCD = BitConverter.GetBytes(0xFFFFFFFF);
+			MathJKLM = BitConverter.GetBytes(0xFFFFFFFF);
+			MathEFGH = BitConverter.GetBytes(0xFFFFFFFF);
+			MathNP = BitConverter.GetBytes(0xFFFF);
+
+			signAB = signCD = signEFGH = 1;
 			//Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::Reset");
 		}
 	}

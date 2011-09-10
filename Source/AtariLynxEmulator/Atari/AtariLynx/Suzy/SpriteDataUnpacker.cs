@@ -67,8 +67,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 			
 			if (totallyLiteral)
 			{
-				int repeatCount = (offsetToNextLine * 8) / BitsPerPixel;
-				for (int index = 0; index < repeatCount - 1; index++)
+				int pixelCount = (offsetToNextLine * 8) / BitsPerPixel;
+				
+				// Read all pixels except last, to check for bug condition
+				for (int index = 0; index < pixelCount - 1; index++) 
 				{
 					yield return register.GetBits(BitsPerPixel);
 				}

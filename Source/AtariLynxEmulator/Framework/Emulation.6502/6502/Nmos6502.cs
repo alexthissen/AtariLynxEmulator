@@ -105,7 +105,9 @@ namespace KillerApps.Emulation.Processors
 		}
 
 		internal byte PullFromStack()
-		{ 
+		{
+			// http://www.6502.org/tutorials/interrupts.html
+			// "When a byte is pulled off the stack, the stack pointer is incremented before the byte is read."
 			SP++; 
 			SP &= 0xff;
 			
@@ -115,7 +117,10 @@ namespace KillerApps.Emulation.Processors
 			return Memory.Peek((ushort)(SP + 0x0100)); 
 		}
 
-		internal byte PeekStack(byte depth) { return Memory.Peek((ushort)((SP + 0x0100 - depth) & 0x01ff)); }
+		internal byte PeekStack(byte depth) 
+		{ 
+			return Memory.Peek((ushort)((SP + 0x0100 - depth) & 0x01ff)); 
+		}
 
 		public override ulong Execute(int instructionsToExecute)
 		{
@@ -155,6 +160,8 @@ namespace KillerApps.Emulation.Processors
 			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, String.Format("{0:X4} {1}", PC, builder.ToString()));
 			builder.Clear();
 #endif
+
+			//if (PC == 0x1d8d) Debugger.Break();
 
 			// Fetch opcode
 			Opcode = Memory.Peek(PC);

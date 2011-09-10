@@ -44,7 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cartridge\BllRomImageHeader.cs" />
     <Compile Include="Cartridge\CartRotation.cs" />
+    <Compile Include="Cartridge\BllRomImageFileFormat.cs" />
     <Compile Include="Cartridge\LnxRomImageFileFormat.cs" />
     <Compile Include="Cartridge\RomCart.cs" />
     <Compile Include="Cartridge\RomCartMemoryBank.cs" />
@@ -63,6 +65,7 @@
     <Compile Include="Mikey\ITimerLogic.cs" />
     <Compile Include="Mikey\DisplayControlBits.cs" />
     <Compile Include="Mikey\DynamicTimerControl.cs" />
+    <Compile Include="Mikey\ParallelDataDirection.cs" />
     <Compile Include="Mikey\TimerExpirationEventArgs.cs" />
     <Compile Include="Mikey\LinkingTimerLogic.cs" />
     <Compile Include="Mikey\Mikey.Addresses.cs" />

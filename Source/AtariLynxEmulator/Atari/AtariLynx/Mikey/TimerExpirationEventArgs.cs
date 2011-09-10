@@ -7,6 +7,12 @@ namespace KillerApps.Emulation.Atari.Lynx
 {
 	public class TimerExpirationEventArgs: EventArgs
 	{
-		public byte InterruptMask { get; set; }
+		public TimerExpirationEventArgs(byte interruptMask)
+		{
+			this.InterruptMask = interruptMask;
+		}
+
+		public byte InterruptMask { get; private set; }
+		public ulong CyclesInterrupt { get; set; }
 	}
 }

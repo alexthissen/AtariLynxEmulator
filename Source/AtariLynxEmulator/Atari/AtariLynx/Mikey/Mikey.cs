@@ -8,7 +8,7 @@ using System.Diagnostics;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
-	public partial class Mikey : IMemoryAccess<ushort, byte>
+	public partial class Mikey : IMemoryAccess<ushort, byte>, IResetable
 	{
 		public const int AUDIO_DPRAM_READWRITE_MIN = 5;
 		public const int AUDIO_DPRAM_READWRITE_MAX = 20;
@@ -27,7 +27,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public SystemControlBits1 SYSCTL1 { get; set; }
 		public ParallelData IODAT { get; set; }
 		public DisplayControlBits DISPCTL { get; set; }
-		public byte IODIR { get; set; }
+		//public byte IODIR { get; set; }
+		public ParallelDataDirection IODIR { get; set; }
 		public byte PBKUP { get; set; }
 		public Word VideoDisplayStartAddress;
 					
@@ -50,6 +51,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private uint[] LcdScreenDma;
 		private byte[] VideoMemoryDma;
 		private byte currentLine;
+		private bool RestActive;
+		//private bool RestActive;
 		
 		public Mikey(ILynxDevice lynx)
 		{
@@ -101,7 +104,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			if (timer.StaticControlBits.EnableInterrupt)
 			{
 				// Update interrupt status
-				timerInterruptStatusRegister |= e.InterruptMask;
+				timerInterruptStatusRegister |= e.InterruptMask; // TODO: Was |=
 
 				// Trigger a maskable interrupt
 				//Debug.WriteLineIf(GeneralSwitch.TraceInfo, String.Format("Mikie::Update() - Timer IRQ Triggered at {0:X8}", device.SystemClock.CompatibleCycleCount));
@@ -113,6 +116,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		
 		private void DisplayEndOfFrame(object sender, TimerExpirationEventArgs e) 
 		{
+			TimerExpired(sender, e);
+
 			currentLcdDmaCounter = 0;
 			currentLine = Timers[2].BackupValue;
 
@@ -121,6 +126,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		
 		private void RenderLine(object sender, TimerExpirationEventArgs e) 
 		{
+			TimerExpired(sender, e);
+
 			// TODO: Implementation of Keith does not always trigger IRQ when DMA is not enabled, 
 			// display bits (?) or display current have not been set
 			if (!DISPCTL.EnableVideoDma) return;
@@ -132,7 +139,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// TODO: Determine if rest is between frames 104, 103 and 102 (for 60Hz)
 			// Keith Wilkins has Rest period between 102, 101 and 100
 			bool rest = (currentLine >= (backupValue - 4) && currentLine <= (backupValue - 2));
-			IODAT.Rest = rest;
+			RestActive = rest;
+			//IODAT.Rest = rest;
 
 			if (currentLine > (backupValue - 3))
 			{
@@ -159,7 +167,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			if (currentLcdDmaCounter < 0) return;
 
 			// TODO: Define constant for DMA_READWRITE_CYCLE
-			device.SystemClock.CompatibleCycleCount += 80 * 4;
+			e.CyclesInterrupt = 80 * 4;
 		
 			// Every byte has two nibbles for two pixels
 			for (int loop = 0; loop < Suzy.SCREEN_WIDTH / 2; loop++)
@@ -191,7 +199,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 			// SDONEACK = 0 "(not acked)"
 			timerInterruptMask = timerInterruptStatusRegister = 0;
-			IODIR = 0; // reset = 0,0.0.0,0,0,0,0
+			IODIR = new ParallelDataDirection(0x00); // reset = 0,0.0.0,0,0,0,0
 			IODAT = new ParallelData(0x00);
 			SYSCTL1 = new SystemControlBits1(0x02); // reset x,x,x,x,x,x,1,0
 			DISPCTL = new DisplayControlBits(0x00);	// reset = 0
@@ -205,10 +213,11 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public void Update() 
 		{
+			ulong cycleCountAdvance = 0;
 			//Debug.WriteLineIf(GeneralSwitch.TraceVerbose, "Mikey::Update");
 			foreach (Timer timer in Timers)
 			{
-				timer.Update(device.SystemClock.CompatibleCycleCount);
+				cycleCountAdvance += timer.Update(device.SystemClock.CompatibleCycleCount);
 			}
 
 			// Take lowest timer 
@@ -223,6 +232,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			}
 			//if (device.SystemClock.CompatibleCycleCount >= 0x627d982)
 			//  Trace.WriteLine(String.Format("Time={0:D12}, NextTimer={1:D12}", device.SystemClock.CompatibleCycleCount, device.NextTimerEvent));
+			device.SystemClock.CompatibleCycleCount += cycleCountAdvance;
 		}
 
 		public void Poke(ushort address, byte value)
@@ -276,7 +286,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 					timerInterruptStatusRegister &= value;
 
 					// TODO: Keith Wilkins has fix below for Championship Rally here. Is it still necessary?
-					//device.Cpu.SignalInterrupt(...)
+					if (timerInterruptStatusRegister != 0) device.Cpu.SignalInterrupt(InterruptType.Irq);
 					ForceTimerUpdate();
 					return;
 
@@ -285,8 +295,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 					timerInterruptStatusRegister |= value;
 				
 					// TODO: Keith Wilkins has fix for Championship Rally here. Is it still necessary?
-					//device.Cpu.SignalInterrupt(...)
-					//ForceTimerUpdate();
+					if (timerInterruptStatusRegister != 0) device.Cpu.SignalInterrupt(InterruptType.Irq);
+					ForceTimerUpdate();
 					return;
 
 				case Mikey.Addresses.MIKEYSREV:
@@ -296,7 +306,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 				// "Also note that only the lines that are set to input are actually valid for reading."
 				// "8 bits I/O direction corresponding to the 8 bits at FD8B 0=input, 1= output"
 				case Mikey.Addresses.IODIR:
-					IODIR = value;
+					//IODIR.ByteData = value;
+					IODIR.ByteData = value;
 					return;
 
 				// "Mikey Parallel Data(sort of a R/W) 8 bits of general purpose I/O data"
@@ -311,7 +322,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 					// "The other is that it controls power to the cartridge."
 					device.CartridgePowerOn = !IODAT.CartPowerOff;
 					// "In its current use, it is the write enable line for writeable elements in the cartridge."
-					if ((IODIR & 0x10) == 0x10)
+					//if ((IODIR & 0x10) == 0x10)
+					if (IODIR.AudioIn == DataDirection.Output)
 						device.Cartridge.WriteEnabled = IODAT.AudioIn;
 					return;
 
@@ -452,13 +464,21 @@ namespace KillerApps.Emulation.Atari.Lynx
 					return timerInterruptStatusRegister;
 
 				case Mikey.Addresses.IODIR:
-					return this.IODIR;
+					return this.IODIR.ByteData;
 
 				// "Note that some lines are used for several functions, please read the spec.
 				// Also note that only the lines that are set to input are actually valid for reading."
 				case Mikey.Addresses.IODAT:
-					byte value = IODAT.ByteData;
-					return (byte)(value & (IODIR ^ 0xff));
+					byte value = 0x00;
+					if (IODIR.AudioIn == DataDirection.Input || IODAT.AudioIn) value |= ParallelData.AudioInMask;
+					if (IODIR.Rest == DataDirection.Output && (!IODAT.Rest || !RestActive)) value |= ParallelData.RestMask;
+					if ((IODIR.NoExpansion == DataDirection.Input && ComLynxCablePresent) || (IODIR.NoExpansion == DataDirection.Output && IODAT.NoExpansion))
+					  value |= ParallelData.NoExpansionMask;
+					if (IODIR.CartAddressData == DataDirection.Output && IODAT.CartAddressData) value |= ParallelData.CartAddressDataMask;
+					if (IODIR.ExternalPower == DataDirection.Input || IODAT.ExternalPower) value |= ParallelData.ExternalPowerMask;
+					return value;
+					//byte value = IODAT.ByteData;
+					//return (byte)(value & (IODIR ^ 0xff));
 
 				case Mikey.Addresses.PBKUP:
 					return PBKUP;
@@ -500,5 +520,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			//Trace.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Mikey::Peek -  Unknown address ${0:X4} specified.", address));
 			return 0x00;
 		}
+
+		public bool ComLynxCablePresent { get; set; }
 	}
 }

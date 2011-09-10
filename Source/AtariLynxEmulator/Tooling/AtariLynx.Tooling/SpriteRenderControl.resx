@@ -117,38 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Collision" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\collision.lnx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="LYNXBOOT" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\LYNXBOOT.IMG;System.Byte[], mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e</value>
-  </data>
-  <data name="IRQ_Test" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\IRQ Test.lnx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="demo01" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\demo01.o;System.Byte[], mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e</value>
-  </data>
-  <data name="demo02" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\demo02.o;System.Byte[], mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e</value>
-  </data>
-  <data name="demo03" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\demo03.o;System.Byte[], mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e</value>
-  </data>
-  <data name="demo04" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\demo04.o;System.Byte[], mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e</value>
-  </data>
-  <data name="demo05" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\demo05.o;System.Byte[], mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e</value>
-  </data>
-  <data name="lite" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\lite.o;System.Byte[], mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e</value>
-  </data>
-  <data name="Wuerfel" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\Wuerfel.lnx;System.Byte[], mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e</value>
-  </data>
-  <data name="Mode7" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\Mode7.lnx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
+  <metadata name="backgroundColorDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
 </root>

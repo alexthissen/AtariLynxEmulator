@@ -38,7 +38,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 				// TODO: Handle incorrect file format more elegantly
 
 				byte[] magic = reader.ReadBytes(4);
-				if (magic[0] != 'L' || magic[1] != 'Y' || magic[2] != 'N' || magic[3] != 'X') return null;
+				if (magic[0] != 'L' || magic[1] != 'Y' || magic[2] != 'N' || magic[3] != 'X')
+					throw new LynxException("LNX Cartridge format is incorrect. Magic bytes are not present.");
 
 				Bank0Size = reader.ReadUInt16();
 				Bank1Size = reader.ReadUInt16();

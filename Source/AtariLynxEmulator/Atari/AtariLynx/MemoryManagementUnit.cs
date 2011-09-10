@@ -10,7 +10,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 	// "The above listed adress ranges (except for FFF8 and FFF9) can, under control of the CPU, 
 	// have RAM overlayed on them. These overlays are controlled by the bits in the hardware register at FFF9. 
 	// Both Mikey and Suzy accept a write at those addresses but only Mikey responds to a read."
-	public class MemoryManagementUnit: IMemoryAccess<ushort, byte>
+	public class MemoryManagementUnit: IMemoryAccess<ushort, byte>, IResetable
 	{
 		public IMemoryAccess<ushort, byte> SuzySpace { get; private set; }
 		public IMemoryAccess<ushort, byte> MikeySpace { get; private set; }
@@ -45,14 +45,16 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public void Poke(ushort address, byte value)
 		{
 			// Regular RAM 
-			if (address < 0xfc00)
+			//if (address >= 0x591d && address <= 0x5927 || address == 0x56fb)
+				//Debugger.Break();
+			if (address < 0xFC00)
 			{
 				Ram.Poke(address, value);
 				return;
 			}
 
 			// "These overlays are controlled by the bits in the hardware register at FFF9."
-			if (address == 0xfff9) // Special case for memory map control register
+			if (address == 0xFFF9) // Special case for memory map control register
 			{
 				ConfigureMemoryMapControl(value);
 				return;
@@ -61,16 +63,16 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// "FFFE, FFFF CPU Interrupt Vector (RAM or ROM)
 			// FFFC, FFFD CPU Reset Vector (RAM or ROM) 
 			// FFFA, FFFB CPU NMI Vector (RAM or ROM)"
-			if (address > 0xfffa) { VectorSpace.Poke(address, value); return; }
+			if (address > 0xFFFA) { VectorSpace.Poke(address, value); return; }
 
 			// "FE00 thru FFF7 ROM Space"
-			if (address >= 0xfe00) { RomSpace.Poke(address, value); return; }
+			if (address >= 0xFE00) { RomSpace.Poke(address, value); return; }
 			
 			// "FD00 thru FDFF Mikey Space" 
-			if (address >= 0xfd00) { MikeySpace.Poke(address, value); return; }
+			if (address >= 0xFD00) { MikeySpace.Poke(address, value); return; }
 			
 			// "FC00 thru FCFF Suzy Space"
-			if (address >= 0xfc00) { SuzySpace.Poke(address, value); return; }
+			if (address >= 0xFC00) { SuzySpace.Poke(address, value); return; }
 		}
 
 		private void ConfigureMemoryMapControl(byte value)
@@ -89,13 +91,13 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public byte Peek(ushort address)
 		{
 			// Regular RAM 
-			if (address < 0xfc00)
+			if (address < 0xFC00)
 			{
 				return Ram.Peek(address);
 			}
 
 			// "These overlays are controlled by the bits in the hardware register at FFF9."
-			if (address == 0xfff9) // Special case for memory map control register
+			if (address == 0xFFF9) // Special case for memory map control register
 			{
 				// "Both Mikey and Suzy accept a write at those addresses but only Mikey responds to a read."
 				// Since we will be passing regular RAM memory to Suzy, it is OK to always return value
@@ -104,10 +106,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 			}
 
 			// For details on address ranges see Poke() implementation
-			if (address >= 0xfffa) { return VectorSpace.Peek(address); }
-			if (address >= 0xfe00) { return RomSpace.Peek(address); }
-			if (address >= 0xfd00) { return MikeySpace.Peek(address); }
-			if (address >= 0xfc00) { return SuzySpace.Peek(address); }
+			if (address >= 0xFFFA) { return VectorSpace.Peek(address); }
+			if (address >= 0xFE00) { return RomSpace.Peek(address); }
+			if (address >= 0xFD00) { return MikeySpace.Peek(address); }
+			if (address >= 0xFC00) { return SuzySpace.Peek(address); }
 
 			Debug.WriteLine(String.Format("MemoryManagementUnit::Peek: Unknown address {0}", address));
 			return 0;

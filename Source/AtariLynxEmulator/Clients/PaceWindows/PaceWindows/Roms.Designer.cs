@@ -67,9 +67,72 @@ namespace KillerApps.Gaming.Atari {
             }
         }
         
+        internal static byte[] demo01 {
+            get {
+                object obj = ResourceManager.GetObject("demo01", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        internal static byte[] demo02 {
+            get {
+                object obj = ResourceManager.GetObject("demo02", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        internal static byte[] demo03 {
+            get {
+                object obj = ResourceManager.GetObject("demo03", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        internal static byte[] demo04 {
+            get {
+                object obj = ResourceManager.GetObject("demo04", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        internal static byte[] demo05 {
+            get {
+                object obj = ResourceManager.GetObject("demo05", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        internal static byte[] IRQ_Test {
+            get {
+                object obj = ResourceManager.GetObject("IRQ_Test", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        internal static byte[] lite {
+            get {
+                object obj = ResourceManager.GetObject("lite", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
         internal static byte[] LYNXBOOT {
             get {
                 object obj = ResourceManager.GetObject("LYNXBOOT", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        internal static byte[] Mode7 {
+            get {
+                object obj = ResourceManager.GetObject("Mode7", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        internal static byte[] Wuerfel {
+            get {
+                object obj = ResourceManager.GetObject("Wuerfel", resourceCulture);
                 return ((byte[])(obj));
             }
         }

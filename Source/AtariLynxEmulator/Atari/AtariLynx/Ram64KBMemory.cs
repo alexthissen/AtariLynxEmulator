@@ -7,9 +7,11 @@ using System.Diagnostics;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
-	public class Ram64KBMemory: IMemoryAccess<ushort, byte>
+	public class Ram64KBMemory: IMemoryAccess<ushort, byte>, IResetable
 	{
-		public const int MEMORY_SIZE = 0xffff + 1;
+		public const byte DEFAULT_CONTENT = 0xFF;
+		public const int MEMORY_SIZE = 0xFFFF + 1;
+
 		private byte[] ram = null;
 
 		public Ram64KBMemory()
@@ -37,6 +39,11 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public byte Peek(ushort address)
 		{
 			return ram[address];
+		}
+
+		public void Reset()
+		{
+			for (int index = 0; index < MEMORY_SIZE; index++) ram[index] = DEFAULT_CONTENT;
 		}
 	}
 }

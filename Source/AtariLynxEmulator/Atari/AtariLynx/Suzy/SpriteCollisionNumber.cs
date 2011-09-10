@@ -17,7 +17,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			set
 			{ 
 				byteData = value;
-				byteData &= 0x2F;
+				byteData &= 0x2F; // B7, B6, B4 are set to zero
 			}
 		}
 
@@ -38,11 +38,12 @@ namespace KillerApps.Emulation.Atari.Lynx
 		// "B3,B2,B1,B0 = number"
 		public byte Number 
 		{ 
-			get { return (byte)(ByteData & 0x0f); }
+			get { return (byte)(ByteData & 0x0F); }
 			set 
 			{
-				//Debug.WriteLineIf(value > 0x0f, "Collision number should be 0 to 15.");
-				ByteData |= (byte)(value & 0x0f);
+				//Debug.WriteLineIf(value > 0x0F, "Collision number should be 0 to 15.");
+				ByteData &= DontCollideMask; // Zero out previous collision number
+				ByteData |= (byte)(value & 0x0F);
 			}
 		}
 

@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Media;
 using KillerApps.Emulation.Atari.Lynx;
 using System.Diagnostics;
 using System.IO;
+using KillerApps.Emulation.Processors;
 
 namespace KillerApps.Gaming.Atari
 {
@@ -27,7 +28,7 @@ namespace KillerApps.Gaming.Atari
 		private ContentManager romContent;
 		private InputHandler inputHandler;
 
-		private const int magnification = 3;
+		private const int magnification = 4;
 		private const int graphicsWidth = Suzy.SCREEN_WIDTH * magnification;
 		private const int graphicsHeight = Suzy.SCREEN_HEIGHT * magnification;
 
@@ -58,21 +59,32 @@ namespace KillerApps.Gaming.Atari
 
 			lcdScreen = new Texture2D(graphics.GraphicsDevice, Suzy.SCREEN_WIDTH, Suzy.SCREEN_HEIGHT, false, SurfaceFormat.Color);
 
-			//IAsyncResult result = StorageDevice.BeginShowSelector(EndShowSelector, "Storage for Player One");
-			//result.AsyncWaitHandle.WaitOne();
-
 			// Lynx related
 			emulator.BootRomImage = new MemoryStream(Roms.LYNXBOOT);
 			LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
-			emulator.Cartridge = romImage.LoadCart(new MemoryStream(Roms.Collision));
+			BllRomImageFileFormat romImage2 = new BllRomImageFileFormat();
+			emulator.Cartridge = romImage.LoadCart(new MemoryStream(Roms.Wuerfel));
 			emulator.Initialize();
+
+			//byte[] ram = emulator.Ram.GetDirectAccess();
+			//Array.Copy(romImage2.Bytes, 0, ram, romImage2.Header.LoadAddress, romImage2.Header.Size);
+			//ram[VectorAddresses.BOOT_VECTOR] = (byte)(romImage2.Header.LoadAddress & 0xFF);
+			//ram[VectorAddresses.BOOT_VECTOR + 1] = (byte)((romImage2.Header.LoadAddress & 0xFF00) >> 8);
+
+			emulator.Reset();
+
+			// Preset for homebrew cartridges
+			//emulator.Mikey.Timers[0].BackupValue = 0x9E;
+			//emulator.Mikey.Timers[0].StaticControlBits = new StaticTimerControl(0x18);
+			//emulator.Mikey.Timers[2].BackupValue = 0x68;
+			//emulator.Mikey.Timers[2].StaticControlBits = new StaticTimerControl(0x1F);
+			//emulator.Mikey.DISPCTL.ByteData = 0x09;
 
 			Window.Title = "Portable Color Entertainment System";
 			Window.AllowUserResizing = false;
 
 			spriteBatch = new SpriteBatch(GraphicsDevice);
 			
-			//Components.Add(new GamerServicesComponent(this));
 			Components.Add(new FrameRateCounter(this));
 
 #if WINDOWS_PHONE
@@ -84,8 +96,6 @@ namespace KillerApps.Gaming.Atari
 #endif
 			Components.Add(inputHandler);
 			
-			//this.Services.AddService(typeof(IControllerHandler), controlHandler);
-
 			base.Initialize();
 		}
 

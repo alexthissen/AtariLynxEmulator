@@ -8,7 +8,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 	// "FFF9 = MAPCTL. Memory Map Control
 	// (R/W) Mikey reset = 0,0,0,0,0,0,0,0
 	// (W) Suzy reset x,x,x,x,x,x,x,0 (Only bit 0 is implemented)"
-	public class MemoryMapControl
+	public class MemoryMapControl : IResetable
 	{
 		public byte ByteData { get; set; }
 
