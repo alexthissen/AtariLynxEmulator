@@ -62,8 +62,9 @@ namespace KillerApps.Gaming.Atari
 			// Lynx related
 			emulator.BootRomImage = new MemoryStream(Roms.LYNXBOOT);
 			LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
+
 			BllRomImageFileFormat romImage2 = new BllRomImageFileFormat();
-			emulator.Cartridge = romImage.LoadCart(new MemoryStream(Roms.Wuerfel));
+			emulator.Cartridge = romImage.LoadCart(new MemoryStream(Roms.Collision));
 			emulator.Initialize();
 
 			//byte[] ram = emulator.Ram.GetDirectAccess();
@@ -105,7 +106,6 @@ namespace KillerApps.Gaming.Atari
 		/// </summary>
 		protected override void LoadContent()
 		{
-			// Create a new SpriteBatch, which can be used to draw textures.
 			byte[] ram = new byte[0x3FC0 * 4];
 			for (int i = 0; i < 0x3FC0 * 4; i++)
 			{
@@ -142,7 +142,7 @@ namespace KillerApps.Gaming.Atari
 			base.Update(gameTime);
 		}
 
-		/// <summary>8
+		/// <summary>
 		/// This is called when the game should draw itself.
 		/// </summary>
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>

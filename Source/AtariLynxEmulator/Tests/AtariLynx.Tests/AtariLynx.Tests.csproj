@@ -87,6 +87,9 @@
     <None Include="Roms\Collision.lnx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Roms\LYNXBOOT.IMG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="SpriteControlBlocks\AtariLogo.scb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

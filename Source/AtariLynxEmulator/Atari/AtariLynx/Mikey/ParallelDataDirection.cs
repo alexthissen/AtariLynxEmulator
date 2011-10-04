@@ -13,8 +13,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 	public class ParallelDataDirection
 	{
-		private int p;
-
 		public ParallelDataDirection(byte initialValue)
 		{
 			this.ByteData = initialValue;

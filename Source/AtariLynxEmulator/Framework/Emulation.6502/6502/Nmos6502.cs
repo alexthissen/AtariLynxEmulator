@@ -83,7 +83,7 @@ namespace KillerApps.Emulation.Processors
 			Debug.WriteLine(String.Format("Nmos6502::Sleep: Entering sleep till cycle count {0}", ScheduledWakeUpTime));
 		}
 
-		// Irq and Mni related
+		// Irq and Nmi related
 		public bool IsSystemIrqActive { get { return ActiveInterrupt != InterruptType.None; } }
 		protected internal InterruptType ActiveInterrupt;
 
@@ -111,9 +111,10 @@ namespace KillerApps.Emulation.Processors
 			SP++; 
 			SP &= 0xff;
 			
-			// Increase stack pointer and fetch data
 			// TODO: Find out if extra cycle is a clock or memory read cycle
 			//SystemClock.CycleCount += MemoryReadCycle + 2;
+
+			// Increase stack pointer and fetch data
 			return Memory.Peek((ushort)(SP + 0x0100)); 
 		}
 
@@ -160,8 +161,6 @@ namespace KillerApps.Emulation.Processors
 			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, String.Format("{0:X4} {1}", PC, builder.ToString()));
 			builder.Clear();
 #endif
-
-			//if (PC == 0x1d8d) Debugger.Break();
 
 			// Fetch opcode
 			Opcode = Memory.Peek(PC);
@@ -434,14 +433,14 @@ namespace KillerApps.Emulation.Processors
 
 			builder.AppendFormat("A:{0:x2} X:{1:x2} Y:{2:x2} S:{3:x2} PC:{4:x4} Flags:[", A, X, Y, SP, PC);
 			string flags = "NVRBDIZC";
-			for (byte index = 0, flag = 0x01; index < 8; index++, flag <<= 1)
+			for (byte index = 0, flag = 0x80; index < 8; index++, flag >>= 1)
 				builder.AppendFormat("{0}", (flag & ProcessorStatus) != 0 ? flags[index] : '.');
 			builder.Append("]");
 
 			return builder.ToString();
 		}
 
-		// Timing values by Keith Wilkins
+		// Timing values by Keith Wilkins for Handy emulator
 		protected byte[] timings = new byte[256]
 		{
 			6, 5, 1, 1, 4, 2, 4, 1, 2, 2, 1, 1, 5, 3, 5, 4,

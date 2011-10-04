@@ -12,7 +12,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 	// of Suzys sprite engine."
 	public partial class Suzy : IMemoryAccess<ushort, byte>, IResetable
 	{
-		public const int SUZY_BASEADDRESS = 0xfc00;
+		public const int SUZY_BASEADDRESS = 0xFC00;
 		public const int SUZY_SIZE = 0x100;
 		public const int SCREEN_WIDTH = 160;
 		public const int SCREEN_HEIGHT = 102;
@@ -42,11 +42,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public byte[] MathJKLM = new byte[4];
 		public byte[] MathABCD = new byte[4];
 		public byte[] MathNP = new byte[2];
-
-		//public Word HOFF, VOFF;
-		//public Word VIDBAS, COLLBAS;
-		//public Word COLLOFF;
-		//public Word HSIZOFF, VSIZOFF;
 
 		private SpriteControlBlock SCB = null;
 		private SpriteEngine Engine = null;
@@ -262,6 +257,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			SPRGO.SpriteProcessEnabled = false;
 			SPRSYS.SpriteProcessStarted = false;	
 
+			// TODO: Return actual number of clock cycles that passed
 			return 10000; 
 		}
 

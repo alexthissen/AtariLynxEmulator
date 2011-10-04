@@ -113,6 +113,15 @@
       <Name>Emulation.Core8Bit</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Mikey\Timers.cd" />
+    <None Include="Suzy\SpriteRendering.sequencediagram" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Suzy\SpriteRendering.sequencediagram.layout">
+      <DependentUpon>SpriteRendering.sequencediagram</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

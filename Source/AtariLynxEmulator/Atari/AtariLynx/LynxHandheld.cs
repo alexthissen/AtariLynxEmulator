@@ -43,12 +43,15 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// Pass all hardware that have memory access to MMU
 			Mmu = new MemoryManagementUnit(Rom, Ram, Mikey, Suzy);
 			SystemClock = new Clock();
-			LcdScreenDma = new uint[0x3FC0];
+			LcdScreenDma = new uint[0x3FC0]; // 160 * 102 pixels
 
-			// Finally construct processor
+			// Construct processor
 			Cpu = new Cmos65SC02(Mmu, SystemClock);
 
 			Mikey.Initialize();
+
+			// Initialization means running reset operation
+			Reset();
 		}
 
 		public void Reset()

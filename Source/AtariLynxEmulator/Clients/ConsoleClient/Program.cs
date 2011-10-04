@@ -16,7 +16,6 @@ namespace ConsoleClient
 			//return;
 
 			string BootRomImageFilePath = @"D:\lynxboot.img";
-			string CartRomImageFilePath = @"D:\roms\chips challenge.lnx";
 			Stream bootRomImageStream;
 			RomCart cartridge = null;
 

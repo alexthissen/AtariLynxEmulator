@@ -18,7 +18,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private ILynxDevice device;
 		private byte timerInterruptStatusRegister;
 		private byte timerInterruptMask = 0;
-		private int lineAddress { get; set; }
+		private int lineAddress;
 
 		public byte[] GreenColorMap = new byte[0x10];
 		public byte[] BlueRedColorMap = new byte[0x10];
@@ -31,6 +31,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public ParallelDataDirection IODIR { get; set; }
 		public byte PBKUP { get; set; }
 		public Word VideoDisplayStartAddress;
+		public bool ComLynxCablePresent;
 					
 		// Timers
 		public Timer[] Timers = new Timer[8];
@@ -472,7 +473,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 					byte value = 0x00;
 					if (IODIR.AudioIn == DataDirection.Input || IODAT.AudioIn) value |= ParallelData.AudioInMask;
 					if (IODIR.Rest == DataDirection.Output && (!IODAT.Rest || !RestActive)) value |= ParallelData.RestMask;
-					if ((IODIR.NoExpansion == DataDirection.Input && ComLynxCablePresent) || (IODIR.NoExpansion == DataDirection.Output && IODAT.NoExpansion))
+					if ((IODIR.NoExpansion == DataDirection.Input && ComLynxCablePresent) || 
+							(IODIR.NoExpansion == DataDirection.Output && IODAT.NoExpansion))
 					  value |= ParallelData.NoExpansionMask;
 					if (IODIR.CartAddressData == DataDirection.Output && IODAT.CartAddressData) value |= ParallelData.CartAddressDataMask;
 					if (IODIR.ExternalPower == DataDirection.Input || IODAT.ExternalPower) value |= ParallelData.ExternalPowerMask;
@@ -520,7 +522,5 @@ namespace KillerApps.Emulation.Atari.Lynx
 			//Trace.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Mikey::Peek -  Unknown address ${0:X4} specified.", address));
 			return 0x00;
 		}
-
-		public bool ComLynxCablePresent { get; set; }
 	}
 }

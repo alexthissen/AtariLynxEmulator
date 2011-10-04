@@ -61,7 +61,7 @@ namespace KillerApps.Emulation.Processors
 				new Instruction6502(0x2D, "AND",AddressingMode.Absolute), 
 				new Instruction6502(0x2E, "ROL",AddressingMode.Absolute), 
 				null,
-   	
+		
 				new Instruction6502(0x30, "BMI",AddressingMode.Relative),
 				new Instruction6502(0x31, "AND",AddressingMode.ZeroPageIndirectIndexedY),
 				new Instruction6502(0x32, "AND",AddressingMode.ZeroPageIndirect),
@@ -78,7 +78,7 @@ namespace KillerApps.Emulation.Processors
 				new Instruction6502(0x3D, "AND",AddressingMode.AbsoluteX), 
 				new Instruction6502(0x3E, "ROL",AddressingMode.AbsoluteX), 
 				null,
-  	
+		
 				new Instruction6502(0x40, "RTI",AddressingMode.Implicit),
 				new Instruction6502(0x41, "EOR",AddressingMode.ZeroPageIndexedIndirectX),
 				null,
@@ -95,7 +95,7 @@ namespace KillerApps.Emulation.Processors
 				new Instruction6502(0x4D, "EOR",AddressingMode.Absolute),
 				new Instruction6502(0x4E, "LSR",AddressingMode.Absolute),
 				null,
-  	
+		
 				new Instruction6502(0x50, "BVC" ,AddressingMode.Relative),
 				new Instruction6502(0x51, "EOR",AddressingMode.ZeroPageIndirectIndexedY),
 				new Instruction6502(0x52, "EOR",AddressingMode.ZeroPageIndirect),
@@ -112,7 +112,7 @@ namespace KillerApps.Emulation.Processors
 				new Instruction6502(0x5D, "EOR",AddressingMode.AbsoluteX),
 				new Instruction6502(0x5E, "LSR",AddressingMode.AbsoluteX),
 				null,
-  	
+		
 				new Instruction6502(0x60, "RTS",AddressingMode.Implicit),
 				new Instruction6502(0x61, "ADC",AddressingMode.ZeroPageIndexedIndirectX),
 				null,
@@ -129,7 +129,7 @@ namespace KillerApps.Emulation.Processors
 				new Instruction6502(0x6D, "ADC",AddressingMode.Absolute),
 				new Instruction6502(0x6E, "ROR",AddressingMode.Absolute),
 				null,
-  	
+		
 				new Instruction6502(0x70, "BVS",AddressingMode.Relative),
 				new Instruction6502(0x71, "ADC",AddressingMode.ZeroPageIndirectIndexedY),
 				new Instruction6502(0x72, "ADC",AddressingMode.ZeroPageIndirect),
@@ -163,7 +163,7 @@ namespace KillerApps.Emulation.Processors
 				new Instruction6502(0x8D, "STA",AddressingMode.Absolute),
 				new Instruction6502(0x8E, "STX",AddressingMode.Absolute),
 				null,
-   	
+		
 				new Instruction6502(0x90, "BCC",AddressingMode.Relative),
 				new Instruction6502(0x91, "STA",AddressingMode.ZeroPageIndirectIndexedY),
 				new Instruction6502(0x92, "STA",AddressingMode.ZeroPageIndirect),
@@ -197,7 +197,7 @@ namespace KillerApps.Emulation.Processors
 				new Instruction6502(0xAD, "LDA",AddressingMode.Absolute),
 				new Instruction6502(0xAE, "LDX",AddressingMode.Absolute),
 				null,
-   	
+		
 				new Instruction6502(0xB0, "BCS",AddressingMode.Relative),
 				new Instruction6502(0xB1, "LDA",AddressingMode.ZeroPageIndirectIndexedY),
 				new Instruction6502(0xB2, "LDA",AddressingMode.ZeroPageIndirect),
@@ -214,7 +214,7 @@ namespace KillerApps.Emulation.Processors
 				new Instruction6502(0xBD, "LDA",AddressingMode.AbsoluteX),
 				new Instruction6502(0xBE, "LDX",AddressingMode.AbsoluteY),
 				null,
-  	
+		
 				new Instruction6502(0xC0, "CPY",AddressingMode.Immediate),
 				new Instruction6502(0xC1, "CMP",AddressingMode.ZeroPageIndexedIndirectX),
 				null,
@@ -265,7 +265,7 @@ namespace KillerApps.Emulation.Processors
 				new Instruction6502(0xED, "SBC",AddressingMode.Absolute),
 				new Instruction6502(0xEE, "INC",AddressingMode.Absolute),
 				null,
-   	
+		
 				new Instruction6502(0xF0, "BEQ",AddressingMode.Relative),
 				new Instruction6502(0xF1, "SBC",AddressingMode.ZeroPageIndirectIndexedY),
 				new Instruction6502(0xF2, "SBC",AddressingMode.ZeroPageIndirect),
