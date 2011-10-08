@@ -18,8 +18,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private ILynxDevice device;
 		private byte timerInterruptStatusRegister;
 		private byte timerInterruptMask = 0;
-		private int lineAddress;
-
+		
 		public byte[] GreenColorMap = new byte[0x10];
 		public byte[] BlueRedColorMap = new byte[0x10];
 		public uint[] ArgbColorMap = new uint[0x10];
@@ -27,12 +26,21 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public SystemControlBits1 SYSCTL1 { get; set; }
 		public ParallelData IODAT { get; set; }
 		public DisplayControlBits DISPCTL { get; set; }
-		//public byte IODIR { get; set; }
 		public ParallelDataDirection IODIR { get; set; }
+		public SerialControlRegister SERCTL { get; set; }
 		public byte PBKUP { get; set; }
 		public Word VideoDisplayStartAddress;
 		public bool ComLynxCablePresent;
-					
+		
+		// Comlynx related variables
+		public byte SERDAT { get; set; }
+		private Queue<byte> receiveBuffer = new Queue<byte>(32);
+		//private Queue<byte> transmitBuffer = new Queue<byte>(32);
+		private int transmitCountdown;
+		private int receiveCountdown;
+		// TODO: Factor out receive inactive flag
+		private bool receiveInactive = true;
+
 		// Timers
 		public Timer[] Timers = new Timer[8];
 		
@@ -53,7 +61,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private byte[] VideoMemoryDma;
 		private byte currentLine;
 		private bool RestActive;
-		//private bool RestActive;
 		
 		public Mikey(ILynxDevice lynx)
 		{
@@ -83,7 +90,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 				if (index > 1) Timers[index].PreviousTimer = Timers[index - 2];
 				// TODO: Hook up timer 1 to audio 3 when linked
 
-				Timers[index].Expired += new EventHandler<TimerExpirationEventArgs>(TimerExpired);
+				if (index % 2 != 0) Timers[index].Expired += new EventHandler<TimerExpirationEventArgs>(TimerExpired);
 			}
 
 			// Timer 6 is not part of a group and does not have a timer linked to it
@@ -95,6 +102,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			Timers[2].Expired += new EventHandler<TimerExpirationEventArgs>(DisplayEndOfFrame);
 			// "One of the timers (timer 4) will be used as the baud rate generator for the serial expansion port (UART)."
 			Timers[4].Expired += new EventHandler<TimerExpirationEventArgs>(GenerateBaudRate);
+			Timers[6].Expired += new EventHandler<TimerExpirationEventArgs>(TimerExpired);
 		}
 
 		private void TimerExpired(object sender, TimerExpirationEventArgs e)
@@ -105,7 +113,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			if (timer.StaticControlBits.EnableInterrupt)
 			{
 				// Update interrupt status
-				timerInterruptStatusRegister |= e.InterruptMask; // TODO: Was |=
+				timerInterruptStatusRegister |= e.InterruptMask;
 
 				// Trigger a maskable interrupt
 				//Debug.WriteLineIf(GeneralSwitch.TraceInfo, String.Format("Mikie::Update() - Timer IRQ Triggered at {0:X8}", device.SystemClock.CompatibleCycleCount));
@@ -113,7 +121,62 @@ namespace KillerApps.Emulation.Atari.Lynx
 			}
 		}
 
-		private void GenerateBaudRate(object sender, TimerExpirationEventArgs e) { }
+		private void GenerateBaudRate(object sender, TimerExpirationEventArgs e) 
+		{
+			Timer timer = (Timer)sender;
+
+			if (receiveCountdown == 0 && !receiveInactive)
+			{
+				if (receiveBuffer.Count > 0)
+					SERDAT = receiveBuffer.Dequeue();
+
+				if (receiveBuffer.Count > 0)
+				{
+					receiveCountdown = 11 + 44;
+					receiveInactive = false;
+				}
+				else
+				{
+					receiveInactive = true;
+				}
+				if (SERCTL.ReceiveReady) 
+					SERCTL.OverrunError = true;
+				SERCTL.ReceiveReady = true;
+			}
+			else if (!receiveInactive)
+			{
+				receiveCountdown--;
+			}
+
+			if (transmitCountdown == 0 && !SERCTL.TransmitterDone)
+			{
+				if (SERCTL.TransmitBreak)
+				{
+					// TODO: Implement break transmission
+				}
+				else
+					SERCTL.TransmitterDone = true;
+			}
+			else if (!SERCTL.TransmitterDone)
+				transmitCountdown--;
+
+			// Emulate the UART bug where UART IRQ is level sensitive
+
+			// "Well, we did screw something up after all. 
+			// Both the transmit and receive interrupts are 'level' sensitive, rather than 'edge' sensitive. 
+			// This means that an interrupt will be continuously generated as long as it is enabled and 
+			// its UART buffer is ready. 
+			// As a result, the software must disable the interrupt prior to clearing it. Sorry."
+			if ((SERCTL.TransmitterDone && SERCTL.TransmitterInterruptEnable) || (SERCTL.ReceiveReady && SERCTL.ReceiveInterruptEnable))
+			{
+				// Update interrupt status
+				timerInterruptStatusRegister |= e.InterruptMask;
+
+				// Trigger a maskable interrupt
+				//Debug.WriteLineIf(GeneralSwitch.TraceInfo, String.Format("Mikie::Update() - Timer IRQ Triggered at {0:X8}", device.SystemClock.CompatibleCycleCount));
+				device.Cpu.SignalInterrupt(InterruptType.Irq);
+			}
+		}
 		
 		private void DisplayEndOfFrame(object sender, TimerExpirationEventArgs e) 
 		{
@@ -203,7 +266,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 			IODIR = new ParallelDataDirection(0x00); // reset = 0,0.0.0,0,0,0,0
 			IODAT = new ParallelData(0x00);
 			SYSCTL1 = new SystemControlBits1(0x02); // reset x,x,x,x,x,x,1,0
-			DISPCTL = new DisplayControlBits(0x00);	// reset = 0
+			DISPCTL = new DisplayControlBits(0x00);	// "reset = 0"
+			SERCTL = new SerialControlRegister(0x00); // "reset 0,0,0,0,0,0,0,0"
 		}
 
 		private void ForceTimerUpdate()
@@ -231,8 +295,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 				// Make wakeup time next timer event if earlier than first timer
 				if (device.NextTimerEvent > device.Cpu.ScheduledWakeUpTime) device.NextTimerEvent = device.Cpu.ScheduledWakeUpTime;
 			}
-			//if (device.SystemClock.CompatibleCycleCount >= 0x627d982)
-			//  Trace.WriteLine(String.Format("Time={0:D12}, NextTimer={1:D12}", device.SystemClock.CompatibleCycleCount, device.NextTimerEvent));
+			//Trace.WriteLine(String.Format("Time={0:D12}, NextTimer={1:D12}", device.SystemClock.CompatibleCycleCount, device.NextTimerEvent));
 			device.SystemClock.CompatibleCycleCount += cycleCountAdvance;
 		}
 
@@ -326,6 +389,28 @@ namespace KillerApps.Emulation.Atari.Lynx
 					//if ((IODIR & 0x10) == 0x10)
 					if (IODIR.AudioIn == DataDirection.Output)
 						device.Cartridge.WriteEnabled = IODAT.AudioIn;
+					return;
+
+				case Mikey.Addresses.SERCTL:
+					SERCTL.ByteData = value;
+					// "Once received, these error bits remain set until they are cleared by writing to the control 
+					// byte with the reset error bit set."
+					if (SERCTL.ResetAllErrors)
+					{
+						SERCTL.OverrunError = false;
+						SERCTL.FrameError = false;
+					}
+					if (SERCTL.TransmitBreak) 
+					{ 
+						// TODO: Transmit break signal
+					}
+					return;
+
+				case Mikey.Addresses.SERDAT:
+					transmitCountdown = 11;
+					SERCTL.TransmitterDone = false;
+					//SERDAT = value;
+					ComLynxTransmitLoopback(value);
 					return;
 
 				case Mikey.Addresses.SYSCTL1:
@@ -427,6 +512,20 @@ namespace KillerApps.Emulation.Atari.Lynx
 			//Trace.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Mikey::Poke: Unknown address ${0:X4} specified (value={1:X2}).", address,value));
 		}
 
+		private void ComLynxTransmitLoopback(byte value)
+		{
+			if (receiveBuffer.Count <= 31)
+			{
+				receiveBuffer.Enqueue(value);
+				// It will take 1 + 8 + 1 + 1 bits = 11 timer expirations for single byte to be transmitted
+				receiveCountdown = 11;
+				receiveInactive = false;
+			}
+			else
+				// TODO: Check if this is correct
+				SERCTL.OverrunError = true;
+		}
+
 		public byte Peek(ushort address)
 		{
 			// Timer addresses can be handled separately
@@ -481,6 +580,14 @@ namespace KillerApps.Emulation.Atari.Lynx
 					return value;
 					//byte value = IODAT.ByteData;
 					//return (byte)(value & (IODIR ^ 0xff));
+
+				case Mikey.Addresses.SERCTL:
+					return SERCTL.ByteData;
+
+				case Mikey.Addresses.SERDAT:
+					// TODO: Build real buffer
+					SERCTL.ReceiveReady = false;
+					return SERDAT;
 
 				case Mikey.Addresses.PBKUP:
 					return PBKUP;

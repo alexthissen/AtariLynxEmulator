@@ -21,6 +21,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 			public const ushort IODAT = 0xFD8B; // "Mikey Parallel Data (sort of a R/W)"
 			public const ushort MIKEYHREV = 0xFD88; // "Mikey Hardware Revision, (W)"
 			public const ushort MIKEYSREV = 0xFD89; // "Mikey Software Revision, (W)"
+			public const ushort SERCTL = 0xFD8C; // "Serial Control Register.(R/W)"
+			public const ushort SERDAT = 0xFD8D; // "Serial Data (R/W)"
 			public const ushort SDONEACK = 0xFD90; // "Suzy Done Acknowledge, (W)"
 			public const ushort CPUSLEEP = 0xFD91; // "CPU Bus Request Disable(W)"
 			public const ushort DISPCTL = 0xFD92; // "Video Bus Request Enable, (W)"

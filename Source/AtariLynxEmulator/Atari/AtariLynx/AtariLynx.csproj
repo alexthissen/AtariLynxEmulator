@@ -66,6 +66,7 @@
     <Compile Include="Mikey\DisplayControlBits.cs" />
     <Compile Include="Mikey\DynamicTimerControl.cs" />
     <Compile Include="Mikey\ParallelDataDirection.cs" />
+    <Compile Include="Mikey\SerialControlRegister.cs" />
     <Compile Include="Mikey\TimerExpirationEventArgs.cs" />
     <Compile Include="Mikey\LinkingTimerLogic.cs" />
     <Compile Include="Mikey\Mikey.Addresses.cs" />
@@ -115,12 +116,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Mikey\Timers.cd" />
-    <None Include="Suzy\SpriteRendering.sequencediagram" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Suzy\SpriteRendering.sequencediagram.layout">
-      <DependentUpon>SpriteRendering.sequencediagram</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

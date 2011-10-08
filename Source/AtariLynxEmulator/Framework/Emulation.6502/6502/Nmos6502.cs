@@ -161,6 +161,7 @@ namespace KillerApps.Emulation.Processors
 			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, String.Format("{0:X4} {1}", PC, builder.ToString()));
 			builder.Clear();
 #endif
+			//if (PC == 0xb16e) Debugger.Break();
 
 			// Fetch opcode
 			Opcode = Memory.Peek(PC);

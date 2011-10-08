@@ -25,7 +25,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		// is 1 us or higher powers of two. Shift right by multiplier additional bits from clock select 
 		// to get number of units in clock from cyclecount. Shift left 4 + bits will multiply 
 		// units on clock to cyclecount.
-		public int Multiplier { get { return 4 + (int)Owner.StaticControlBits.SourcePeriod; } }
+		public virtual int Multiplier { get { return 4 + (int)Owner.StaticControlBits.SourcePeriod; } }
 
 		public bool UpdateCurrentValue(ulong currentCycleCount)
 		{

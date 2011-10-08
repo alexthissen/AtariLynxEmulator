@@ -93,6 +93,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		}
 
 		// "This bit must be set to an input. It detects the presence of a plug in the expansion connector."
+		// "There is also a signal called NOEXP which indicates the presence of a plug in the REDEYE socket."
 		// "B2 = noexp input"
 		public bool NoExpansion
 		{

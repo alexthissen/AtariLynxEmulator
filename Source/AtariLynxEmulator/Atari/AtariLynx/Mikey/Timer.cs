@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
-	public class Timer
+	public class Timer: IResetable
 	{
 		public byte InterruptMask { get; private set; }
 		public byte BackupValue { get; set; } // TODO: Revert setter to internal
