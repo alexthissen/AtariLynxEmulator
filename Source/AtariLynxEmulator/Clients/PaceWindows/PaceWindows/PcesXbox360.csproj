@@ -143,7 +143,13 @@
     <None Include="Resources\lite.o" />
     <None Include="Resources\LYNXBOOT.IMG" />
     <None Include="Resources\Mode7.lnx" />
+    <None Include="Resources\Ninja Gaiden.lnx" />
+    <None Include="Resources\Raiden.lnx" />
+    <None Include="Resources\Rampage.lnx" />
+    <None Include="Resources\Rampart.lnx" />
+    <None Include="Resources\Robotron 2084.lnx" />
     <None Include="Resources\Wuerfel.lnx" />
+    <None Include="Resources\Zarlor Mercenary.lnx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Xna.Framework">

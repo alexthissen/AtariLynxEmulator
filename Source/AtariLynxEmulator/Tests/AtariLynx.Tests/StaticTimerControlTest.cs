@@ -39,7 +39,7 @@ namespace AtariLynx.Tests
 		public void ConstructorShouldInitializeProperty()
 		{
 			byte value = 0xFF;
-			StaticTimerControl timerControl = new StaticTimerControl(value);
+			StaticControlBits timerControl = new StaticControlBits(value);
 
 			// Assert
 			Assert.AreEqual<byte>(value, timerControl.ByteData, "Constructor value not set on ByteData property.");
@@ -49,7 +49,7 @@ namespace AtariLynx.Tests
 		public void ByteDataShouldSetCorrectProperties()
 		{
 			byte value = 0xFF;
-			StaticTimerControl timerControl = new StaticTimerControl(value);
+			StaticControlBits timerControl = new StaticControlBits(value);
 
 			// Assert
 			Assert.IsTrue(timerControl.EnableCount, "Count should be enabled.");
@@ -64,7 +64,7 @@ namespace AtariLynx.Tests
 		public void ByteDataShouldSetCorrectProperties2()
 		{
 			byte value = 0x00;
-			StaticTimerControl timerControl = new StaticTimerControl(value);
+			StaticControlBits timerControl = new StaticControlBits(value);
 
 			// Assert
 			Assert.IsFalse(timerControl.EnableCount, "Count should be disabled.");

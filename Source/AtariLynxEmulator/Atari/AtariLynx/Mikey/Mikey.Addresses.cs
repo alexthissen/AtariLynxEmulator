@@ -9,10 +9,34 @@ namespace KillerApps.Emulation.Atari.Lynx
 	{
 		public static class Addresses
 		{
+			// "FD00 -> FD03 Timer channel 0 and Hcount
+			// FD04 -> FD07 Timer channel 1 and mag0a (read current state of TAPE0 in b7)
+			// FD08 -> FD0B Timer channel 2 and Vcount
+			// FD0C -> FD0F Timer channel 3 and mag0b
+			// FD10 -> FD13 Timer channel 4 and ser	ial rate
+			// FD14 -> FD17 Timer channel 5 and mag1a (read current state of TAPE1 in b7)
+			// FD18 -> FD1B Timer channel 6
+			// FD1C -> FD1F Timer channel 7 and mag1b"
 			public const ushort HTIMBKUP = 0xFD00; // "Timer 0 backup value"
 			public const ushort TIM7CTLB = 0xFD1F; // "Timer 7 dynamic control"
+
+			public const ushort AUD0VOL = 0xFD20; // "Timer 0 backup value"
+			public const ushort AUD3MISC = 0xFD3F; // "Timer 7 dynamic control"
+
+			public const ushort ATTENREG0 = 0xFD40;
+			public const ushort ATTENREG1 = 0xFD41;
+			public const ushort ATTENREG2 = 0xFD42;
+			public const ushort ATTENREG3 = 0xFD43;
+			public const ushort MPAN = 0xFD44;
+			public const ushort MSTEREO = 0xFD50;
+
+			// "FD51 -> FD7F = not yet allocated"
+
 			public const ushort INTRST = 0xFD80; // "INTRST.Interrupt Poll 0, (R/W)"
 			public const ushort INTSET = 0xFD81; // "INTSET. Interrupt Poll 1, (R/W)"
+			
+			// "FD82 -> FD83 = not yet allocated"
+
 			public const ushort MAGRDY0 = 0xFD84; // "Mag Tape Channel 0 ready bit.(R)"
 			public const ushort MAGRDY1 = 0xFD85; // "Mag Tape Channel 1 ready bit.(R)"
 			public const ushort AUDIN = 0xFD86; // "Audio In (R)"
@@ -29,6 +53,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 			public const ushort PBKUP = 0xFD93; // "Magic 'P' count, (W)"
 			public const ushort DISPADRL = 0xFD94; // "Start Address of Video Display, (W)"
 			public const ushort DISPADRH = 0xFD95; // "Start Address of Video Display, (W)"
+
+			// "FD96 -> FD9B = not yet allocated"
+
 			public const ushort GREEN0 = 0xFDA0; // "Green color map 0, (R/W)"
 			public const ushort GREEN1 = 0xFDA1; // "Green color map 1, (R/W)"
 			public const ushort GREEN2 = 0xFDA2; // "Green color map 2, (R/W)"

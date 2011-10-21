@@ -10,9 +10,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 	{
 		// Cycle count at moment when current value was reached
 		private ulong CycleCountCurrentValue;
-		protected Timer Owner;
+		protected TimerBase Owner;
+		protected int basePeriod = 0;
 		
-		public ClockedTimerLogic(Timer owner)
+		public ClockedTimerLogic(TimerBase owner)
 		{
 			this.Owner = owner;
 		}
@@ -25,8 +26,16 @@ namespace KillerApps.Emulation.Atari.Lynx
 		// is 1 us or higher powers of two. Shift right by multiplier additional bits from clock select 
 		// to get number of units in clock from cyclecount. Shift left 4 + bits will multiply 
 		// units on clock to cyclecount.
-		public virtual int Multiplier { get { return 4 + (int)Owner.StaticControlBits.SourcePeriod; } }
+		public int Multiplier
+		{ 
+			get { return 4 + basePeriod + (int)Owner.TimerControlBits.SourcePeriod; } 
+		}
 
+		/// <summary>
+		/// Updates the current value of the clock
+		/// </summary>
+		/// <param name="currentCycleCount">The current cycle count of the CPU.</param>
+		/// <returns><c>true</c> if timer has expired, <c>false</c> otherwise.</returns>
 		public bool UpdateCurrentValue(ulong currentCycleCount)
 		{
 			byte value = CalculateValueDecrease(currentCycleCount);

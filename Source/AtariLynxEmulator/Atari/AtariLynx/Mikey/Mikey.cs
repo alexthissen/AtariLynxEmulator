@@ -14,7 +14,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public const int AUDIO_DPRAM_READWRITE_MAX = 20;
 		public const int COLORPALETTE_DPRAM_READWRITE = 5;
 		public const int AVAILABLEHARDWARE_READWRITE = 5;
-		
+
 		private ILynxDevice device;
 		private byte timerInterruptStatusRegister;
 		private byte timerInterruptMask = 0;
@@ -23,26 +23,26 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public byte[] BlueRedColorMap = new byte[0x10];
 		public uint[] ArgbColorMap = new uint[0x10];
 
-		public SystemControlBits1 SYSCTL1 { get; set; }
-		public ParallelData IODAT { get; set; }
-		public DisplayControlBits DISPCTL { get; set; }
-		public ParallelDataDirection IODIR { get; set; }
-		public SerialControlRegister SERCTL { get; set; }
+		private Uart comLynx;
+		public SystemControlBits1 SYSCTL1 { get; private set; }
+		public ParallelData IODAT { get; private set; }
+		public DisplayControlBits DISPCTL { get; private set; }
+		public ParallelDataDirection IODIR { get; private set; }
 		public byte PBKUP { get; set; }
+		public MagTapeChannelReadyBit MAGRDY0 { get; private set; }
+		public MagTapeChannelReadyBit MAGRDY1 { get; private set; }
+		public AudioIn AUDIN { get; private set; }	
 		public Word VideoDisplayStartAddress;
+		public StereoConnection Stereo { get; private set; }
+		public AudioFilter AudioFilter { get; private set; }
 		public bool ComLynxCablePresent;
 		
-		// Comlynx related variables
-		public byte SERDAT { get; set; }
-		private Queue<byte> receiveBuffer = new Queue<byte>(32);
-		//private Queue<byte> transmitBuffer = new Queue<byte>(32);
-		private int transmitCountdown;
-		private int receiveCountdown;
-		// TODO: Factor out receive inactive flag
-		private bool receiveInactive = true;
-
 		// Timers
 		public Timer[] Timers = new Timer[8];
+
+		// "There are four identical audio channels."
+		// "The audio system is mono with 4 voices and a frequency response from 100Hz to 4kHz."
+		public AudioChannel[] AudioChannels = new AudioChannel[4];
 		
 		//private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
 
@@ -65,17 +65,42 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public Mikey(ILynxDevice lynx)
 		{
 			this.device = lynx;
+			this.comLynx = new Uart();
+			this.AudioFilter = new AudioFilter();
+
+			// "reset = x"
+			MAGRDY0 = new MagTapeChannelReadyBit(0);
+			MAGRDY1 = new MagTapeChannelReadyBit(0);
 		}
 
 		public void Initialize()
 		{
 			InitializeTimers();
+			InitializeAudioChannels();
+
 			// TODO: Clean this hack up and use a decent way to get at the LCD screen memory
 			LcdScreenDma = ((LynxHandheld)device).LcdScreenDma;
 			// TODO: Another hack to avoid rendering when timer 2 has only just started
 			currentLcdDmaCounter = -1;
 			VideoMemoryDma = device.Ram.GetDirectAccess();
 			for (int index = 0; index <= 0x0F; index++) ArgbColorMap[index] = 0xFF000000;
+		}
+
+		private void InitializeAudioChannels()
+		{
+			for (int index = 0; index < AudioChannels.Length; index++)
+			{
+				AudioChannel channel = new AudioChannel();
+
+				// "FD28 -> FD2F Audio channel 1, links from audio timer 0"
+				// "FD30 -> FD37 Audio channel 2, links from audio timer 1"
+				// "FD38 -> FD3F Audio channel 3, links trom audio timer 2"
+				if (index > 0) channel.PreviousTimer = AudioChannels[index - 1];
+				AudioChannels[index] = channel;
+			}
+
+			// "FD20 -> FD27 Audio channel 0, links from timer 7"
+			AudioChannels[0].PreviousTimer = Timers[7];
 		}
 
 		private void InitializeTimers()
@@ -121,53 +146,12 @@ namespace KillerApps.Emulation.Atari.Lynx
 			}
 		}
 
-		private void GenerateBaudRate(object sender, TimerExpirationEventArgs e) 
+		public void GenerateBaudRate(object sender, TimerExpirationEventArgs e)
 		{
 			Timer timer = (Timer)sender;
 
-			if (receiveCountdown == 0 && !receiveInactive)
-			{
-				if (receiveBuffer.Count > 0)
-					SERDAT = receiveBuffer.Dequeue();
-
-				if (receiveBuffer.Count > 0)
-				{
-					receiveCountdown = 11 + 44;
-					receiveInactive = false;
-				}
-				else
-				{
-					receiveInactive = true;
-				}
-				if (SERCTL.ReceiveReady) 
-					SERCTL.OverrunError = true;
-				SERCTL.ReceiveReady = true;
-			}
-			else if (!receiveInactive)
-			{
-				receiveCountdown--;
-			}
-
-			if (transmitCountdown == 0 && !SERCTL.TransmitterDone)
-			{
-				if (SERCTL.TransmitBreak)
-				{
-					// TODO: Implement break transmission
-				}
-				else
-					SERCTL.TransmitterDone = true;
-			}
-			else if (!SERCTL.TransmitterDone)
-				transmitCountdown--;
-
-			// Emulate the UART bug where UART IRQ is level sensitive
-
-			// "Well, we did screw something up after all. 
-			// Both the transmit and receive interrupts are 'level' sensitive, rather than 'edge' sensitive. 
-			// This means that an interrupt will be continuously generated as long as it is enabled and 
-			// its UART buffer is ready. 
-			// As a result, the software must disable the interrupt prior to clearing it. Sorry."
-			if ((SERCTL.TransmitterDone && SERCTL.TransmitterInterruptEnable) || (SERCTL.ReceiveReady && SERCTL.ReceiveInterruptEnable))
+			bool fireInterrupt = comLynx.GenerateBaudRate();
+			if (fireInterrupt)
 			{
 				// Update interrupt status
 				timerInterruptStatusRegister |= e.InterruptMask;
@@ -259,15 +243,21 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public void Reset()
 		{
+			comLynx.Reset();
+
 			Initialize();
 
 			// SDONEACK = 0 "(not acked)"
 			timerInterruptMask = timerInterruptStatusRegister = 0;
-			IODIR = new ParallelDataDirection(0x00); // reset = 0,0.0.0,0,0,0,0
+			IODIR = new ParallelDataDirection(0x00); // "reset = 0,0.0.0,0,0,0,0"
 			IODAT = new ParallelData(0x00);
-			SYSCTL1 = new SystemControlBits1(0x02); // reset x,x,x,x,x,x,1,0
+			SYSCTL1 = new SystemControlBits1(0x02); // "reset x,x,x,x,x,x,1,0"
 			DISPCTL = new DisplayControlBits(0x00);	// "reset = 0"
-			SERCTL = new SerialControlRegister(0x00); // "reset 0,0,0,0,0,0,0,0"
+			AUDIN = new AudioIn(0x80); // "reset = b7,0,0,0,0,0,0,0"
+
+			// "Audio are reset to 0, all are read/write"
+			// TODO: Reset audio registers to zero
+			Stereo = new StereoConnection();
 		}
 
 		private void ForceTimerUpdate()
@@ -278,25 +268,66 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public void Update() 
 		{
+			// "The 4 audio channels are mixed digitally and a pulse width modulated waveform is 
+			// output from Mikey to the audio filter. This filter is a 1 pole low pass fitter with a 
+			sbyte sample = MixAudioSample();
+			AudioFilter.Output(device.SystemClock.CompatibleCycleCount, sample);
+
 			ulong cycleCountAdvance = 0;
+			// Take lowest timer 
+			ulong nextTimer = UInt64.MaxValue;
+
 			//Debug.WriteLineIf(GeneralSwitch.TraceVerbose, "Mikey::Update");
 			foreach (Timer timer in Timers)
 			{
 				cycleCountAdvance += timer.Update(device.SystemClock.CompatibleCycleCount);
+				if (timer.StaticControlBits.EnableCount && (timer.ExpirationTime < nextTimer))
+					nextTimer = timer.ExpirationTime;
+			}
+			foreach (AudioChannel channel in AudioChannels)
+			{
+				channel.Update(device.SystemClock.CompatibleCycleCount);
+				if (channel.AudioControl.EnableCount && (channel.ExpirationTime < nextTimer))
+					nextTimer = channel.ExpirationTime;
 			}
 
 			// Take lowest timer 
-			device.NextTimerEvent = ulong.MaxValue;
-			var clocks = Timers.Where(t => t.StaticControlBits.EnableCount);
-			if (clocks.Count() > 0) device.NextTimerEvent = clocks.Min(t => t.ExpirationTime);
+			device.NextTimerEvent = nextTimer;
+			//var clocks = Timers.Where(t => t.StaticControlBits.EnableCount);
+			//if (clocks.Count() > 0) device.NextTimerEvent = clocks.Min(t => t.ExpirationTime);
 
 			if (device.Cpu.IsAsleep)
 			{
 				// Make wakeup time next timer event if earlier than first timer
 				if (device.NextTimerEvent > device.Cpu.ScheduledWakeUpTime) device.NextTimerEvent = device.Cpu.ScheduledWakeUpTime;
 			}
+
 			//Trace.WriteLine(String.Format("Time={0:D12}, NextTimer={1:D12}", device.SystemClock.CompatibleCycleCount, device.NextTimerEvent));
 			device.SystemClock.CompatibleCycleCount += cycleCountAdvance;
+		}
+
+		private sbyte MixAudioSample()
+		{
+			long sample = 0;
+			int mixedChannels = 0;
+
+			for (int index = 0; index < 4; index++)
+			{
+				if (!Stereo.LeftEar.AudioChannelDisabled[index])
+				{
+					sample += AudioChannels[index].OutputValue;
+					mixedChannels++;
+				}
+			}
+			if (mixedChannels != 0)
+			{
+				sample += 128 * mixedChannels;
+				sample /= mixedChannels;
+			}
+			else
+				sample = 128;
+
+			return (sbyte)sample;
 		}
 
 		public void Poke(ushort address, byte value)
@@ -315,7 +346,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 						return;
 
 					case 1: // Static control
-						StaticTimerControl control = new StaticTimerControl(value);
+						StaticControlBits control = new StaticControlBits(value);
 						timer.StaticControlBits = control;
 
 						// "It is set on time out, reset with the reset timer done bit (xxx1, B6)"
@@ -341,9 +372,65 @@ namespace KillerApps.Emulation.Atari.Lynx
 				}
 			}
 
+			if (address >= Mikey.Addresses.AUD0VOL && address <= Mikey.Addresses.AUD3MISC)
+			{
+				int offset = address - Mikey.Addresses.AUD0VOL;
+				int index = offset >> 3; // Divide by 8 to get index of audio channel
+				AudioChannel channel = AudioChannels[index];
+
+				// "FD20 -> FD27 Audio channel 0, links from timer 7"
+				// "FD28 -> FD2F Audio channel 1, links from audio timer 0"
+				// "FD30 -> FD37 Audio channel 2, links from audio timer 1"
+				// "FD38 -> FD3F Audio channel 3, links trom audio timer 2"
+				switch (offset % 8)
+				{
+					case 0: // "8 bit. 2's Complement Volume Control"
+						channel.VolumeControl = (sbyte)value;
+						return;
+					
+					case 1: // "Shift register feedback enable"
+						channel.FeedbackEnable.ByteData = value;
+						return;
+
+					case 2: // "Audio output value"
+						channel.OutputValue = (sbyte)value;
+						return;
+
+					case 3: // "Lower 8 Bits of Shift Register"
+						channel.LowerShiftRegister = value;
+						return;
+
+					case 4: // "Audio Timer Backup Value"
+						channel.BackupValue = value;
+						return;
+
+					case 5: // "Audio Control Bits"
+						channel.AudioControl.ByteData = value;
+						return;
+
+					case 6: // "Audio counter"
+						channel.CurrentValue = value;
+						return;
+
+					case 7: // "Other control bits"
+						channel.OtherControlBits = value; 
+						return;
+				}
+			}
+
 			// Handle other addresses
 			switch (address)
 			{
+				case Mikey.Addresses.MSTEREO:
+					// "The Howard boards were not yet finished, so we went ahead and implemented this stereo on them. 
+					// This form of stereo was channel switching controlled by FD50."
+					// TODO: Implement stereo
+					return;
+
+				case Mikey.Addresses.MPAN:
+					// TODO: Implement panning
+					return;
+
 				case Mikey.Addresses.INTRST:
 					// "Read is a poll, write will reset the int that corresponds to a set bit."
 					value ^= 0xff;
@@ -378,39 +465,23 @@ namespace KillerApps.Emulation.Atari.Lynx
 				case Mikey.Addresses.IODAT:
 					IODAT.ByteData = value;
 
-					//Debug.WriteLineIf(((IODIR & 0x08) == 0) & GeneralSwitch.TraceInfo, "MikeyChipsetPoke(IODAT): Rest is not set to output.");
-					//Debug.WriteLineIf(((IODIR & 0x02) == 0) & GeneralSwitch.TraceInfo, "MikeyChipsetPoke(IODAT): CartAddressData is not set to output.");
-
 					// "One is that it is the data pin for the shifter that holds the cartridge address."
 					device.Cartridge.CartAddressData(IODAT.CartAddressData);
+				
 					// "The other is that it controls power to the cartridge."
 					device.CartridgePowerOn = !IODAT.CartPowerOff;
+
 					// "In its current use, it is the write enable line for writeable elements in the cartridge."
-					//if ((IODIR & 0x10) == 0x10)
 					if (IODIR.AudioIn == DataDirection.Output)
 						device.Cartridge.WriteEnabled = IODAT.AudioIn;
 					return;
 
 				case Mikey.Addresses.SERCTL:
-					SERCTL.ByteData = value;
-					// "Once received, these error bits remain set until they are cleared by writing to the control 
-					// byte with the reset error bit set."
-					if (SERCTL.ResetAllErrors)
-					{
-						SERCTL.OverrunError = false;
-						SERCTL.FrameError = false;
-					}
-					if (SERCTL.TransmitBreak) 
-					{ 
-						// TODO: Transmit break signal
-					}
+					comLynx.SetSerialControlRegister(value);
 					return;
 
 				case Mikey.Addresses.SERDAT:
-					transmitCountdown = 11;
-					SERCTL.TransmitterDone = false;
-					//SERDAT = value;
-					ComLynxTransmitLoopback(value);
+					comLynx.TransmitSerialData(value);
 					return;
 
 				case Mikey.Addresses.SYSCTL1:
@@ -512,20 +583,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 			//Trace.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Mikey::Poke: Unknown address ${0:X4} specified (value={1:X2}).", address,value));
 		}
 
-		private void ComLynxTransmitLoopback(byte value)
-		{
-			if (receiveBuffer.Count <= 31)
-			{
-				receiveBuffer.Enqueue(value);
-				// It will take 1 + 8 + 1 + 1 bits = 11 timer expirations for single byte to be transmitted
-				receiveCountdown = 11;
-				receiveInactive = false;
-			}
-			else
-				// TODO: Check if this is correct
-				SERCTL.OverrunError = true;
-		}
-
 		public byte Peek(ushort address)
 		{
 			// Timer addresses can be handled separately
@@ -551,17 +608,68 @@ namespace KillerApps.Emulation.Atari.Lynx
 				}
 			}
 
+			if (address >= Mikey.Addresses.AUD0VOL && address <= Mikey.Addresses.AUD3MISC)
+			{
+				int offset = address - Mikey.Addresses.AUD0VOL;
+				int index = offset >> 3; // Divide by 8 to get index of audio channel
+				AudioChannel channel = AudioChannels[index];
 
-			// TODO: Fix when audio is really implemented
-			if (address >= 0xFD20 && address <= 0xFD3F)
-				return 0;
+				switch (offset % 8)
+				{
+					case 0: // "8 bit. 2's Complement Volume Control"
+						return (byte)channel.VolumeControl;
+
+					case 1: // "Shift register feedback enable"
+						return channel.FeedbackEnable.ByteData;
+
+					case 2: // "Audio output value"
+						return (byte)channel.OutputValue;
+
+					case 3: // "Lower 8 Bits of Shift Register"
+						return channel.LowerShiftRegister;
+
+					case 4: // "Audio Timer Backup Value"
+						return channel.BackupValue;
+
+					case 5: // "Audio Control Bits"
+						return channel.AudioControl.ByteData;
+
+					case 6: // "Audio counter"
+						return channel.CurrentValue;
+
+					case 7: // "Other control bits"
+						return channel.OtherControlBits;
+				}
+			}
 
 			switch (address)
 			{
+				case Mikey.Addresses.MSTEREO:
+					// "The Howard boards were not yet finished, so we went ahead and implemented this stereo on them. 
+					// This form of stereo was channel switching controlled by FD50."
+					// TODO: Implement stereo
+					return 0x00;
+
+				case Mikey.Addresses.MPAN:
+					// TODO: Implement panning
+					return 0x00;
+
 				case Mikey.Addresses.INTSET:
 				case Mikey.Addresses.INTRST:
 					// "The software reads either the INTSET or INTRST registers (they have duplicate information) ..."
 					return timerInterruptStatusRegister;
+
+				case Mikey.Addresses.MAGRDY0:
+					byte magReady0 = MAGRDY0.ByteData;
+					// "B7=edge (1) Reset upon read."
+					MAGRDY0.Edge = false;
+					return magReady0;
+					
+				case Mikey.Addresses.MAGRDY1:
+					byte magReady1 = MAGRDY0.ByteData;
+					// "B7=edge (1) Reset upon read."
+					MAGRDY0.Edge = false;
+					return magReady1;
 
 				case Mikey.Addresses.IODIR:
 					return this.IODIR.ByteData;
@@ -582,12 +690,12 @@ namespace KillerApps.Emulation.Atari.Lynx
 					//return (byte)(value & (IODIR ^ 0xff));
 
 				case Mikey.Addresses.SERCTL:
-					return SERCTL.ByteData;
+					return comLynx.SERCTL.ByteData;
 
 				case Mikey.Addresses.SERDAT:
 					// TODO: Build real buffer
-					SERCTL.ReceiveReady = false;
-					return SERDAT;
+					comLynx.SERCTL.ReceiveReady = false;
+					return comLynx.SERDAT;
 
 				case Mikey.Addresses.PBKUP:
 					return PBKUP;

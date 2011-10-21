@@ -39,11 +39,11 @@ namespace AtariLynx.Tests
 		[TestInitialize()]
 		public void MyTestInitialize() 
 		{
-			expiringTimer = new Timer(interruptMask) { StaticControlBits = new StaticTimerControl(0x08), CurrentValue = 0 };
-			reloadingTimer = new Timer(interruptMask) { StaticControlBits = new StaticTimerControl(0x18), CurrentValue = 0, BackupValue = backupValue };
-			nonReloadingTimer = new Timer(interruptMask) { StaticControlBits = new StaticTimerControl(0x08), CurrentValue = 0 };
-			clockedTimer = new Timer(interruptMask) { StaticControlBits = new StaticTimerControl(0x08), CurrentValue = currentValue };
-			linkingTimer = new Timer(interruptMask) { StaticControlBits = new StaticTimerControl(0x0F), CurrentValue = currentValue };
+			expiringTimer = new Timer(interruptMask) { StaticControlBits = new StaticControlBits(0x08), CurrentValue = 0 };
+			reloadingTimer = new Timer(interruptMask) { StaticControlBits = new StaticControlBits(0x18), CurrentValue = 0, BackupValue = backupValue };
+			nonReloadingTimer = new Timer(interruptMask) { StaticControlBits = new StaticControlBits(0x08), CurrentValue = 0 };
+			clockedTimer = new Timer(interruptMask) { StaticControlBits = new StaticControlBits(0x08), CurrentValue = currentValue };
+			linkingTimer = new Timer(interruptMask) { StaticControlBits = new StaticControlBits(0x0F), CurrentValue = currentValue };
 		}
 
 		//
@@ -69,7 +69,7 @@ namespace AtariLynx.Tests
 			Timer timer = new Timer(interruptMask);
 			timer.CurrentValue = currentValue;
 			timer.BackupValue = backupValue;
-			timer.StaticControlBits = new StaticTimerControl(0xFF);
+			timer.StaticControlBits = new StaticControlBits(0xFF);
 			timer.DynamicControlBits.TimerDone = true;
 			
 			// Act 
@@ -87,7 +87,7 @@ namespace AtariLynx.Tests
 		public void SettingLinkingSourcePeriodShouldSetLinkedTimerLogic()
 		{
 			Timer timer = new Timer(interruptMask);
-			timer.StaticControlBits = new StaticTimerControl(0x07);
+			timer.StaticControlBits = new StaticControlBits(0x07);
 
 			Assert.IsInstanceOfType(timer.TimerLogic, typeof(LinkingTimerLogic), "Linked timer logic not set for Linking source period.");
 		}
@@ -96,7 +96,7 @@ namespace AtariLynx.Tests
 		public void SettingClockSourcePeriodShouldSetClockedTimerLogic()
 		{
 			Timer timer = new Timer(interruptMask);
-			timer.StaticControlBits = new StaticTimerControl(0x01);
+			timer.StaticControlBits = new StaticControlBits(0x01);
 
 			Assert.IsInstanceOfType(timer.TimerLogic, typeof(ClockedTimerLogic), "Clocked timer logic not set for non-Linking source period.");
 		}
@@ -107,7 +107,7 @@ namespace AtariLynx.Tests
 			// Arrange 
 			Timer timer = new Timer(interruptMask);
 			timer.CurrentValue = 0;
-			timer.StaticControlBits = new StaticTimerControl(0x88); // Enable interrupt and count
+			timer.StaticControlBits = new StaticControlBits(0x88); // Enable interrupt and count
 			Assert.IsTrue(timer.StaticControlBits.EnableInterrupt, "Interrupt not enabled before Act.");
 			
 			byte receivedInterruptMask = 0;
@@ -127,7 +127,7 @@ namespace AtariLynx.Tests
 		public void DisabledTimerShouldNotUpdateCurrentValue()
 		{
 			// Arrange
-			clockedTimer.StaticControlBits = new StaticTimerControl(0); // Disabled timer
+			clockedTimer.StaticControlBits = new StaticControlBits(0); // Disabled timer
 			clockedTimer.Start(0);
 
 			// Act

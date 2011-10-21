@@ -6,49 +6,53 @@ using System.Diagnostics;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
-	public class Timer: IResetable
+	public class Timer: TimerBase
 	{
 		public byte InterruptMask { get; private set; }
-		public byte BackupValue { get; set; } // TODO: Revert setter to internal
-		public event EventHandler<TimerExpirationEventArgs> Expired;
-		internal ITimerLogic TimerLogic;
-		private StaticTimerControl staticControlBits;
-		public Timer PreviousTimer { get; internal set; }
-		public ulong ExpirationTime { get; private set; }
-		public DynamicTimerControl DynamicControlBits { get; protected set; }
-		public byte CurrentValue { get; set; }
+		private StaticControlBits staticControlBits;
 
-		public StaticTimerControl StaticControlBits
+		public Timer(byte interruptMask)
+			: base()
+		{
+			InterruptMask = interruptMask;
+			StaticControlBits = new StaticControlBits(0);
+		}
+
+		public StaticControlBits StaticControlBits
 		{
 			get { return staticControlBits; }
 			set
 			{
 				staticControlBits = value;
-				TimerLogic = TimerLogicFactory.CreateTimerLogic(this, staticControlBits, TimerLogic);
+
+				// Timer 4 (UART for ComLynx) has different clocking logic
+				if (InterruptMask == 0x10)
+				{
+					// TODO: Check if UART timer logic needs to be initialized from current timer
+					TimerLogic = new UartTimerLogic(this);
+				}
+				else
+					TimerLogic = TimerLogicFactory.CreateTimerLogic(this, staticControlBits.SourcePeriod, TimerLogic);
 			}
 		}
 
-		public Timer(byte interruptMask)
+		public override TimerControlBase TimerControlBits
 		{
-			InterruptMask = interruptMask;
-			StaticControlBits = new StaticTimerControl(0);
-			DynamicControlBits = new DynamicTimerControl(0);
+			get { return staticControlBits; }
 		}
 
 		// "Timers are reset to 0"
-		public void Reset()
+		public override void Reset()
 		{
-			BackupValue = 0;
+			base.Reset();
 			StaticControlBits.ByteData = 0;
-			CurrentValue = 0;
-			DynamicControlBits.ByteData = 0;
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <returns>Number of system cycles used by work in timer interrupt</returns>
-		public ulong Update(ulong currentCycleCount)
+		public override ulong Update(ulong currentCycleCount)
 		{
 			ulong cyclesInterrupt = 0;
 
@@ -60,7 +64,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 				DynamicControlBits.BorrowOut = false;
 				DynamicControlBits.BorrowIn = false; // TODO: Find out why and when borrow-in is set
 
-				// Calculate new current value and update is necessary
+				// Calculate new current value and update if necessary
 				bool expired = TimerLogic.UpdateCurrentValue(currentCycleCount);
 
 				// When timer value has expired it will borrow out
@@ -74,7 +78,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			return cyclesInterrupt;
 		}
 
-		protected virtual ulong Expire()
+		protected ulong Expire()
 		{
 			ulong cyclesInterrupt = 0;
 
@@ -86,24 +90,11 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// Reload if neccessary
 			CurrentValue = StaticControlBits.EnableReload ? BackupValue : (byte)0;
 
-			if (Expired != null)
-			{
-				TimerExpirationEventArgs args = new TimerExpirationEventArgs(this.InterruptMask);
-				Expired(this, args);
-				cyclesInterrupt = args.CyclesInterrupt;
-			}
+			TimerExpirationEventArgs args = new TimerExpirationEventArgs(this.InterruptMask);
+			OnExpire(args);
+			cyclesInterrupt = args.CyclesInterrupt;
 			
 			return cyclesInterrupt;
-		}
-
-		public void Start(ulong cycleCount)
-		{
-			// Starting a timer will force an update
-			//Update(cycleCount);
-			//TimerLogic.UpdateCurrentValue(cycleCount);
-
-			// Delegate down to internal logic
-			TimerLogic.Start(cycleCount);
 		}
 	}
 }

@@ -53,11 +53,14 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AudioChannelTest.cs" />
+    <Compile Include="AudioControlBitsTest.cs" />
     <Compile Include="MemoryManagementUnitTest.cs" />
     <Compile Include="MemoryMapControl.cs" />
     <Compile Include="MikeyTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LynxHandheldTest.cs" />
+    <Compile Include="ShiftRegisterFeedbackEnableTest.cs" />
     <Compile Include="ShiftRegisterTest.cs" />
     <Compile Include="SpriteCollisionNumberTest.cs" />
     <Compile Include="SpriteControlBits0Test.cs" />

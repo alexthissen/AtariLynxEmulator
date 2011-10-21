@@ -111,6 +111,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 			}
 
 			MathEFGH = BitConverter.GetBytes(EFGH);
+#if XBOX360
+			MathEFGH.Reverse();
+#endif
 
 			if (SPRSYS.Accumulate)
 			{
@@ -132,6 +135,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 				// TODO: "BIG NOTE: Unsafe access is broken for math operations. Please reset it after every math operation or it will not be useful for sprite operations. "
 				// Save accumulated result
 				MathJKLM = BitConverter.GetBytes(accumulate);
+#if XBOX360
+				MathJKLM.Reverse();
+#endif
 			}
 
 			SPRSYS.MathInProcess = false;
@@ -202,6 +208,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 				MathABCD = BitConverter.GetBytes(ABCD);
 				MathJKLM = BitConverter.GetBytes(JKLM);
+#if XBOX360
+				MathABCD.Reverse();
+				MathJKLM.Reverse();
+#endif
 
 				// "As a courtesy, the hardware will set J,K to zero so that the software can treat the remainder
 				// as a 32 bit number."

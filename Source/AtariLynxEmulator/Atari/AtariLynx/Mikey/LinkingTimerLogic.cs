@@ -9,9 +9,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 	{
 		// TODO: Find out what last link carrying is meant for
 		public bool LastLinkCarry { get; private set; }
-		private Timer Owner;
+		private TimerBase Owner;
 		
-		public LinkingTimerLogic(Timer owner)
+		public LinkingTimerLogic(TimerBase owner)
 		{
 			this.Owner = owner;
 		}

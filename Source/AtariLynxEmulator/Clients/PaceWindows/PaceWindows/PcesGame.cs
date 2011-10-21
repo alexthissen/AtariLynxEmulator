@@ -1,6 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using KillerApps.Emulation.Atari.Lynx;
+using KillerApps.Emulation.Processors;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -8,10 +12,6 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
-using KillerApps.Emulation.Atari.Lynx;
-using System.Diagnostics;
-using System.IO;
-using KillerApps.Emulation.Processors;
 
 namespace KillerApps.Gaming.Atari
 {
@@ -20,17 +20,25 @@ namespace KillerApps.Gaming.Atari
 	/// </summary>
 	public class PcesGame : Game
 	{
+		// Emulator 
+		private LynxHandheld emulator;
+		private ContentManager romContent;
+
+		// Video
 		private GraphicsDeviceManager graphics;
 		private SpriteBatch spriteBatch;
-		private LynxHandheld emulator;
 		private Texture2D lcdScreen;
 		private SpriteFont font;
-		private ContentManager romContent;
-		private InputHandler inputHandler;
-
-		private const int magnification = 4;
+		private const int magnification = 5;
 		private const int graphicsWidth = Suzy.SCREEN_WIDTH * magnification;
 		private const int graphicsHeight = Suzy.SCREEN_HEIGHT * magnification;
+
+		// Input
+		private InputHandler inputHandler;
+
+		// Audio
+		private byte[] soundBuffer;
+		private DynamicSoundEffectInstance dynamicSound;
 
 		public PcesGame()
 		{
@@ -48,17 +56,30 @@ namespace KillerApps.Gaming.Atari
 		protected override void Initialize()
 		{
 			Content.RootDirectory = "Content";
-
-			graphics.PreferredBackBufferWidth = graphicsWidth;
-			graphics.PreferredBackBufferHeight = graphicsHeight;
-			graphics.IsFullScreen = false;
-			graphics.ApplyChanges();
-
+			Window.Title = "Portable Color Entertainment System";
+			Window.AllowUserResizing = false;
 			IsFixedTimeStep = true;
 			TargetElapsedTime = TimeSpan.FromMilliseconds(6); // 60Hz
 
-			lcdScreen = new Texture2D(graphics.GraphicsDevice, Suzy.SCREEN_WIDTH, Suzy.SCREEN_HEIGHT, false, SurfaceFormat.Color);
+			InitializeVideo();
+			InitializeEmulator();
+			InitializeAudio();
 
+#if WINDOWS_PHONE
+			inputHandler = new TouchHandler(this, Content, spriteBatch);
+#elif WINDOWS
+			inputHandler = new KeyboardHandler(this);
+#elif XBOX360
+			inputHandler = new GamePadHandler(this);
+#endif
+			Components.Add(inputHandler);
+			Components.Add(new FrameRateCounter(this));
+			
+			base.Initialize();
+		}
+
+		private void InitializeEmulator()
+		{
 			// Lynx related
 			emulator.BootRomImage = new MemoryStream(Roms.LYNXBOOT);
 			LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
@@ -80,24 +101,32 @@ namespace KillerApps.Gaming.Atari
 			//emulator.Mikey.Timers[2].BackupValue = 0x68;
 			//emulator.Mikey.Timers[2].StaticControlBits = new StaticTimerControl(0x1F);
 			//emulator.Mikey.DISPCTL.ByteData = 0x09;
+		}
 
-			Window.Title = "Portable Color Entertainment System";
-			Window.AllowUserResizing = false;
+		private void InitializeVideo()
+		{
+			graphics.PreferredBackBufferWidth = graphicsWidth;
+			graphics.PreferredBackBufferHeight = graphicsHeight;
+			graphics.IsFullScreen = false;
+			graphics.ApplyChanges();
 
+			lcdScreen = new Texture2D(graphics.GraphicsDevice, Suzy.SCREEN_WIDTH, Suzy.SCREEN_HEIGHT, false, SurfaceFormat.Color);
 			spriteBatch = new SpriteBatch(GraphicsDevice);
-			
-			Components.Add(new FrameRateCounter(this));
+		}
 
-#if WINDOWS_PHONE
-			inputHandler = new TouchHandler(this, Content, spriteBatch);
-#elif WINDOWS
-			inputHandler = new KeyboardHandler(this);
-#elif XBOX360
-			inputHandler = new GamePadHandler(this);
-#endif
-			Components.Add(inputHandler);
-			
-			base.Initialize();
+		private void InitializeAudio()
+		{
+			dynamicSound = new DynamicSoundEffectInstance(22050, AudioChannels.Mono);
+			soundBuffer = new byte[dynamicSound.GetSampleSizeInBytes(TimeSpan.FromMilliseconds(250))];
+			dynamicSound.BufferNeeded += new EventHandler<EventArgs>(DynamicSoundBufferNeeded);
+			dynamicSound.Play();
+		}
+
+		private void DynamicSoundBufferNeeded(object sender, EventArgs e)
+		{
+			byte[] buffer = emulator.Mikey.AudioFilter.Buffer;
+			dynamicSound.SubmitBuffer(buffer, 0, buffer.Length / 2);
+			dynamicSound.SubmitBuffer(buffer, buffer.Length / 2, buffer.Length / 2);
 		}
 
 		/// <summary>
@@ -106,12 +135,6 @@ namespace KillerApps.Gaming.Atari
 		/// </summary>
 		protected override void LoadContent()
 		{
-			byte[] ram = new byte[0x3FC0 * 4];
-			for (int i = 0; i < 0x3FC0 * 4; i++)
-			{
-				ram[i] = 0x00;
-			}
-
 			// Use this.Content to load your game content here
 			font = Content.Load<SpriteFont>("DefaultFont");
 		}
@@ -132,7 +155,7 @@ namespace KillerApps.Gaming.Atari
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Update(GameTime gameTime)
 		{
-			//if (controlHandler.ExitGame == true)
+			//if (inputHandler.ExitGame == true)
 			//	this.Exit();
 
 			JoystickStates joystick = inputHandler.Joystick;
@@ -140,6 +163,13 @@ namespace KillerApps.Gaming.Atari
 			emulator.Update(50000);
 
 			base.Update(gameTime);
+		}
+
+		protected override void OnExiting(object sender, EventArgs args)
+		{
+			// Stop sound before exiting
+			if (dynamicSound.State != SoundState.Stopped) dynamicSound.Stop(true);
+			base.OnExiting(sender, args);
 		}
 
 		/// <summary>

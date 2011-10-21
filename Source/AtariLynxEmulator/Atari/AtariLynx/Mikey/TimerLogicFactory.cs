@@ -7,16 +7,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 {
 	public class TimerLogicFactory
 	{
-		public static ITimerLogic CreateTimerLogic(Timer owner, StaticTimerControl control, ITimerLogic currentTimerLogic)
+		public static ITimerLogic CreateTimerLogic(TimerBase owner, ClockSelect sourcePeriod, ITimerLogic currentTimerLogic)
 		{
-			// Timer 4 (UART for ComLynx) has different clocking logic
-			if (owner.InterruptMask == 0x10)
-			{
-				// TODO: Check if UART timer logic needs to be initialized from current timer
-				return new UartTimerLogic(owner);
-			}
-
-			if (control.SourcePeriod == ClockSelect.Linking)
+			if (sourcePeriod == ClockSelect.Linking)
 			{
 				return new LinkingTimerLogic(owner);
 			}

@@ -28,6 +28,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public ulong NextTimerEvent { get; set; }
 		public bool NewVideoFrameAvailable { get; set; }
 
+		public const int SYSTEM_FREQ = 16000000;
+
 		//private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
 
 		public void Initialize()
