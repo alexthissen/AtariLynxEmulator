@@ -15,5 +15,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public bool VStretch;
 		public bool DontCollide;
+		public bool EveronEnabled;
 	}
 }

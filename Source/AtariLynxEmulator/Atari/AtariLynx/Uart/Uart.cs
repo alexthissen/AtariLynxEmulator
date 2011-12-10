@@ -5,6 +5,9 @@ using System.Text;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
+	// TODO: Use and place comment at right place
+	// "The interrupt bit for timer 4 (UART baud rate) is driven by receiver or 
+	// transmitter ready bit of the UART."
 	internal class Uart: IResetable
 	{
 		// Comlynx related variables

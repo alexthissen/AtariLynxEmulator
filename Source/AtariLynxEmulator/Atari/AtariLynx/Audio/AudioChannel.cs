@@ -15,6 +15,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		// 9 outputs of the 12 bit shift register are individually selectable as inputs to a large exclusive or gate."
 		public ushort ShiftRegister { get; private set; }
 		private ushort tapSelector = 0x0000;
+		private static int[] switches = { 0, 1, 2, 3, 4, 5, 7, 10, 11 };
+		private AudioControlBits audioControlBits;
 	
 		// "Note: registers only exist on MIKEY rev 2 and later"
 		// "Four bit attenuation values range from 0000 = silent to 1111 = 15/16 volume"
@@ -52,7 +54,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		{
 			base.Reset();
 
-			// "Audio are rest to 0, all are read/write"
+			// "Audio are reset to 0, all are read/write"
 			VolumeControl = 0x00;
 			AudioControl.ByteData = 0x00;
 			FeedbackEnable.ByteData = 0x00;
@@ -86,7 +88,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		// This is how we achieve a 50% duty cycle for 0 volume. 
 		// (we did it right for the upper nybble) 
 		// This error results in a single glitch in the sound when the value transitions from 8 to 9. 
-		// The effect is at most, 1/1 6 of the max volume for one tick of the 0/A clock, 
+		// The effect is at most, 1/16 of the max volume for one tick of the 0/A clock, 
 		// and is generally not noticed."
 
 		protected void Expire()
@@ -132,17 +134,17 @@ namespace KillerApps.Emulation.Atari.Lynx
 				else
 				{
 					// "In normal mode, shift reg 0 = 0: contains 2's complement of volume register."
-					OutputValue = (sbyte)(-1*VolumeControl);
+					OutputValue = (sbyte)-VolumeControl;
 				}
 			}
 		}
 
 		public override ulong Update(ulong currentCycleCount)
 		{
-			// Only enabled and not-done timers should predict expiration time
 			ExpirationTime = ulong.MaxValue;
 
-			if (AudioControl.EnableCount && (AudioControl.EnableReload || !DynamicControlBits.TimerDone) 
+			// Only enabled and not-done timers should predict expiration time
+			if (AudioControl.EnableCount && (AudioControl.EnableReload || !DynamicControlBits.TimerDone)
 				&& VolumeControl != 0 && BackupValue != 0)
 			{
 				// Assume timer has not expired and is not updated
@@ -152,12 +154,12 @@ namespace KillerApps.Emulation.Atari.Lynx
 				// Calculate new current value and update if necessary
 				bool expired = TimerLogic.UpdateCurrentValue(currentCycleCount);
 
-				// When timer value has expired it will borrow out
+				// When timer value has expired it will attempt to borrow out
 				if (expired) Expire();
 				ExpirationTime = TimerLogic.PredictExpirationTime(currentCycleCount);
 			}
 
-			// Audio channels never trigger interrupts
+			// Audio channels never trigger interrupts, so never spend CPU time in IRQ handling code
 			return 0;
 		}
 
@@ -172,17 +174,14 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// "The repeat period is programmed by selecting the initial value in the shift register 
 			// (set shifter) and by picking which feedback taps are connected."
 
-			bool feedback = CalculateFeedback(ShiftRegister, tapSelector);
+			ushort feedback = CalculateFeedback(ShiftRegister, tapSelector);
 
 			ShiftRegister <<= 1;
 			ShiftRegister &= 0xffe;
-			if (feedback) ShiftRegister |= 0x0001;
+			ShiftRegister |= feedback;
 		}
 
-		private static int[] switches = { 0, 1, 2, 3, 4, 5, 7, 10, 11 };
-		private AudioControlBits audioControlBits;
-
-		private bool CalculateFeedback(ushort ShiftRegister, ushort tapSelector)
+		private ushort CalculateFeedback(ushort ShiftRegister, ushort tapSelector)
 		{
 			// 11 10 9 8 7 6 5 4 3 2 1 0
 			//  *  *     *   * * * * * *
@@ -193,7 +192,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 				if (((tapSelector >> index) & 0x0001) == 0x0001)
 					feedback ^= (ushort)((ShiftRegister >> switches[index]) & 0x0001);
 			}
-			return feedback != 0x0000;
+			return feedback;
 		}
 	}
 }

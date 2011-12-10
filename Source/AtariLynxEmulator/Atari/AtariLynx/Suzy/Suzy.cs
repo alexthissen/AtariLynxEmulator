@@ -92,9 +92,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 			uint EFGH;
 			SPRSYS.MathWarning = false;
 			SPRSYS.MathInProcess = true;
-			
-			ushort AB = (ushort)((MathABCD[3] << 8) + MathABCD[2]);
-			ushort CD = (ushort)((MathABCD[1] << 8) + MathABCD[0]);
+
+			ushort AB = BitConverter.IsLittleEndian ? (ushort)((MathABCD[3] << 8) + MathABCD[2]) : (ushort)((MathABCD[2] << 8) + MathABCD[3]);
+			ushort CD = BitConverter.IsLittleEndian ? (ushort)((MathABCD[1] << 8) + MathABCD[0]) : (ushort)((MathABCD[0] << 8) + MathABCD[1]);
 
 			EFGH = (uint)AB * (uint)CD;
 
@@ -111,33 +111,31 @@ namespace KillerApps.Emulation.Atari.Lynx
 			}
 
 			MathEFGH = BitConverter.GetBytes(EFGH);
-#if XBOX360
-			MathEFGH.Reverse();
-#endif
+			if (!BitConverter.IsLittleEndian) MathEFGH = MathEFGH.Reverse().ToArray();
 
 			if (SPRSYS.Accumulate)
 			{
+				if (!BitConverter.IsLittleEndian) MathJKLM = MathJKLM.Reverse().ToArray();
 				uint JKLM = BitConverter.ToUInt32(MathJKLM, 0);
 				uint accumulate = JKLM + EFGH;
 
-				long overflow = (long)JKLM + (long)EFGH;
+				long overflow = (long)(int)JKLM + (long)(int)EFGH;
 				if (overflow > 0xFFFFFFFF || overflow < 0)
 				{
 					// "... and an accumulator overflow bit."
-					SPRSYS.LastCarry = true;
+					SPRSYS.MathWarning = true;
 					//Debug.WriteLineIf(GeneralSwitch.TraceWarning, "Suzy::Multiply16By16() - Overflow detected");
 				}
 				else
 				{
-					SPRSYS.LastCarry = false;
+					SPRSYS.MathWarning = false;
 				}
 
-				// TODO: "BIG NOTE: Unsafe access is broken for math operations. Please reset it after every math operation or it will not be useful for sprite operations. "
+				// TODO: "BIG NOTE: Unsafe access is broken for math operations.
+				// Please reset it after every math operation or it will not be useful for sprite operations."
 				// Save accumulated result
 				MathJKLM = BitConverter.GetBytes(accumulate);
-#if XBOX360
-				MathJKLM.Reverse();
-#endif
+				if (!BitConverter.IsLittleEndian) MathJKLM = MathJKLM.Reverse().ToArray();
 			}
 
 			SPRSYS.MathInProcess = false;
@@ -197,21 +195,25 @@ namespace KillerApps.Emulation.Atari.Lynx
 			SPRSYS.MathWarning = false;
 
 			// KW: "Divide is ALWAYS unsigned arithmetic..."
-			ushort NP = (ushort)((MathNP[1] << 8) + MathNP[0]);
+			ushort NP = BitConverter.IsLittleEndian ? (ushort)((MathNP[1] << 8) + MathNP[0]) : (ushort)((MathNP[0] << 8) + MathNP[1]);
 			if (NP != 0)
 			{
 				//Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::Divide32By16() - Unsigned math");
 				uint ABCD, JKLM;
+				
+				// Reverse array for big endian
+				if (!BitConverter.IsLittleEndian) MathEFGH = MathEFGH.Reverse().ToArray();
 				uint EFGH = BitConverter.ToUInt32(MathEFGH, 0);
 				ABCD = EFGH / NP;
 				JKLM = EFGH % NP;
 
 				MathABCD = BitConverter.GetBytes(ABCD);
 				MathJKLM = BitConverter.GetBytes(JKLM);
-#if XBOX360
-				MathABCD.Reverse();
-				MathJKLM.Reverse();
-#endif
+				if (!BitConverter.IsLittleEndian)
+				{
+					MathABCD = MathABCD.Reverse().ToArray();
+					MathJKLM = MathJKLM.Reverse().ToArray();
+				}
 
 				// "As a courtesy, the hardware will set J,K to zero so that the software can treat the remainder
 				// as a 32 bit number."
@@ -259,6 +261,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// Delegate to engine
 			context.DontCollide = SPRSYS.DontCollide;
 			context.VStretch = SPRSYS.VStretch;
+			context.EveronEnabled = SPRGO.EveronDetectorEnabled;
 			device.SystemClock.CompatibleCycleCount += (ulong)Engine.RenderSprites();
 			
 			// "When the engine finishes processing the sprite list, or if it has been requested 
@@ -561,7 +564,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 				case Addresses.MATHM:
 					MathJKLM[0] = value;
 					// "The write to 'M' will clear the accumulator overflow bit."
-					SPRSYS.LastCarry = false;
+					SPRSYS.MathWarning = false;
 					// "Writing to B,D,F,H,K, or M will force a '0' to be written to A,C,E,G,J, or L, respectively."
 					MathJKLM[1] = 0;
 					break;

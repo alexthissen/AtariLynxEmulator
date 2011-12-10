@@ -27,7 +27,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			get { return (ByteData & EVER_ONMask) == EVER_ONMask; } 
 		}
 
-		public const byte EVER_ONMask = 0x04;
-		public const byte SPRITE_GOMask = 0x01;
+		private const byte EVER_ONMask = 0x04;
+		private const byte SPRITE_GOMask = 0x01;
 	}
 }

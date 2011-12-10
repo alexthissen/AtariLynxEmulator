@@ -47,6 +47,7 @@
     <Compile Include="Audio\AttenuationRegister.cs" />
     <Compile Include="Audio\AudioControlBits.cs" />
     <Compile Include="Audio\AudioFilter.cs" />
+    <Compile Include="Audio\BufferEventArgs.cs" />
     <Compile Include="Audio\OtherControlBits.cs" />
     <Compile Include="Audio\StereoConnection.cs" />
     <Compile Include="Cartridge\BllRomImageHeader.cs" />

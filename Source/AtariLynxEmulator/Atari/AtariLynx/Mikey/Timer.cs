@@ -55,9 +55,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public override ulong Update(ulong currentCycleCount)
 		{
 			ulong cyclesInterrupt = 0;
-
-			// Only enabled and not-done timers should predict expiration time
 			ExpirationTime = ulong.MaxValue;
+			
+			// Only enabled and not-done timers should predict expiration time
 			if (StaticControlBits.EnableCount && (StaticControlBits.EnableReload || !DynamicControlBits.TimerDone))
 			{
 				// Assume timer has not expired and is not updated
@@ -67,7 +67,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 				// Calculate new current value and update if necessary
 				bool expired = TimerLogic.UpdateCurrentValue(currentCycleCount);
 
-				// When timer value has expired it will borrow out
+				// When timer value has expired it will attempt to borrow out
 				if (expired)
 				{
 					cyclesInterrupt = Expire();
@@ -78,6 +78,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 			return cyclesInterrupt;
 		}
 
+		// "The interrupt signal comes from the timer when the timer value is zero 
+		// AND the timer is attempting to perform a 'borrow'." 
 		protected ulong Expire()
 		{
 			ulong cyclesInterrupt = 0;

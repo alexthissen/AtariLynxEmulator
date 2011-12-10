@@ -20,8 +20,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 			public const ushort HTIMBKUP = 0xFD00; // "Timer 0 backup value"
 			public const ushort TIM7CTLB = 0xFD1F; // "Timer 7 dynamic control"
 
-			public const ushort AUD0VOL = 0xFD20; // "Timer 0 backup value"
-			public const ushort AUD3MISC = 0xFD3F; // "Timer 7 dynamic control"
+			public const ushort AUD0VOL = 0xFD20; // "Audio 0 volume value"
+			public const ushort AUD3MISC = 0xFD3F; // "Audio 3 other bits"
 
 			public const ushort ATTENREG0 = 0xFD40;
 			public const ushort ATTENREG1 = 0xFD41;

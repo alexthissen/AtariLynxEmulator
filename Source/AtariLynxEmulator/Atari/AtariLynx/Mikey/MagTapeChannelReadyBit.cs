@@ -16,7 +16,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public bool Edge { get; internal set; }
 
 		private const byte EdgeMask = 0x80;
-		private int p;
 
 		public MagTapeChannelReadyBit(byte value)
 		{

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KillerApps.Emulation.Atari.Lynx;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
@@ -16,24 +17,48 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public byte[] Buffer { get; private set; }
 
+		public event EventHandler<BufferEventArgs> BufferReady;
+		private int currentIndex;
+
+		private void OnBufferReady()
+		{
+			if (BufferReady != null)
+			{
+				//byte[] copy = new byte[currentIndex];
+				//Array.Copy(Buffer, 0, copy, 0, currentIndex);
+				BufferReady(this, new BufferEventArgs() { Buffer = this.Buffer });
+			}
+		}
+
 		public AudioFilter()
 		{
 			// Buffer must contain 16 bit PCM data
 			Buffer = new byte[AUDIO_BUFFER_SIZE * 2];
+			//Buffer = new byte[10000000];
 		}
 
 		// "The 4 audio channels are mixed digitally and a pulse width modulated waveform is 
 		// output from Mikey to the audio filter. This filter is a 1 pole low pass fitter with a 
 		// frequency cutoff at 4 KHz. The output of the filter is amplified to drive an 8 ohm speaker."
-		public void Output(ulong cycleCount, sbyte sample)
+		public void Output(ulong cycleCount, byte sample)
 		{
-			for (	; audioLastUpdateCycle + AUDIO_SAMPLE_PERIOD < cycleCount; audioLastUpdateCycle += AUDIO_SAMPLE_PERIOD)
+			for (; audioLastUpdateCycle + AUDIO_SAMPLE_PERIOD < cycleCount; audioLastUpdateCycle += AUDIO_SAMPLE_PERIOD)
 			{
 				// Output audio sample
-				audioBufferIndex++;
-				Buffer[audioBufferIndex++] = (byte)sample;
-				audioBufferIndex %= AUDIO_BUFFER_SIZE;
+				//audioBufferIndex++;
+				Buffer[audioBufferIndex++] = 0;
+				Buffer[audioBufferIndex++] = sample;
+				if (audioBufferIndex >= Buffer.Length)
+				{
+					OnBufferReady();
+					audioBufferIndex = 0;
+				}
+				//audioBufferIndex %= AUDIO_BUFFER_SIZE;
 			}
+
+			//byte[] buffer = new byte[((cycleCount - audioLastUpdateCycle)/AUDIO_SAMPLE_PERIOD) * 2];
+			
+
 		}
 	}
 }

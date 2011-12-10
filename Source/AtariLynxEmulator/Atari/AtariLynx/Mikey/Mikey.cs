@@ -61,7 +61,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private byte[] VideoMemoryDma;
 		private byte currentLine;
 		private bool RestActive;
-		
+		private bool SoundEnabled = false;
+
 		public Mikey(ILynxDevice lynx)
 		{
 			this.device = lynx;
@@ -76,7 +77,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public void Initialize()
 		{
 			InitializeTimers();
-			InitializeAudioChannels();
+			if (SoundEnabled) InitializeAudioChannels();
 
 			// TODO: Clean this hack up and use a decent way to get at the LCD screen memory
 			LcdScreenDma = ((LynxHandheld)device).LcdScreenDma;
@@ -111,17 +112,24 @@ namespace KillerApps.Emulation.Atari.Lynx
 				byte interruptMask = (byte)(1 << index);
 				Timers[index] = new Timer(interruptMask);
 
-				// Hook up linked timer to previous timer in group B
+				// Hook up linked timer to previous timer in group A and B
+				// "Group A:
+				// Timer 0 -> Timer 2 -> Timer 4."
+				// "Group B:
+				// Timer 1 -> Timer 3 -> Timer 5 -> Timer 7 -> Audio 0 -> Audio 1-> Audio 2 -> Audio 3 -> Timer 1."
 				if (index > 1) Timers[index].PreviousTimer = Timers[index - 2];
-				// TODO: Hook up timer 1 to audio 3 when linked
 
 				if (index % 2 != 0) Timers[index].Expired += new EventHandler<TimerExpirationEventArgs>(TimerExpired);
 			}
+
+			// "... Audio 3 -> Timer 1."
+			if (SoundEnabled) Timers[1].PreviousTimer = AudioChannels[3];
 
 			// Timer 6 is not part of a group and does not have a timer linked to it
 			Timers[6].PreviousTimer = null;
 
 			// "Two of the timers will be used for the video frame rate generator."
+			// "One (timer 0) is set to the length of a display line and ..."
 			Timers[0].Expired += new EventHandler<TimerExpirationEventArgs>(RenderLine);
 			// "... the second (timer 2) is set to the number of lines."
 			Timers[2].Expired += new EventHandler<TimerExpirationEventArgs>(DisplayEndOfFrame);
@@ -270,13 +278,16 @@ namespace KillerApps.Emulation.Atari.Lynx
 		{
 			// "The 4 audio channels are mixed digitally and a pulse width modulated waveform is 
 			// output from Mikey to the audio filter. This filter is a 1 pole low pass fitter with a 
-			sbyte sample = MixAudioSample();
-			AudioFilter.Output(device.SystemClock.CompatibleCycleCount, sample);
+			if (SoundEnabled)
+			{
+				byte sample = MixAudioSample();
+				AudioFilter.Output(device.SystemClock.CompatibleCycleCount, sample);
+			}
 
-			ulong cycleCountAdvance = 0;
 			// Take lowest timer 
 			ulong nextTimer = UInt64.MaxValue;
-
+			ulong cycleCountAdvance = 0;
+			
 			//Debug.WriteLineIf(GeneralSwitch.TraceVerbose, "Mikey::Update");
 			foreach (Timer timer in Timers)
 			{
@@ -284,11 +295,15 @@ namespace KillerApps.Emulation.Atari.Lynx
 				if (timer.StaticControlBits.EnableCount && (timer.ExpirationTime < nextTimer))
 					nextTimer = timer.ExpirationTime;
 			}
-			foreach (AudioChannel channel in AudioChannels)
+
+			if (SoundEnabled)
 			{
-				channel.Update(device.SystemClock.CompatibleCycleCount);
-				if (channel.AudioControl.EnableCount && (channel.ExpirationTime < nextTimer))
-					nextTimer = channel.ExpirationTime;
+				foreach (AudioChannel channel in AudioChannels)
+				{
+					channel.Update(device.SystemClock.CompatibleCycleCount);
+					if (channel.AudioControl.EnableCount && (channel.ExpirationTime < nextTimer))
+						nextTimer = channel.ExpirationTime;
+				}
 			}
 
 			// Take lowest timer 
@@ -306,14 +321,14 @@ namespace KillerApps.Emulation.Atari.Lynx
 			device.SystemClock.CompatibleCycleCount += cycleCountAdvance;
 		}
 
-		private sbyte MixAudioSample()
+		private byte MixAudioSample()
 		{
 			long sample = 0;
 			int mixedChannels = 0;
 
 			for (int index = 0; index < 4; index++)
 			{
-				if (!Stereo.LeftEar.AudioChannelDisabled[index])
+				if (!Stereo.RightEar.AudioChannelDisabled[index])
 				{
 					sample += AudioChannels[index].OutputValue;
 					mixedChannels++;
@@ -321,13 +336,14 @@ namespace KillerApps.Emulation.Atari.Lynx
 			}
 			if (mixedChannels != 0)
 			{
-				sample += 128 * mixedChannels;
+				//sample += 128 * mixedChannels;
 				sample /= mixedChannels;
+				sample += 128;
 			}
 			else
 				sample = 128;
 
-			return (sbyte)sample;
+			return (byte)sample;
 		}
 
 		public void Poke(ushort address, byte value)
@@ -372,7 +388,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 				}
 			}
 
-			if (address >= Mikey.Addresses.AUD0VOL && address <= Mikey.Addresses.AUD3MISC)
+			if (address >= Mikey.Addresses.AUD0VOL && address <= Mikey.Addresses.AUD3MISC && SoundEnabled)
 			{
 				int offset = address - Mikey.Addresses.AUD0VOL;
 				int index = offset >> 3; // Divide by 8 to get index of audio channel
@@ -608,7 +624,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 				}
 			}
 
-			if (address >= Mikey.Addresses.AUD0VOL && address <= Mikey.Addresses.AUD3MISC)
+			if (address >= Mikey.Addresses.AUD0VOL && address <= Mikey.Addresses.AUD3MISC && SoundEnabled)
 			{
 				int offset = address - Mikey.Addresses.AUD0VOL;
 				int index = offset >> 3; // Divide by 8 to get index of audio channel

@@ -139,15 +139,11 @@
     <None Include="Resources\demo03.o" />
     <None Include="Resources\demo04.o" />
     <None Include="Resources\demo05.o" />
+    <None Include="Resources\flashcart_slideshow.lnx" />
     <None Include="Resources\IRQ Test.lnx" />
     <None Include="Resources\lite.o" />
     <None Include="Resources\LYNXBOOT.IMG" />
     <None Include="Resources\Mode7.lnx" />
-    <None Include="Resources\Ninja Gaiden.lnx" />
-    <None Include="Resources\Raiden.lnx" />
-    <None Include="Resources\Rampage.lnx" />
-    <None Include="Resources\Rampart.lnx" />
-    <None Include="Resources\Robotron 2084.lnx" />
     <None Include="Resources\Wuerfel.lnx" />
     <None Include="Resources\Zarlor Mercenary.lnx" />
   </ItemGroup>

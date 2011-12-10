@@ -23,6 +23,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private IMemoryAccess<ushort, byte> Mikey;
 		private IMemoryAccess<ushort, byte> Ram;
 		private IMemoryAccess<ushort, byte> Rom;
+		private byte[] directAccessRam;
 
 		public MemoryManagementUnit(IMemoryAccess<ushort, byte> rom, IMemoryAccess<ushort, byte> ram, IMemoryAccess<ushort, byte> mikey, IMemoryAccess<ushort, byte> suzy)
 		{
@@ -32,6 +33,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			this.Mikey = mikey;
 
 			MAPCTL = new MemoryMapControl();
+			directAccessRam = ((Ram64KBMemory)ram).GetDirectAccess();
 		}
 
 		public void Reset()
@@ -45,11 +47,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public void Poke(ushort address, byte value)
 		{
 			// Regular RAM 
-			//if (address >= 0x591d && address <= 0x5927 || address == 0x56fb)
-				//Debugger.Break();
 			if (address < 0xFC00)
 			{
-				Ram.Poke(address, value);
+				//Ram.Poke(address, value);
+				directAccessRam[address] = value;
 				return;
 			}
 
@@ -93,7 +94,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// Regular RAM 
 			if (address < 0xFC00)
 			{
-				return Ram.Peek(address);
+				//return Ram.Peek(address);
+				return directAccessRam[address];
 			}
 
 			// "These overlays are controlled by the bits in the hardware register at FFF9."

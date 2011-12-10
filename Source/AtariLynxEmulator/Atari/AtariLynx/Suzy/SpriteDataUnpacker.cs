@@ -79,7 +79,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 				// data packet at the end of a scan line does not occur in the last bit of a byte (bit 0)."
 				// Only return last pixel if value is not zero
 				byte value = register.GetBits(BitsPerPixel);
-				if (value != 0x00) yield return value;
+				//if (value != 0x00) yield return value;
+				if (register.BitsLeft == 0) yield break;
 
 				// All done
 				yield break;

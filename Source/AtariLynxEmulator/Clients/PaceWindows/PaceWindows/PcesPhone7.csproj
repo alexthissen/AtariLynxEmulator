@@ -37,7 +37,7 @@
     <SilverlightManifestTemplate Condition="$(XnaOutputType)=='Game'">Properties\AppManifest.xml</SilverlightManifestTemplate>
     <XnaWindowsPhoneManifestTemplate Condition="$(XnaOutputType)=='Game'">Properties\WMAppManifest.xml</XnaWindowsPhoneManifestTemplate>
     <TileImage Condition="$(XnaOutputType)=='Game'">Background.png</TileImage>
-    <TileTitle Condition="$(XnaOutputType)=='Game'">$(AssemblyName)</TileTitle>
+    <TileTitle Condition="$(XnaOutputType)=='Game'">Epic Atari Lynx Emulator</TileTitle>
     <SupportedCultures />
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -155,15 +155,11 @@
     <None Include="Resources\demo03.o" />
     <None Include="Resources\demo04.o" />
     <None Include="Resources\demo05.o" />
+    <None Include="Resources\flashcart_slideshow.lnx" />
     <None Include="Resources\IRQ Test.lnx" />
     <None Include="Resources\lite.o" />
     <None Include="Resources\LYNXBOOT.IMG" />
     <None Include="Resources\Mode7.lnx" />
-    <None Include="Resources\Ninja Gaiden.lnx" />
-    <None Include="Resources\Raiden.lnx" />
-    <None Include="Resources\Rampage.lnx" />
-    <None Include="Resources\Rampart.lnx" />
-    <None Include="Resources\Robotron 2084.lnx" />
     <None Include="Resources\Wuerfel.lnx" />
     <None Include="Resources\Zarlor Mercenary.lnx" />
   </ItemGroup>

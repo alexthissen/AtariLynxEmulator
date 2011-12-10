@@ -38,16 +38,26 @@ namespace KillerApps.Emulation.Atari.Lynx
 		// "B3,B2,B1,B0 = number"
 		public byte Number 
 		{ 
-			get { return (byte)(ByteData & 0x0F); }
+			get { return (byte)(ByteData & NumberMask); }
 			set 
 			{
 				//Debug.WriteLineIf(value > 0x0F, "Collision number should be 0 to 15.");
 				ByteData &= DontCollideMask; // Zero out previous collision number
-				ByteData |= (byte)(value & 0x0F);
+				ByteData |= (byte)(value & NumberMask);
 			}
 		}
 
+		// "This function will cause the 'Everon' bit to reflect the off- screen situation of a particular sprite. 
+		// This bit is returned to each SCB in bit 7 of the collision depository."
+		public bool Everon
+		{
+			get { return (ByteData & EveronMask) == EveronMask; }
+			set { if (value) ByteData |= EveronMask; else ByteData &= (EveronMask ^ 0xFF); }
+		}
+
+		private const byte EveronMask = 0x80;
 		private const byte DontCollideMask = 0x20;
+		private const byte NumberMask = 0x0F;
 		private byte byteData;
 	}
 }

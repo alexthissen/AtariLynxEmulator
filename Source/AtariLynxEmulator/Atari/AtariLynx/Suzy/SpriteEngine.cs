@@ -110,9 +110,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 				// "At the end of the processing of this particular sprite, the number in fred will be written out to the 
 				// collision depository. If more than one collideable object was hit, the number in fred will be the 
 				// HIGHEST of all of the collision numbers detected."
-				if (!this.SpriteControlBlock.SPRCOLL.DontCollide && !this.context.DontCollide)
+				if (!this.scb.SPRCOLL.DontCollide && !this.context.DontCollide)
 				{
-					switch (SpriteControlBlock.SPRCTL0.SpriteType)
+					switch (scb.SPRCTL0.SpriteType)
 					{
 						case SpriteTypes.ExclusiveOrShadow:
 						case SpriteTypes.Boundary:
@@ -128,7 +128,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 							break;
 					}
 				}
-
 			}
 
 			//return cyclesUsed;
@@ -139,6 +138,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		{
 			// "The processing of an actual sprite can be 'skipped' on a sprite by sprite basis."
 			if (scb.SPRCTL1.SkipSprite) return;
+
+			bool isEverOnScreen = false;
 
 			PROCADR.Value = scb.SPRDLINE.Value; // Set current PROC address
 
@@ -220,6 +221,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 										// Process pixel based on sprite type
 										ProcessPixel((ushort)(VIDADR.Value + (sprhpos + sprvpos * Suzy.SCREEN_WIDTH) / 2), pixelValue, sprhpos % 2 == 0);
 										ProcessCollision((ushort)(COLLADR.Value + (sprhpos + sprvpos * Suzy.SCREEN_WIDTH) / 2), pixelValue, sprhpos % 2 == 0);
+										
+										isEverOnScreen = true;
 									}
 									sprhpos += horizontalIncrease;
 								}
@@ -256,6 +259,11 @@ namespace KillerApps.Emulation.Atari.Lynx
 				quadrant = GetNextQuadrant(quadrant);
 			}
 			while (quadrant != scb.StartQuadrant); // Never more than 4 quadrants
+
+			if (context.EveronEnabled)
+			{
+				scb.SPRCOLL.Everon = isEverOnScreen;
+			}
 		}
 
 		// "Each SCB contains certain elements in a certain order as required by the hardware"
@@ -267,17 +275,34 @@ namespace KillerApps.Emulation.Atari.Lynx
 			scb.SPRCTL1.ByteData = ramMemory[address++]; // "(1 byte)  8 bits of control (SPRCTL1)"
 			scb.SPRCOLL.ByteData = ramMemory[address++]; // "(1 byte)  4 bits of control (SPRCOLL)"
 			// "(2 bytes) 16 bits of pointer to next sprite SCB (0 last SCB)"
-			scb.SCBNEXT.Value = BitConverter.ToUInt16(ramMemory, address); address += 2;
+			if (BitConverter.IsLittleEndian)
+			{
+				scb.SCBNEXT.Value = BitConverter.ToUInt16(ramMemory, address);
+				address += 2;
+			}
+			else
+			{
+				scb.SCBNEXT.Value = (ushort)(ramMemory[address++] + (ramMemory[address++] << 8));
+			}
 
 			// "The processing of an actual sprite can be 'skipped' on a sprite by sprite basis."
 			if (!scb.SPRCTL1.SkipSprite)
 			{
-				// "(2 bytes) 16 bits of address of start of Sprite Data"
-				scb.SPRDLINE.Value = BitConverter.ToUInt16(ramMemory, address); address += 2;
-				// "(2) 16 bits of starting H Pos"
-				scb.HPOSSTRT.Value = BitConverter.ToUInt16(ramMemory, address); address += 2;
-				// "(2) 16 bits of starting V Pos"
-				scb.VPOSSTRT.Value = BitConverter.ToUInt16(ramMemory, address); address += 2;
+				if (BitConverter.IsLittleEndian)
+				{
+					// "(2 bytes) 16 bits of address of start of Sprite Data"
+					scb.SPRDLINE.Value = BitConverter.ToUInt16(ramMemory, address); address += 2;
+					// "(2) 16 bits of starting H Pos"
+					scb.HPOSSTRT.Value = BitConverter.ToUInt16(ramMemory, address); address += 2;
+					// "(2) 16 bits of starting V Pos"
+					scb.VPOSSTRT.Value = BitConverter.ToUInt16(ramMemory, address); address += 2;
+				}
+				else
+				{
+					scb.SPRDLINE.Value = (ushort)(ramMemory[address++] + (ramMemory[address++] << 8));
+					scb.HPOSSTRT.Value = (ushort)(ramMemory[address++] + (ramMemory[address++] << 8));
+					scb.VPOSSTRT.Value = (ushort)(ramMemory[address++] + (ramMemory[address++] << 8));
+				}
 				address += ParseReloadableDepth(ramMemory, address);
 
 				// Read pen palette if necessary
@@ -522,23 +547,38 @@ namespace KillerApps.Emulation.Atari.Lynx
 				case ReloadableDepth.HVST:
 					TiltingEnabled = true;
 					// "(2 bytes) 16 bits of tilt value"
-					TILT.Value = BitConverter.ToUInt16(memory, address + 6);
+					
+					TILT.Value = BitConverter.IsLittleEndian ? 
+						BitConverter.ToUInt16(memory, address + 6) :
+						(ushort)((ramMemory[address + 7] << 8) + ramMemory[address + 6]);
 					bytesRead += 2;
 					goto case ReloadableDepth.HVS;
 
 				case ReloadableDepth.HVS:
 					StretchingEnabled = true;
 					// "(2 bytes) 16 bits of stretch value"
-					STRETCH.Value = BitConverter.ToUInt16(memory, address + 4);
+					STRETCH.Value = BitConverter.IsLittleEndian ?
+						BitConverter.ToUInt16(memory, address + 4) :
+						(ushort)((ramMemory[address + 5] << 8) + ramMemory[address + 4]);
 					bytesRead += 2;
 					goto case ReloadableDepth.HV;
 
 				case ReloadableDepth.HV:
 					SizingEnabled = true;
 					// "(2 bytes) 16 bits of H size bits"
-					scb.SPRHSIZ.Value = BitConverter.ToUInt16(memory, address); address += 2;
+					if (BitConverter.IsLittleEndian)
+					{
+						scb.SPRHSIZ.Value = BitConverter.ToUInt16(memory, address);
+						address += 2;
+					}
+					else
+					{
+						scb.SPRHSIZ.Value = (ushort)(ramMemory[address++] + (ramMemory[address++] << 8));
+					}
 					// "(2 bytes) 16 bits of V size bits"
-					scb.SPRVSIZ.Value = BitConverter.ToUInt16(memory, address);
+					scb.SPRVSIZ.Value = BitConverter.IsLittleEndian ?
+						BitConverter.ToUInt16(memory, address) : 
+						(ushort)(ramMemory[address++] + (ramMemory[address++] << 8));
 					bytesRead += 4;
 					break;
 

@@ -29,7 +29,7 @@ namespace KillerApps.Gaming.Atari
 		private SpriteBatch spriteBatch;
 		private Texture2D lcdScreen;
 		private SpriteFont font;
-		private const int magnification = 5;
+		private const int magnification = 4;
 		private const int graphicsWidth = Suzy.SCREEN_WIDTH * magnification;
 		private const int graphicsHeight = Suzy.SCREEN_HEIGHT * magnification;
 
@@ -85,7 +85,7 @@ namespace KillerApps.Gaming.Atari
 			LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
 
 			BllRomImageFileFormat romImage2 = new BllRomImageFileFormat();
-			emulator.Cartridge = romImage.LoadCart(new MemoryStream(Roms.Collision));
+			emulator.Cartridge = romImage.LoadCart(new MemoryStream(Roms.Mode7));
 			emulator.Initialize();
 
 			//byte[] ram = emulator.Ram.GetDirectAccess();
@@ -118,8 +118,16 @@ namespace KillerApps.Gaming.Atari
 		{
 			dynamicSound = new DynamicSoundEffectInstance(22050, AudioChannels.Mono);
 			soundBuffer = new byte[dynamicSound.GetSampleSizeInBytes(TimeSpan.FromMilliseconds(250))];
-			dynamicSound.BufferNeeded += new EventHandler<EventArgs>(DynamicSoundBufferNeeded);
-			dynamicSound.Play();
+			//dynamicSound.BufferNeeded += new EventHandler<EventArgs>(DynamicSoundBufferNeeded);
+			emulator.Mikey.AudioFilter.BufferReady += new EventHandler<BufferEventArgs>(OnAudioFilterBufferReady);
+			//dynamicSound.Play();
+		}
+
+		void OnAudioFilterBufferReady(object sender, BufferEventArgs e)
+		{
+			byte[] buffer = e.Buffer;
+			dynamicSound.SubmitBuffer(buffer, 0, buffer.Length / 2);
+			dynamicSound.SubmitBuffer(buffer, buffer.Length / 2, buffer.Length / 2);
 		}
 
 		private void DynamicSoundBufferNeeded(object sender, EventArgs e)
@@ -190,7 +198,6 @@ namespace KillerApps.Gaming.Atari
 				new Rectangle(0, 0, Suzy.SCREEN_WIDTH, Suzy.SCREEN_HEIGHT), 
 				Color.White);
 			spriteBatch.DrawString(font, emulator.SystemClock.CompatibleCycleCount.ToString("X16"), new Vector2(10, 50), Color.White);
-			spriteBatch.DrawString(font, "Slow" + gameTime.IsRunningSlowly.ToString(), new Vector2(10, 65), Color.White);
 			spriteBatch.End();
 
 			base.Draw(gameTime);
