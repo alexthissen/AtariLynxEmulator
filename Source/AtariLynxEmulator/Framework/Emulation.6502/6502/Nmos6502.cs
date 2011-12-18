@@ -80,7 +80,7 @@ namespace KillerApps.Emulation.Processors
 			// We might get beaten by earlier IRQs from timers
 			this.ScheduledWakeUpTime = SystemClock.CompatibleCycleCount + cyclesToSleep;
 			IsAsleep = true;
-			Debug.WriteLine(String.Format("Nmos6502::Sleep: Entering sleep till cycle count {0}", ScheduledWakeUpTime));
+			//Debug.WriteLine(String.Format("Nmos6502::Sleep: Entering sleep till cycle count {0}", ScheduledWakeUpTime));
 		}
 
 		// Irq and Nmi related
@@ -161,7 +161,6 @@ namespace KillerApps.Emulation.Processors
 			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, String.Format("{0:X4} {1}", PC, builder.ToString()));
 			builder.Clear();
 #endif
-			//if (PC == 0xb16e) Debugger.Break();
 
 			// Fetch opcode
 			Opcode = Memory.Peek(PC);
@@ -402,7 +401,7 @@ namespace KillerApps.Emulation.Processors
 		// -- in that order."
 		protected virtual void RunInterruptSequence(InterruptType irqType)
 		{
-			Debug.WriteLine(String.Format("IRQ sequence run at PC={0}", PC));
+			//Debug.WriteLine(String.Format("IRQ sequence run at PC={0}", PC));
 		
 			// "The interrupt sequence pushes three bytes onto the stack. First is the high byte of 
 			// the return address, followed by the low byte, and finally the status byte from 

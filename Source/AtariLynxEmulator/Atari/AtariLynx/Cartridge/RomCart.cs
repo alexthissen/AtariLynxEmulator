@@ -11,7 +11,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 	// "The data input is a ROM cartridge with 1 Mbyte of address space and can contain writable elements."
 	// "The data input system is either a ROM cartridge or a magnetic tape reader. 
 	// The system hardware will support both, but units will be made with either one or the other."
-	public class RomCart
+	public class RomCart : ICartridge
 	{
 		// "In a ROM Cart unit, the addresses for the ROM Cart are provided by an 8 bit shift 
 		// register and a 11 bit counter. "

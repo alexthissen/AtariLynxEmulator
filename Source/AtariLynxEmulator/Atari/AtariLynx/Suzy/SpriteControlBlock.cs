@@ -29,8 +29,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public Word HPOSSTRT, VPOSSTRT;
 		public Word SPRHSIZ, SPRVSIZ;
 		
-		public byte CollisionDepository { get; private set; }
-
 		public SpriteControlBlock()
 		{
 			SPRCTL0 = new SpriteControlBits0(0);

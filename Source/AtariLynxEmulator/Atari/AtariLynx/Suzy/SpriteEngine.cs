@@ -105,7 +105,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 				// "At the start of painting a particular sprite, a hardware register called fred is cleared to 0."
 				highestCollision = 0;
 
-				RenderSingleSprite();
+				bool isEveronScreen = RenderSingleSprite();
 
 				// "At the end of the processing of this particular sprite, the number in fred will be written out to the 
 				// collision depository. If more than one collideable object was hit, the number in fred will be the 
@@ -119,14 +119,27 @@ namespace KillerApps.Emulation.Atari.Lynx
 						case SpriteTypes.Normal:
 						case SpriteTypes.BoundaryShadow:
 						case SpriteTypes.Shadow:
-							{
-								ushort collisionDepository = (ushort)(SCBADR.Value + context.COLLOFF.Value);
-								ramMemory[collisionDepository] = highestCollision;
-							}
+							ushort collisionDepository = (ushort)(SCBADR.Value + context.COLLOFF.Value);
+							ramMemory[collisionDepository] = (byte)(highestCollision & 0x7F);
 							break;
 						default:
 							break;
 					}
+				}
+
+				// "At a particular point in the life of a sprite, it may move in such a manner that it no longer 
+				// appears on the screen. It may also have started its life off-screen. It appears to be useful 
+				// to the software to know that a sprite is completely off-screen. 
+				// The function used to discover this truth is called 'Everon' and is enabled by the 'Everonoff' bit.
+				// The function is enabled when the Sprite Engine is started with an 05 instead of an 01 at 'SPRGO'."
+				if (context.EveronEnabled)
+				{
+					// "This function will cause the 'Everon' bit to reflect the off-screen situation of a particular sprite. 
+					// This bit is returned to each SCB in bit 7 of the collision depository. 
+					// The bit will be a '0' if Everon is disabled or if the sprite is ever on the screen. The bit is a '1' 
+					// only when Everon is enabled (Everonoff-is on) and the sprite is neveron the screen."
+					ushort collisionDepository = (ushort)(SCBADR.Value + context.COLLOFF.Value);
+					if (!isEveronScreen) ramMemory[collisionDepository] |= 0x80;
 				}
 			}
 
@@ -134,10 +147,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 			return 0;
 		}
 
-		public void RenderSingleSprite()
+		public bool RenderSingleSprite()
 		{
 			// "The processing of an actual sprite can be 'skipped' on a sprite by sprite basis."
-			if (scb.SPRCTL1.SkipSprite) return;
+			if (scb.SPRCTL1.SkipSprite) return false;
 
 			bool isEverOnScreen = false;
 
@@ -219,8 +232,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 									if (sprhpos >= 0 && sprhpos < Suzy.SCREEN_WIDTH)
 									{
 										// Process pixel based on sprite type
-										ProcessPixel((ushort)(VIDADR.Value + (sprhpos + sprvpos * Suzy.SCREEN_WIDTH) / 2), pixelValue, sprhpos % 2 == 0);
-										ProcessCollision((ushort)(COLLADR.Value + (sprhpos + sprvpos * Suzy.SCREEN_WIDTH) / 2), pixelValue, sprhpos % 2 == 0);
+										bool left = sprhpos % 2 == 0;
+										ushort offset = (ushort)((sprhpos + sprvpos * Suzy.SCREEN_WIDTH) / 2);
+										ProcessPixel((ushort)(VIDADR.Value + offset), pixelValue, left);
+										ProcessCollision((ushort)(COLLADR.Value + offset), pixelValue, left);
 										
 										isEverOnScreen = true;
 									}
@@ -260,10 +275,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			}
 			while (quadrant != scb.StartQuadrant); // Never more than 4 quadrants
 
-			if (context.EveronEnabled)
-			{
-				scb.SPRCOLL.Everon = isEverOnScreen;
-			}
+			return isEverOnScreen;
 		}
 
 		// "Each SCB contains certain elements in a certain order as required by the hardware"

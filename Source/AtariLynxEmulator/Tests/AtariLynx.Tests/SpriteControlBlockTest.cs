@@ -354,7 +354,7 @@ namespace AtariLynx.Tests
 	{
 		public bool NewVideoFrameAvailable { get; set; }
 
-		public RomCart Cartridge
+		public ICartridge Cartridge
 		{
 			get
 			{

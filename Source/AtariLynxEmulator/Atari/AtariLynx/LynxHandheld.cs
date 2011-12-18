@@ -11,7 +11,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 {
 	public class LynxHandheld: ILynxDevice
 	{
-		public RomCart Cartridge { get; set; }
+		public ICartridge Cartridge { get; set; }
 		public Ram64KBMemory Ram { get; private set; }
 		public RomBootMemory Rom { get; private set; }
 		internal MemoryManagementUnit Mmu { get; private set; }

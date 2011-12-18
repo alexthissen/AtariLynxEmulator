@@ -85,7 +85,7 @@ namespace KillerApps.Gaming.Atari
 			LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
 
 			BllRomImageFileFormat romImage2 = new BllRomImageFileFormat();
-			emulator.Cartridge = romImage.LoadCart(new MemoryStream(Roms.Mode7));
+			emulator.Cartridge = romImage.LoadCart(new MemoryStream(Roms.Collision));
 			emulator.Initialize();
 
 			//byte[] ram = emulator.Ram.GetDirectAccess();
@@ -186,11 +186,11 @@ namespace KillerApps.Gaming.Atari
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Draw(GameTime gameTime)
 		{
-			//if (emulator.NewVideoFrameAvailable)
-			//{
+			if (emulator.NewVideoFrameAvailable)
+			{
 				lcdScreen.SetData(emulator.LcdScreenDma, 0x0, 0x3FC0);
-				//emulator.NewVideoFrameAvailable = false;
-			//}
+				emulator.NewVideoFrameAvailable = false;
+			}
 
 			spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null);
 			spriteBatch.Draw(lcdScreen, 

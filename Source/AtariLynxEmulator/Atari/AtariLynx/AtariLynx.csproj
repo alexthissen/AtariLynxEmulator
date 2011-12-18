@@ -53,6 +53,8 @@
     <Compile Include="Cartridge\BllRomImageHeader.cs" />
     <Compile Include="Cartridge\CartRotation.cs" />
     <Compile Include="Cartridge\BllRomImageFileFormat.cs" />
+    <Compile Include="Cartridge\FaultyCart.cs" />
+    <Compile Include="Cartridge\ICartridge.cs" />
     <Compile Include="Cartridge\LnxRomImageFileFormat.cs" />
     <Compile Include="Cartridge\RomCart.cs" />
     <Compile Include="Cartridge\RomCartMemoryBank.cs" />
