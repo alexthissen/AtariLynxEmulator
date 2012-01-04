@@ -97,10 +97,6 @@ namespace KillerApps.Emulation.Processors
 			UpdateZeroFlag((byte)(Data & A));
 			N = (Data & 0x80) == 0x80;
 			V = (Data & 0x40) == 0x40;
-			//FetchData();
-			//Data &= A;
-			//UpdateNegativeZeroFlags(Data);
-			//V = (Data & 0x40) == 0x40;
 		}
 	}
 }

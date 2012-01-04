@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EmulationException.cs" />
+    <Compile Include="IDirectMemoryAccessT.cs" />
     <Compile Include="IMemoryAccessT.cs" />
     <Compile Include="InterruptType.cs" />
     <Compile Include="ProcessorBase.cs" />

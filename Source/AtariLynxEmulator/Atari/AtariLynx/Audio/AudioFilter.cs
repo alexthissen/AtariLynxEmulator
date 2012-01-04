@@ -18,7 +18,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public byte[] Buffer { get; private set; }
 
 		public event EventHandler<BufferEventArgs> BufferReady;
-		private int currentIndex;
 
 		private void OnBufferReady()
 		{
@@ -57,8 +56,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 			}
 
 			//byte[] buffer = new byte[((cycleCount - audioLastUpdateCycle)/AUDIO_SAMPLE_PERIOD) * 2];
-			
-
 		}
 	}
 }

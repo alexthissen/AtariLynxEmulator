@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="AudioChannelTest.cs" />
     <Compile Include="AudioControlBitsTest.cs" />
+    <Compile Include="LynxDeviceStub.cs" />
     <Compile Include="MemoryManagementUnitTest.cs" />
     <Compile Include="MemoryMapControl.cs" />
     <Compile Include="MikeyTest.cs" />

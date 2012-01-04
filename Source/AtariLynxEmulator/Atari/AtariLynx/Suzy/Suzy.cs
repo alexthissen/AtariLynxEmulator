@@ -220,7 +220,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 				MathJKLM[3] = 0; // J
 				MathJKLM[2] = 0; // K
 
-				ulong time = this.device.SystemClock.CompatibleCycleCount;
 				Debug.WriteLine("CSusie::DoMathDivide() EFGH=${0:X8} / NP={1:X4}", EFGH, NP);
 				Debug.WriteLine("CSusie::DoMathDivide() Results (div) ABCD=${0:X8}", ABCD);
 				Debug.WriteLine("CSusie::DoMathDivide() Results (mod) JKLM=${0:X8}", JKLM);

@@ -3,14 +3,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{244BE6E7-3086-4522-A21F-975BB9D37F0B}</ProjectGuid>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3BAFEC86-C7FF-4AF6-A577-D116619A466E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>KillerApps.Emulation.Processors</RootNamespace>
-    <AssemblyName>KillerApps.Emulation.6502</AssemblyName>
+    <RootNamespace>KillerApps.Emulation.Atari.Lynx.Cryptography</RootNamespace>
+    <AssemblyName>KillerApps.Emulation.Atari.Lynx.Cryptography</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <TargetFrameworkProfile>Profile1</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -25,8 +25,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -39,38 +37,20 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="6502\Nmos6502.Arithmetic.cs" />
-    <Compile Include="6502\Nmos6502.Registers.cs" />
-    <Compile Include="6502\Nmos6502.Flags.cs" />
-    <Compile Include="6502\Nmos6502.Stack.cs" />
-    <Compile Include="6502\Nmos6502.Bitwise.cs" />
-    <Compile Include="6502\Nmos6502.AddressingModes.cs" />
-    <Compile Include="6502\Nmos6502.Branching.cs" />
-    <Compile Include="6502\Nmos6502.cs" />
-    <Compile Include="6502\Nmos6502.Logical.cs" />
-    <Compile Include="6502\Nmos6502.System.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="65C02\Cmos65SC02.cs" />
-    <Compile Include="65C02\Cmos65SC02.AddressingModes.cs" />
-    <Compile Include="65C02\Cmos65SC02.Opcodes.cs" />
-    <Compile Include="AddressingMode.cs" />
-    <Compile Include="Clock.cs" />
-    <Compile Include="Disassembler6502.cs" />
-    <Compile Include="MemoryAccessExtensions.cs" />
+    <Compile Include="BootLoaderCryptoAlgorithm.cs" />
+    <Compile Include="EncryptedLoaderFrame.cs" />
+    <Compile Include="LynxRsaCryptographicKeys.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="VectorAddresses.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Emulation.Core8Bit\Emulation.Core8Bit.csproj">
-      <Project>{714EA8D7-CD22-41B6-956B-C0B8076E7C30}</Project>
-      <Name>Emulation.Core8Bit</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

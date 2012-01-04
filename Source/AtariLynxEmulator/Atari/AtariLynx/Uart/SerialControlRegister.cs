@@ -10,7 +10,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public SerialControlRegister(byte data)
 		{
 			ByteData = data;
-			TransmitterDone = true;
 		}
 
 		public byte ByteData
@@ -30,6 +29,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 				if (FrameError) data |= FRAMERRMask;
 				if (ReceivedBreak) data |= RXBRKMask;
 				if (ParityBit) data |= PARBITMask;
+
+				// "B5 = 0 (for future compatibility)"
+				data &= 0xdf;
+
 				return data;
 			}
 			set 
@@ -45,34 +48,36 @@ namespace KillerApps.Emulation.Atari.Lynx
 		}
 
 		#region Write properties
+		// Values can only be written by accessing ByteData, i.e. Poke to SERCTL
 
 		// "B7 = TXINTEN transmitter interrupt enable"
-		public bool TransmitterInterruptEnable { internal get; set; }
+		public bool TransmitterInterruptEnable { get; private set; }
 
 		// "B6 = RXINTEN receive interrupt enable"
-		public bool ReceiveInterruptEnable { internal get; set; }
+		public bool ReceiveInterruptEnable { get; private set; }
 
 		// "B4 = PAREN xmit parity enable (if 0, PAREVEN is the bit sent)"
-		public bool TransmitParityEnable { internal get; set; }
+		public bool TransmitParityEnable { get; private set; }
 
 		// "B3 = RESETERR reset all errors"
-		public bool ResetAllErrors { internal get; set; }
+		public bool ResetAllErrors { get; private set; }
 
 		// "B2 = TXOPEN 1 open collector driver, 0 = TTL driver"
-		public bool TransmitOpen { internal get; set; }
+		public bool TransmitOpen { get; private set; }
 		
 		// "B1 = TXBRK send a break (for as long as the bit is set)"
-		public bool TransmitBreak { internal get; set; }
+		public bool TransmitBreak { get; private set; }
 
 		// "B0 = PAREVEN send/rcv even parity"
-		public bool ParityEven { internal get; set; }
+		public bool ParityEven { get; private set; }
  
 	#endregion
 
 		#region Read properties
 
+		// "There are 2 status bits for the transmitter, TXRDY (transmit buffer ready) and TXEMPTY (transmitter totally done)."
 		// "B7 = TXRDY transmitter buffer empty"
-		public bool TransmitBufferEmpty { get; internal set; }
+		public bool TransmitterBufferEmpty { get; internal set; }
 
 		// "B6 = RXRDY receive character ready"
 		public bool ReceiveReady { get; internal set; }
@@ -80,14 +85,12 @@ namespace KillerApps.Emulation.Atari.Lynx
 		// "B5 = TXEMPTY transmitter totally done"
 		public bool TransmitterDone { get; internal set; }
 
-		// "B4 = PARERR received parity error"
-		public bool ParityError { get; internal set; }
+		// "There are 3 receive errors, parity error (already explained), framing error, and overrun error."
 
-		// "B3 = OVERRUN received overrun error"
-		public bool OverrunError { get; internal set; }
-
-		// "B2 = FRAMERR received framing error"
-		public bool FrameError { get; internal set; }
+		// "The state of the 9th bit is always available for read in the control byte."
+		public bool ParityError { get; internal set; } // "B4 = PARERR received parity error"
+		public bool OverrunError { get; internal set; } // "B3 = OVERRUN received overrun error"
+		public bool FrameError { get; internal set; } // "B2 = FRAMERR received framing error"
 
 		// "B1 = RXBRK break recieved (24 bit periods)"
 		public bool ReceivedBreak { get; internal set; }

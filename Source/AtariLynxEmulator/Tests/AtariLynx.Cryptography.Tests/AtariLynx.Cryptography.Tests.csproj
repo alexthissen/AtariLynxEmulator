@@ -3,15 +3,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{244BE6E7-3086-4522-A21F-975BB9D37F0B}</ProjectGuid>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{811CE56B-9810-4510-91BB-C2971C576B2B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>KillerApps.Emulation.Processors</RootNamespace>
-    <AssemblyName>KillerApps.Emulation.6502</AssemblyName>
+    <RootNamespace>AtariLynx.Encryption.Tests</RootNamespace>
+    <AssemblyName>AtariLynx.Encryption.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <TargetFrameworkProfile>Profile1</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
@@ -25,8 +27,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -37,40 +37,29 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="6502\Nmos6502.Arithmetic.cs" />
-    <Compile Include="6502\Nmos6502.Registers.cs" />
-    <Compile Include="6502\Nmos6502.Flags.cs" />
-    <Compile Include="6502\Nmos6502.Stack.cs" />
-    <Compile Include="6502\Nmos6502.Bitwise.cs" />
-    <Compile Include="6502\Nmos6502.AddressingModes.cs" />
-    <Compile Include="6502\Nmos6502.Branching.cs" />
-    <Compile Include="6502\Nmos6502.cs" />
-    <Compile Include="6502\Nmos6502.Logical.cs" />
-    <Compile Include="6502\Nmos6502.System.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="65C02\Cmos65SC02.cs" />
-    <Compile Include="65C02\Cmos65SC02.AddressingModes.cs" />
-    <Compile Include="65C02\Cmos65SC02.Opcodes.cs" />
-    <Compile Include="AddressingMode.cs" />
-    <Compile Include="Clock.cs" />
-    <Compile Include="Disassembler6502.cs" />
-    <Compile Include="MemoryAccessExtensions.cs" />
+    <CodeAnalysisDependentAssemblyPaths Condition=" '$(VS100COMNTOOLS)' != '' " Include="$(VS100COMNTOOLS)..\IDE\PrivateAssemblies">
+      <Visible>False</Visible>
+    </CodeAnalysisDependentAssemblyPaths>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="EncryptedLoaderFrameTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="VectorAddresses.cs" />
+    <Compile Include="BootLoaderCryptoAlgorithmTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Emulation.Core8Bit\Emulation.Core8Bit.csproj">
-      <Project>{714EA8D7-CD22-41B6-956B-C0B8076E7C30}</Project>
-      <Name>Emulation.Core8Bit</Name>
+    <ProjectReference Include="..\..\Tooling\AtariLynx.Cryptography\AtariLynx.Cryptography.csproj">
+      <Project>{3BAFEC86-C7FF-4AF6-A577-D116619A466E}</Project>
+      <Name>AtariLynx.Cryptography</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

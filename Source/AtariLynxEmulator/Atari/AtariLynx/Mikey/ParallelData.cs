@@ -59,7 +59,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		{ 
 			get 
 			{ 
-				// Functionality of Cart power off is same as for cart address data
+				// Functionality of cart power off is same as for cart address data
 				return CartAddressData; 
 			}
 		}

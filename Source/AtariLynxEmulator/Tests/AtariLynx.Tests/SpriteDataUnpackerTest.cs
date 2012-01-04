@@ -87,6 +87,7 @@ namespace AtariLynx.Tests
 				if (offset == 0) break;
 
 				totalPixelCount += unpacker.PixelsInLine((byte)(offset - 1)).Count();
+				unpacker.MoveToNextLine(offset);
 			}
 
 			// Assert

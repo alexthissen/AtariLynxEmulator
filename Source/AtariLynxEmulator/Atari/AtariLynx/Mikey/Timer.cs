@@ -56,7 +56,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		{
 			ulong cyclesInterrupt = 0;
 			ExpirationTime = ulong.MaxValue;
-			
+
+			// "The Timer Done bit requires clearing in order to count."
 			// Only enabled and not-done timers should predict expiration time
 			if (StaticControlBits.EnableCount && (StaticControlBits.EnableReload || !DynamicControlBits.TimerDone))
 			{

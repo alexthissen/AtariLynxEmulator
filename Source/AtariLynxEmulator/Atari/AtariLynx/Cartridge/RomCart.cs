@@ -49,8 +49,19 @@ namespace KillerApps.Emulation.Atari.Lynx
 		// "CartAddressData is the data input to the shift register ..."
 		public void CartAddressData(bool data)
 		{
-			//Debug.WriteLineIf(GeneralSwitch.TraceVerbose, String.Format("CartAddressData (${0:x})", data));
+			// "Since some types of ROM do not have a useful power down mode, we provide a switched power pin 
+			// to the cartridge. This pin is controlled by the state of the 'CartAddressData' signal from Mikey. 
+			// Yes, this is the same pin that we use as a data source while clocking the address shift register 
+			// and therefor, we will be switching ROM power on and off while loading that register. 
+			// Unless the software is poorly arranged, that interval of power switching will be short. 
+			// The switched power pin is powered up by setting the 'CartAddressData' signal low. 
+			// It is suggested that the pin be powered up for the read of any ROM cart since carts that do not 
+			// need it will not be wired to that pin. 
+			// Additionally, information in that ROM cart can tell the software if it needs to further 
+			// manipulate the pin."
 			addressData = data;
+
+			//Debug.WriteLineIf(GeneralSwitch.TraceVerbose, String.Format("CartAddressData (${0:x})", data));
 		}
 
 		// "... and CartAddressStrobe is the clock to the shift register. "
@@ -95,6 +106,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 			return Peek(Bank1);
 		}
 
+		// "The length of the strobe is 562.5 ns, the data is stable for 125 ns prior to the strobe and 
+		// for 62.5 ns after the strobe. This is a 'blind' write from the CPU and must not be interrupted 
+		// by another access to Suzy until it is finished. 
+		// The CPU must not access Suzy for 12 ticks after the completion of the 'blind' write cycle."
 		private void Poke(RomCartMemoryBank bank, byte value)
 		{
 			if (!bank.WriteEnabled) return;

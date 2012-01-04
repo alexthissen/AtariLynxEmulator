@@ -16,11 +16,13 @@ namespace AtariLynx.Tests
 	[TestClass]
 	public class MemoryManagementUnitTest
 	{
-		IMemoryAccess<ushort, byte> ram, rom, mikey, suzy;
+		IMemoryAccess<ushort, byte> rom, mikey, suzy;
+		IDirectMemoryAccess<ushort, byte> ram;
 		MemoryManagementUnit mmu = null;
 
 		public const byte romValue = 0x11;
 		public const byte ramValue = 0x22;
+		public const int ramSize = 0x10000;
 		public const byte suzyValue = 0x33;
 		public const byte mikeyValue = 0x44;
 
@@ -41,7 +43,7 @@ namespace AtariLynx.Tests
 		public void MyTestInitialize() 
 		{
 			rom = CreateMockMemory(0xfe00, 0xffff, romValue);
-			ram = CreateMockMemory(0x0000, 0xffff, ramValue);
+			ram = CreateMockMemoryWithDirectAccess(0x0000, 0xffff, ramValue, ramSize);
 			suzy = CreateMockMemory(0xfc00, 0xfcff, suzyValue);
 			mikey = CreateMockMemory(0xfd00, 0xfdff, mikeyValue);
 			
@@ -62,6 +64,15 @@ namespace AtariLynx.Tests
 			return mockMemory.Object;
 		}
 
+		private IDirectMemoryAccess<ushort, byte> CreateMockMemoryWithDirectAccess(ushort from, ushort to, byte value, int size)
+		{
+			Mock<IDirectMemoryAccess<ushort, byte>> mockMemory = new Mock<IDirectMemoryAccess<ushort, byte>>();
+			mockMemory.Setup(memory => memory.Peek(It.IsInRange<ushort>(from, to, Range.Inclusive))).Returns(value);
+			byte[] dmaMemory = Enumerable.Repeat(value, size).ToArray();
+			mockMemory.Setup(memory => memory.GetDirectAccess()).Returns(dmaMemory);
+			return mockMemory.Object;
+		}
+
 		private Mock<IMemoryAccess<ushort, byte>> GetMock(IMemoryAccess<ushort, byte> mocked)
 		{
 			Mock<IMemoryAccess<ushort, byte>> mock = Mock.Get<IMemoryAccess<ushort, byte>>(mocked);
@@ -79,7 +90,7 @@ namespace AtariLynx.Tests
 			byte value = mmu.Peek(address);
 
 			Assert.AreEqual<byte>(value, ramValue, "Value from peek at RAM not correct.");
-			GetMock(ram).Verify(r => r.Peek(address), Times.Once(), "Peek to RAM needs to be called exactly once.");
+			Mock.Get(ram).Verify(r => r.Peek(address), Times.Once(), "Peek to RAM needs to be called exactly once.");
 		}
 
 		[TestMethod]
@@ -93,7 +104,7 @@ namespace AtariLynx.Tests
 			byte value = mmu.Peek(address);
 
 			Assert.AreEqual<byte>(value, romValue, "Value from peek at ROM not correct.");
-			GetMock(rom).Verify(r => r.Peek(address), Times.Once(), "Peek to RAM needs to be called exactly once.");
+			Mock.Get(rom).Verify(r => r.Peek(address), Times.Once(), "Peek to RAM needs to be called exactly once.");
 		}
 
 		[TestMethod]
@@ -107,7 +118,7 @@ namespace AtariLynx.Tests
 			byte value = mmu.Peek(address);
 
 			Assert.AreEqual<byte>(value, romValue, "Value from peek at IRQ vector not correct.");
-			GetMock(rom).Verify(r => r.Peek(address), Times.Once(), "Peek to IRQ vector needs to be called exactly once.");
+			Mock.Get(rom).Verify(r => r.Peek(address), Times.Once(), "Peek to IRQ vector needs to be called exactly once.");
 		}
 
 		[TestMethod]
@@ -121,7 +132,7 @@ namespace AtariLynx.Tests
 			byte value = mmu.Peek(address);
 
 			Assert.AreEqual<byte>(value, mikeyValue, "Value from peek at Mikey not correct.");
-			GetMock(mikey).Verify(r => r.Peek(address), Times.Once(), "Peek to Mikey needs to be called exactly once.");
+			Mock.Get(mikey).Verify(r => r.Peek(address), Times.Once(), "Peek to Mikey needs to be called exactly once.");
 		}
 
 		[TestMethod]
@@ -135,7 +146,7 @@ namespace AtariLynx.Tests
 			byte value = mmu.Peek(address);
 
 			Assert.AreEqual<byte>(value, suzyValue, "Value from peek at Suzy not correct.");
-			GetMock(suzy).Verify(r => r.Peek(address), Times.Once(), "Peek to Suzy needs to be called exactly once.");
+			Mock.Get(suzy).Verify(r => r.Peek(address), Times.Once(), "Peek to Suzy needs to be called exactly once.");
 		}
 
 		[TestMethod]
@@ -153,10 +164,10 @@ namespace AtariLynx.Tests
 
 			Assert.AreEqual<byte>(value, ramValue, "Value from peek at RAM not correct.");
 
-			GetMock(ram).Verify(r => r.Peek(It.IsAny<ushort>()), Times.Exactly(5), "All peeks to memory must be mapped to RAM when spaces are disabled.");
-			GetMock(rom).Verify(r => r.Peek(It.IsAny<ushort>()), Times.Never(), "Peek to Suzy must be mapped to RAM.");
-			GetMock(mikey).Verify(r => r.Peek(It.IsAny<ushort>()), Times.Never(), "Peek to Suzy must be mapped to RAM.");
-			GetMock(suzy).Verify(r => r.Peek(It.IsAny<ushort>()), Times.Never(), "Peek to Suzy must be mapped to RAM.");
+			Mock.Get(ram).Verify(r => r.Peek(It.IsAny<ushort>()), Times.Exactly(5), "All peeks to memory must be mapped to RAM when spaces are disabled.");
+			Mock.Get(rom).Verify(r => r.Peek(It.IsAny<ushort>()), Times.Never(), "Peek to Suzy must be mapped to RAM.");
+			Mock.Get(mikey).Verify(r => r.Peek(It.IsAny<ushort>()), Times.Never(), "Peek to Suzy must be mapped to RAM.");
+			Mock.Get(suzy).Verify(r => r.Peek(It.IsAny<ushort>()), Times.Never(), "Peek to Suzy must be mapped to RAM.");
 		}
 	}
 }

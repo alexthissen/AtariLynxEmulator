@@ -133,7 +133,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Blockout.lnx" />
     <None Include="Resources\collision.lnx" />
+    <None Include="Resources\demo0006.lnx" />
     <None Include="Resources\demo01.o" />
     <None Include="Resources\demo02.o" />
     <None Include="Resources\demo03.o" />

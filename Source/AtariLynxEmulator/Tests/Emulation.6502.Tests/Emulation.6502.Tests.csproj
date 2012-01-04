@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cmos65SC02Test.cs" />
+    <Compile Include="Disassembler6502Test.cs" />
     <Compile Include="Opcodes\ArithmeticInstructionsTest.cs" />
     <Compile Include="Opcodes\BranchInstructionsTest.cs" />
     <Compile Include="Opcodes\LogicalInstructionsTest.cs" />
@@ -71,6 +72,12 @@
       <Project>{714EA8D7-CD22-41B6-956B-C0B8076E7C30}</Project>
       <Name>Emulation.Core8Bit</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="Binaries\LYNXBOOT.IMG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

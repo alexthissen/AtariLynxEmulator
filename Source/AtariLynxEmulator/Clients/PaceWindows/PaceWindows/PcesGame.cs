@@ -28,6 +28,7 @@ namespace KillerApps.Gaming.Atari
 		private GraphicsDeviceManager graphics;
 		private SpriteBatch spriteBatch;
 		private Texture2D lcdScreen;
+		private Texture2D border;
 		private SpriteFont font;
 		private const int magnification = 4;
 		private const int graphicsWidth = Suzy.SCREEN_WIDTH * magnification;
@@ -40,11 +41,18 @@ namespace KillerApps.Gaming.Atari
 		private byte[] soundBuffer;
 		private DynamicSoundEffectInstance dynamicSound;
 
+		// Network
+		//private IComLynxTransport transport = null;
+		//private GamerServicesComponent gamerServices = null;
+
 		public PcesGame()
 		{
 			emulator = new LynxHandheld();
 			graphics = new GraphicsDeviceManager(this);
 			romContent = new ResourceContentManager(Services, Roms.ResourceManager);
+
+			//gamerServices = new GamerServicesComponent(this);
+			//Components.Add(gamerServices);
 		}
 
 		/// <summary>
@@ -68,7 +76,12 @@ namespace KillerApps.Gaming.Atari
 #if WINDOWS_PHONE
 			inputHandler = new TouchHandler(this, Content, spriteBatch);
 #elif WINDOWS
+			//inputHandler = new GamePadHandler(this);
 			inputHandler = new KeyboardHandler(this);
+
+			//emulator.Mikey.comLynx.DataSent += new DataSentDelegate(emulator2.Mikey.comLynx.ReceiveSerialData);
+			//emulator2.Mikey.comLynx.DataSent += new DataSentDelegate(emulator.Mikey.comLynx.ReceiveSerialData);
+
 #elif XBOX360
 			inputHandler = new GamePadHandler(this);
 #endif
@@ -145,6 +158,7 @@ namespace KillerApps.Gaming.Atari
 		{
 			// Use this.Content to load your game content here
 			font = Content.Load<SpriteFont>("DefaultFont");
+			border = Content.Load<Texture2D>("BackgroundLynxBorder");
 		}
 
 		/// <summary>
@@ -166,9 +180,12 @@ namespace KillerApps.Gaming.Atari
 			//if (inputHandler.ExitGame == true)
 			//	this.Exit();
 
+			inputHandler.Update(gameTime);
+
 			JoystickStates joystick = inputHandler.Joystick;
 			emulator.UpdateJoystickState(joystick);
 			emulator.Update(50000);
+			//emulator2.Update(50000);
 
 			base.Update(gameTime);
 		}
@@ -186,13 +203,13 @@ namespace KillerApps.Gaming.Atari
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Draw(GameTime gameTime)
 		{
-			if (emulator.NewVideoFrameAvailable)
-			{
-				lcdScreen.SetData(emulator.LcdScreenDma, 0x0, 0x3FC0);
-				emulator.NewVideoFrameAvailable = false;
-			}
+			lcdScreen.SetData(emulator.LcdScreenDma, 0x0, 0x3FC0);
 
+			//  Stream stream = new ;
+			//lcdScreen.SaveAsJpeg(stream, Suzy.SCREEN_WIDTH, Suzy.SCREEN_HEIGHT);
+			
 			spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null);
+			//spriteBatch.Draw(border, new Rectangle(0,0, graphicsWidth *2, graphicsHeight*2), Color.White);
 			spriteBatch.Draw(lcdScreen, 
 				new Rectangle(0, 0, graphicsWidth, graphicsHeight), 
 				new Rectangle(0, 0, Suzy.SCREEN_WIDTH, Suzy.SCREEN_HEIGHT), 

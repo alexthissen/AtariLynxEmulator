@@ -75,5 +75,26 @@ namespace AtariLynx.Tests
 			// Assert
 			Assert.AreEqual<ushort>(0xff80, handheld.Cpu.PC, "After reset program counter of processor should be at boot address.");
 		}
+
+		[TestMethod]
+		[ExpectedException(typeof(LynxException), "Boot image file appears to be fake.")]
+		public void EmulatorShouldThrowForFakeBootRomAtStartup()
+		{
+			// Arrange
+			LynxHandheld handheld = new LynxHandheld();
+			handheld.BootRomImage =
+				new MemoryStream(new byte[] 
+				{ 
+					0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 
+					0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF 
+				});
+			handheld.Cartridge = cartridge;
+
+			// Act
+			handheld.Initialize();
+
+			// Assert
+			Assert.AreEqual<ushort>(0xff80, handheld.Cpu.PC, "After reset program counter of processor should be at boot address.");
+		}
 	}
 }

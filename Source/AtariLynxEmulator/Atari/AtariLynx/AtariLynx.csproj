@@ -65,6 +65,7 @@
     <Compile Include="Audio\ShiftRegisterFeedbackEnable.cs" />
     <Compile Include="Mikey\TimerBase.cs" />
     <Compile Include="Mikey\TimerControlBase.cs" />
+    <Compile Include="Uart\Uart2.cs" />
     <Compile Include="Uart\IComLynxTransport.cs" />
     <Compile Include="Uart\Uart.cs" />
     <Compile Include="ILynxDevice.cs" />
@@ -94,7 +95,7 @@
     <Compile Include="Mikey\SystemControlBits1.cs" />
     <Compile Include="Mikey\Timer.cs" />
     <Compile Include="Mikey\TimerLogicFactory.cs" />
-    <Compile Include="Mikey\UartTimer.cs" />
+    <Compile Include="Mikey\UartTimerLogic.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Ram64KBMemory.cs" />
     <Compile Include="RomBootMemory.cs" />
@@ -119,6 +120,7 @@
     <Compile Include="Suzy\Suzy.Addresses.cs" />
     <Compile Include="Suzy\SuzyBusEnable.cs" />
     <Compile Include="Suzy\Suzy.cs" />
+    <Compile Include="Uart\UartDataEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Framework\Emulation.6502\Emulation.6502.csproj">

@@ -23,7 +23,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public byte[] BlueRedColorMap = new byte[0x10];
 		public uint[] ArgbColorMap = new uint[0x10];
 
-		private Uart comLynx;
+		// TODO: Make Uart member private again
+		public Uart2 comLynx;
 		public SystemControlBits1 SYSCTL1 { get; private set; }
 		public ParallelData IODAT { get; private set; }
 		public DisplayControlBits DISPCTL { get; private set; }
@@ -66,7 +67,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public Mikey(ILynxDevice lynx)
 		{
 			this.device = lynx;
-			this.comLynx = new Uart();
+			this.comLynx = new Uart2();
 			this.AudioFilter = new AudioFilter();
 
 			// "reset = x"
@@ -497,7 +498,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 					return;
 
 				case Mikey.Addresses.SERDAT:
-					comLynx.TransmitSerialData(value);
+					comLynx.WriteToTransmitBuffer(value);
 					return;
 
 				case Mikey.Addresses.SYSCTL1:

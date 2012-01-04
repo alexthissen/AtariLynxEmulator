@@ -152,7 +152,10 @@ namespace AtariLynx.Tests
 		{
 			// Arrange
 			suzy.Poke(Suzy.Addresses.SPRSYS, 0x80); // Signed math enabled
-			suzy.MathABCD = BitConverter.GetBytes(0xFFFEFFFF);
+			suzy.Poke(Suzy.Addresses.MATHD, 0xFF);
+			suzy.Poke(Suzy.Addresses.MATHC, 0xFF); // CD = -1
+			suzy.Poke(Suzy.Addresses.MATHB, 0xFE);
+			suzy.Poke(Suzy.Addresses.MATHA, 0xFF); // AB = -2
 			
 			// Act
 			suzy.Multiply16By16();
@@ -216,7 +219,7 @@ namespace AtariLynx.Tests
 			suzy.Multiply16By16();
 
 			// Assert
-			Assert.IsTrue(suzy.SPRSYS.LastCarry, "Accumulate math overflow bit should have been set for overflowing accumulator.");
+			Assert.IsTrue(suzy.SPRSYS.MathWarning, "Accumulate math overflow bit should have been set for overflowing accumulator.");
 		}
 
 		[TestMethod]
