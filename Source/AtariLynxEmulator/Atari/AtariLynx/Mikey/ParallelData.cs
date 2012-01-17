@@ -12,20 +12,21 @@ namespace KillerApps.Emulation.Atari.Lynx
 	public class ParallelData
 	{
 		public const byte RestMask = 0x08;
-		public const byte AudioInMask = 0x10;
+		public const byte AuxiliaryDigitalInOutMask = 0x10;
 		public const byte NoExpansionMask = 0x04;
 		public const byte CartAddressDataMask = 0x02;
 		public const byte ExternalPowerMask = 0x01;
 		
 		public ParallelData(byte initialData)
+
 		{
 			// "B7 = NC
 			//	B6 = NC
 			//	B5 = NC"
 			// "The other 3 bits in the byte are not connected to anything specific. 
 			// Don't depend on them being any particular value."
-			// TODO: Initialize with mask of 0x1f
 			ByteData = initialData;
+			ByteData &= 0x1F;
 		}
 
 		private byte byteData;
@@ -69,11 +70,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public bool Rest 
 		{ 
 			get { return (ByteData & RestMask) == RestMask; }
-			//set
-			//{
-			//  ByteData &= RestMask ^ 0xFF;
-			//  ByteData |= value ? RestMask : (byte)0;
-			//}
 		}
 
 		// "This bit can be an input or an output. In its current use, it is the write enable line 
@@ -82,14 +78,14 @@ namespace KillerApps.Emulation.Atari.Lynx
 		// Whether it is set to input or output, the value read on this pin will depend on the 
 		// electronics in the cartridge that is driving it."
 		// "B4 = audin input"
-		public bool AudioIn 
+		public bool AuxiliaryDigitalInOut 
 		{
-			get { return (ByteData & AudioInMask) == AudioInMask; }
-			set 
-			{
- 				// TODO: Implement audio in writing
-				throw new NotImplementedException(); 
-			}
+			get { return (ByteData & AuxiliaryDigitalInOutMask) == AuxiliaryDigitalInOutMask; }
+			//set 
+			//{
+			//  ByteData &= (AuxiliaryDigitalInOutMask ^ 0xFF);
+			//  if (value) ByteData |= AuxiliaryDigitalInOutMask;
+			//}
 		}
 
 		// "This bit must be set to an input. It detects the presence of a plug in the expansion connector."

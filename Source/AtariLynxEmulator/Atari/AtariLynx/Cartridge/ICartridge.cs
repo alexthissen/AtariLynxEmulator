@@ -7,6 +7,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 {
 	public interface ICartridge
 	{
+		bool AuxiliaryDigitalInOut { get; set; }
 		bool WriteEnabled { get; set; }
 		void CartAddressData(bool data);
 		void CartAddressStrobe(bool strobe);

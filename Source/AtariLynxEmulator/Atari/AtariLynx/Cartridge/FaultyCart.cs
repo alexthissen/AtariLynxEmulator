@@ -15,6 +15,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			set { /* Do nothing */ }
 		}
 
+		public bool AuxiliaryDigitalInOut { get; set; }
 		public void CartAddressData(bool data) { }
 		public void CartAddressStrobe(bool strobe) { }
 		public void Poke0(byte value) { }

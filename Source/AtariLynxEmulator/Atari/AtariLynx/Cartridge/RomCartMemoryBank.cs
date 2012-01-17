@@ -78,7 +78,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			}
 		}
 
-		private ulong GetAddress(int shiftRegister, int counter)
+		internal ulong GetAddress(int shiftRegister, int counter)
 		{
 			// "A particular ROM Cart will be wired to the address generator such that the upper 8 bits 
 			// of its address will come from the 8 bit shift register and the remaining lower bits of 

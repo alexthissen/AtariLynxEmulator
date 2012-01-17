@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("8-Bit processor emulation")]
-[assembly: AssemblyDescription("Core library for 8-bit processor emulation")]
+[assembly: AssemblyTitle("93XX Chipset family emulation")]
+[assembly: AssemblyDescription("Core library for 93XX EEPROM emulation")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Killer-Apps")]
-[assembly: AssemblyProduct("8-Bit processor emulation library")]
+[assembly: AssemblyProduct("93XX Emulation Library")]
 [assembly: AssemblyCopyright("Copyright © Killer-Apps 2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -26,3 +26,5 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
+
+[assembly: InternalsVisibleTo("Emulation.93XX.Tests")]

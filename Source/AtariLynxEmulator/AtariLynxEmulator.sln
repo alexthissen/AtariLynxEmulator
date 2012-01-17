@@ -50,9 +50,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtariLynx.Cryptography", "T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtariLynx.Cryptography.Tests", "Tests\AtariLynx.Cryptography.Tests\AtariLynx.Cryptography.Tests.csproj", "{811CE56B-9810-4510-91BB-C2971C576B2B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emulation.93XX", "Framework\Emulation.93XX\Emulation.93XX.csproj", "{687F3F48-65FB-4B13-9105-7892AA211A0E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emulation.93XX.Tests", "Tests\Emulation.93XX.Tests\Emulation.93XX.Tests.csproj", "{A417A5A3-C12F-4092-B63F-46C204C197E7}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 15
+		SccNumberOfProjects = 17
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs01
 		SccLocalPath0 = .
@@ -104,14 +108,22 @@ Global
 		SccProjectTopLevelParentUniqueName12 = AtariLynxEmulator.sln
 		SccProjectName12 = Tooling/AtariLynx.Build
 		SccLocalPath12 = Tooling\\AtariLynx.Build
-		SccProjectUniqueName13 = Tooling\\AtariLynx.Encryption\\AtariLynx.Encryption.csproj
+		SccProjectUniqueName13 = Tooling\\AtariLynx.Cryptography\\AtariLynx.Cryptography.csproj
 		SccProjectTopLevelParentUniqueName13 = AtariLynxEmulator.sln
-		SccProjectName13 = Tooling/AtariLynx.Encryption
-		SccLocalPath13 = Tooling\\AtariLynx.Encryption
-		SccProjectUniqueName14 = Tests\\AtariLynx.Encryption.Tests\\AtariLynx.Encryption.Tests.csproj
+		SccProjectName13 = Tooling/AtariLynx.Cryptography
+		SccLocalPath13 = Tooling\\AtariLynx.Cryptography
+		SccProjectUniqueName14 = Tests\\AtariLynx.Cryptography.Tests\\AtariLynx.Cryptography.Tests.csproj
 		SccProjectTopLevelParentUniqueName14 = AtariLynxEmulator.sln
-		SccProjectName14 = Tests/AtariLynx.Encryption.Tests
-		SccLocalPath14 = Tests\\AtariLynx.Encryption.Tests
+		SccProjectName14 = Tests/AtariLynx.Cryptography.Tests
+		SccLocalPath14 = Tests\\AtariLynx.Cryptography.Tests
+		SccProjectUniqueName15 = Framework\\Emulation.93CXX\\Emulation.93CXX.csproj
+		SccProjectTopLevelParentUniqueName15 = AtariLynxEmulator.sln
+		SccProjectName15 = Framework/Emulation.93CXX
+		SccLocalPath15 = Framework\\Emulation.93CXX
+		SccProjectUniqueName16 = Tests\\Emulation.93CXX.Tests\\Emulation.93CXX.Tests.csproj
+		SccProjectTopLevelParentUniqueName16 = AtariLynxEmulator.sln
+		SccProjectName16 = Tests/Emulation.93CXX.Tests
+		SccLocalPath16 = Tests\\Emulation.93CXX.Tests
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = AtariLynxEmulator.vsmdi
@@ -320,6 +332,34 @@ Global
 		{811CE56B-9810-4510-91BB-C2971C576B2B}.Release|Windows Phone.ActiveCfg = Release|Any CPU
 		{811CE56B-9810-4510-91BB-C2971C576B2B}.Release|x86.ActiveCfg = Release|Any CPU
 		{811CE56B-9810-4510-91BB-C2971C576B2B}.Release|Xbox 360.ActiveCfg = Release|Any CPU
+		{687F3F48-65FB-4B13-9105-7892AA211A0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{687F3F48-65FB-4B13-9105-7892AA211A0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{687F3F48-65FB-4B13-9105-7892AA211A0E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{687F3F48-65FB-4B13-9105-7892AA211A0E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{687F3F48-65FB-4B13-9105-7892AA211A0E}.Debug|Windows Phone.ActiveCfg = Debug|Any CPU
+		{687F3F48-65FB-4B13-9105-7892AA211A0E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{687F3F48-65FB-4B13-9105-7892AA211A0E}.Debug|Xbox 360.ActiveCfg = Debug|Any CPU
+		{687F3F48-65FB-4B13-9105-7892AA211A0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{687F3F48-65FB-4B13-9105-7892AA211A0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{687F3F48-65FB-4B13-9105-7892AA211A0E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{687F3F48-65FB-4B13-9105-7892AA211A0E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{687F3F48-65FB-4B13-9105-7892AA211A0E}.Release|Windows Phone.ActiveCfg = Release|Any CPU
+		{687F3F48-65FB-4B13-9105-7892AA211A0E}.Release|x86.ActiveCfg = Release|Any CPU
+		{687F3F48-65FB-4B13-9105-7892AA211A0E}.Release|Xbox 360.ActiveCfg = Release|Any CPU
+		{A417A5A3-C12F-4092-B63F-46C204C197E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A417A5A3-C12F-4092-B63F-46C204C197E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A417A5A3-C12F-4092-B63F-46C204C197E7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{A417A5A3-C12F-4092-B63F-46C204C197E7}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{A417A5A3-C12F-4092-B63F-46C204C197E7}.Debug|Windows Phone.ActiveCfg = Debug|Any CPU
+		{A417A5A3-C12F-4092-B63F-46C204C197E7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A417A5A3-C12F-4092-B63F-46C204C197E7}.Debug|Xbox 360.ActiveCfg = Debug|Any CPU
+		{A417A5A3-C12F-4092-B63F-46C204C197E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A417A5A3-C12F-4092-B63F-46C204C197E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A417A5A3-C12F-4092-B63F-46C204C197E7}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{A417A5A3-C12F-4092-B63F-46C204C197E7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{A417A5A3-C12F-4092-B63F-46C204C197E7}.Release|Windows Phone.ActiveCfg = Release|Any CPU
+		{A417A5A3-C12F-4092-B63F-46C204C197E7}.Release|x86.ActiveCfg = Release|Any CPU
+		{A417A5A3-C12F-4092-B63F-46C204C197E7}.Release|Xbox 360.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -327,9 +367,11 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{714EA8D7-CD22-41B6-956B-C0B8076E7C30} = {57DA1BC1-ABF4-498A-99DA-D60A132A272D}
 		{244BE6E7-3086-4522-A21F-975BB9D37F0B} = {57DA1BC1-ABF4-498A-99DA-D60A132A272D}
+		{687F3F48-65FB-4B13-9105-7892AA211A0E} = {57DA1BC1-ABF4-498A-99DA-D60A132A272D}
 		{EC2DDC9F-46F3-42E1-B2DC-5BB791D0C373} = {36DA151D-7800-4816-8101-2C38E721D71B}
 		{E8C9A948-C4D9-4D26-934B-4A1BA5AC5CFC} = {36DA151D-7800-4816-8101-2C38E721D71B}
 		{811CE56B-9810-4510-91BB-C2971C576B2B} = {36DA151D-7800-4816-8101-2C38E721D71B}
+		{A417A5A3-C12F-4092-B63F-46C204C197E7} = {36DA151D-7800-4816-8101-2C38E721D71B}
 		{55628D95-A00F-4266-B784-20B81D662004} = {C32557B1-9366-4061-85F9-460C1C8019F4}
 		{20FFC2CF-11DF-4865-A340-8BA0B2D9C987} = {7B840FDF-4463-4ABD-BADE-E67DDC4213B6}
 		{0838352B-7576-445E-A71E-D82796D91F31} = {7B840FDF-4463-4ABD-BADE-E67DDC4213B6}

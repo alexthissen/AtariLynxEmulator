@@ -14,14 +14,14 @@ namespace KillerApps.Emulation.Atari.Lynx
 	public class RomCart : ICartridge
 	{
 		// "In a ROM Cart unit, the addresses for the ROM Cart are provided by an 8 bit shift 
-		// register and a 11 bit counter. "
-		private int shiftRegister = 0;
-		private int counter = 0;
-		private bool currentStrobe = false;
-		private bool addressData = false;
+		// register and a 11 bit counter."
+		protected int shiftRegister = 0;
+		protected int counter = 0;
+		protected bool currentStrobe = false;
+		protected bool addressData = false;
 
 		// TODO: Change back to private
-		public RomCartMemoryBank Bank0 { get; set; }
+		private RomCartMemoryBank Bank0 { get; set; }
 		private RomCartMemoryBank Bank1 { get; set; }
 
 		//private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
@@ -86,6 +86,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 			//Debug.WriteLineIf(GeneralSwitch.TraceVerbose, String.Format("CartAddressStrobe (strobe={0}) shifter=${1:x}", strobe, shiftRegister));
 		}
 
+		public virtual bool AuxiliaryDigitalInOut { get; set; }
+
 		public void Poke0(byte value)
 		{
 			Poke(Bank0, value);
@@ -110,13 +112,12 @@ namespace KillerApps.Emulation.Atari.Lynx
 		// for 62.5 ns after the strobe. This is a 'blind' write from the CPU and must not be interrupted 
 		// by another access to Suzy until it is finished. 
 		// The CPU must not access Suzy for 12 ticks after the completion of the 'blind' write cycle."
-		private void Poke(RomCartMemoryBank bank, byte value)
+		protected virtual void Poke(RomCartMemoryBank bank, byte value)
 		{
-			if (!bank.WriteEnabled) return;
+			// "The ROM Cart can also be written to. The addressing scheme is the same as for reads."
+			if (bank.WriteEnabled) bank.Poke(shiftRegister, counter, value);
 
-			// "The ROM Cart can also be written to. The addressing scheme is the same as for reads. 
-			// The strobe is also self timed."
-			bank.Poke(shiftRegister, counter, value);
+			// "The strobe is also self timed."
 			if (!currentStrobe)
 			{
 				counter++;
@@ -124,7 +125,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			}
 		}
 
-		private byte Peek(RomCartMemoryBank bank)
+		protected virtual byte Peek(RomCartMemoryBank bank)
 		{
 			byte data = bank.Peek(shiftRegister, counter);
 			if (!currentStrobe)

@@ -194,6 +194,7 @@
     <None Include="Resources\IRQ Test.lnx" />
     <None Include="Resources\lite.o" />
     <None Include="Resources\LYNXBOOT.IMG" />
+    <None Include="Resources\Lynxopoly NDA.lnx" />
     <None Include="Resources\Mode7.lnx" />
     <None Include="Resources\Wuerfel.lnx" />
   </ItemGroup>

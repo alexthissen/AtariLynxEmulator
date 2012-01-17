@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Atari Lynx emulation library")]
-[assembly: AssemblyDescription("Core library for Atari Lynx emulation")]
+[assembly: AssemblyDescription("Core library for Atari Lynx console emulation")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Killer-Apps")]
-[assembly: AssemblyProduct("Atari Lynx emulation")]
-[assembly: AssemblyCopyright("Copyright © Killer-Apps 2011")]
+[assembly: AssemblyProduct("Atari Lynx emulation library")]
+[assembly: AssemblyCopyright("Copyright © Killer-Apps 2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("Epic Atari Lynx Emulator")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyCompany("Killer-Apps")]
-[assembly: AssemblyCopyright("Copyright © Killer-Apps 2011")]
+[assembly: AssemblyCopyright("Copyright © Killer-Apps 2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

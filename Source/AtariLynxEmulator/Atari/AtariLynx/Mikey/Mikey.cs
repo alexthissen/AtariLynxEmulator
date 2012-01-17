@@ -474,7 +474,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 				// "Also note that only the lines that are set to input are actually valid for reading."
 				// "8 bits I/O direction corresponding to the 8 bits at FD8B 0=input, 1= output"
 				case Mikey.Addresses.IODIR:
-					//IODIR.ByteData = value;
 					IODIR.ByteData = value;
 					return;
 
@@ -487,10 +486,14 @@ namespace KillerApps.Emulation.Atari.Lynx
 				
 					// "The other is that it controls power to the cartridge."
 					device.CartridgePowerOn = !IODAT.CartPowerOff;
+					
+					// "In its current use, it is the write enable line for writeable elements in the cartridge."
+					if (IODIR.AuxiliaryDigitalInOut == DataDirection.Output)
+						device.Cartridge.AuxiliaryDigitalInOut = IODAT.AuxiliaryDigitalInOut;
 
 					// "In its current use, it is the write enable line for writeable elements in the cartridge."
-					if (IODIR.AudioIn == DataDirection.Output)
-						device.Cartridge.WriteEnabled = IODAT.AudioIn;
+					if (IODIR.AuxiliaryDigitalInOut == DataDirection.Output)
+						device.Cartridge.WriteEnabled = IODAT.AuxiliaryDigitalInOut;
 					return;
 
 				case Mikey.Addresses.SERCTL:
@@ -695,7 +698,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 				// Also note that only the lines that are set to input are actually valid for reading."
 				case Mikey.Addresses.IODAT:
 					byte value = 0x00;
-					if (IODIR.AudioIn == DataDirection.Input || IODAT.AudioIn) value |= ParallelData.AudioInMask;
+					if (IODIR.AuxiliaryDigitalInOut == DataDirection.Input && device.Cartridge.AuxiliaryDigitalInOut) 
+						value |= ParallelData.AuxiliaryDigitalInOutMask;
+					if (IODIR.AuxiliaryDigitalInOut == DataDirection.Output && IODAT.AuxiliaryDigitalInOut) 
+						value |= ParallelData.AuxiliaryDigitalInOutMask;
 					if (IODIR.Rest == DataDirection.Output && (!IODAT.Rest || !RestActive)) value |= ParallelData.RestMask;
 					if ((IODIR.NoExpansion == DataDirection.Input && ComLynxCablePresent) || 
 							(IODIR.NoExpansion == DataDirection.Output && IODAT.NoExpansion))
@@ -703,8 +709,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 					if (IODIR.CartAddressData == DataDirection.Output && IODAT.CartAddressData) value |= ParallelData.CartAddressDataMask;
 					if (IODIR.ExternalPower == DataDirection.Input || IODAT.ExternalPower) value |= ParallelData.ExternalPowerMask;
 					return value;
-					//byte value = IODAT.ByteData;
-					//return (byte)(value & (IODIR ^ 0xff));
 
 				case Mikey.Addresses.SERCTL:
 					return comLynx.SERCTL.ByteData;

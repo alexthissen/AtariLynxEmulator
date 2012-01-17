@@ -11,9 +11,9 @@ using KillerApps.Emulation.Atari.Lynx.Tooling;
 [assembly: AssemblyTitle("AtariLynx.Tooling")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Killer-Apps")]
 [assembly: AssemblyProduct("AtariLynx.Tooling")]
-[assembly: AssemblyCopyright("Copyright ©  2011")]
+[assembly: AssemblyCopyright("Copyright © Killer-Apps 2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

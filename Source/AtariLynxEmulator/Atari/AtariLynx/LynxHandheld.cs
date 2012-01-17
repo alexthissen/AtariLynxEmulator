@@ -11,7 +11,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 {
 	public class LynxHandheld: ILynxDevice
 	{
-		public ICartridge Cartridge { get; set; }
+		public ICartridge Cartridge { get; private set; }
 		public Ram64KBMemory Ram { get; private set; }
 		public RomBootMemory Rom { get; private set; }
 		internal MemoryManagementUnit Mmu { get; private set; }
@@ -31,6 +31,11 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public const int SYSTEM_FREQ = 16000000;
 
 		//private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
+
+		public void InsertCartridge(ICartridge cartridge)
+		{
+			this.Cartridge = cartridge;
+		}
 
 		public void Initialize()
 		{

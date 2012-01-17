@@ -8,7 +8,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 {
 	public interface ILynxDevice : IResetable
 	{
-		ICartridge Cartridge { get; set; }
+		ICartridge Cartridge { get; }
 		Mikey Mikey { get; }
 		Suzy Suzy { get; }
 		Cmos65SC02 Cpu { get; }

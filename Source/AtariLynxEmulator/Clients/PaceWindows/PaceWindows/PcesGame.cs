@@ -98,7 +98,7 @@ namespace KillerApps.Gaming.Atari
 			LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
 
 			BllRomImageFileFormat romImage2 = new BllRomImageFileFormat();
-			emulator.Cartridge = romImage.LoadCart(new MemoryStream(Roms.Collision));
+			emulator.InsertCartridge(romImage.LoadCart(new MemoryStream(Roms.Collision)));
 			emulator.Initialize();
 
 			//byte[] ram = emulator.Ram.GetDirectAccess();

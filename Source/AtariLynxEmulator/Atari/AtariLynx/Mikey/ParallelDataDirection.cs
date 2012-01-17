@@ -22,7 +22,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public DataDirection Rest { get { return GetDirection(ParallelData.RestMask); } }
 		public DataDirection NoExpansion { get { return GetDirection(ParallelData.NoExpansionMask); } }
-		public DataDirection AudioIn { get { return GetDirection(ParallelData.AudioInMask); } }
+		public DataDirection AuxiliaryDigitalInOut { get { return GetDirection(ParallelData.AuxiliaryDigitalInOutMask); } }
 		public DataDirection CartAddressData { get { return GetDirection(ParallelData.CartAddressDataMask); } }
 		public DataDirection ExternalPower { get { return GetDirection(ParallelData.ExternalPowerMask); } }
 

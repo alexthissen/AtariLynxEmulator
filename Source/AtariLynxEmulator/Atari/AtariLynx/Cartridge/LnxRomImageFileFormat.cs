@@ -49,7 +49,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 				Rotation = (CartRotation)reader.ReadByte();
 				Spare = reader.ReadBytes(5);
 
-				cart = new RomCart(Bank0Size, Bank1Size);
+				cart = new Eeprom93C46BCart(Bank0Size, Bank1Size);
 				cart.LoadFromStream(stream);
 			}
 

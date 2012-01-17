@@ -67,7 +67,7 @@ namespace AtariLynx.Tests
 			// Arrange
 			LynxHandheld handheld = new LynxHandheld();
 			handheld.BootRomImage = bootRomImageStream;
-			handheld.Cartridge = cartridge;
+			handheld.InsertCartridge(cartridge);
 
 			// Act
 			handheld.Initialize();
@@ -88,7 +88,7 @@ namespace AtariLynx.Tests
 					0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 
 					0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF 
 				});
-			handheld.Cartridge = cartridge;
+			handheld.InsertCartridge(cartridge);
 
 			// Act
 			handheld.Initialize();

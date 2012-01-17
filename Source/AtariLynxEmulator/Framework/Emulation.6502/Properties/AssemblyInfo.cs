@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Emulation.6502")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("6502 Chipset family emulation")]
+[assembly: AssemblyDescription("Core library for 6502 and 65SC02 emulation")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("Emulation.6502")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2011")]
+[assembly: AssemblyCompany("Killer-Apps")]
+[assembly: AssemblyProduct("6502 Emulation Library")]
+[assembly: AssemblyCopyright("Copyright © Killer-Apps 2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

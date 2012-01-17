@@ -53,6 +53,9 @@
     <Compile Include="Cartridge\BllRomImageHeader.cs" />
     <Compile Include="Cartridge\CartRotation.cs" />
     <Compile Include="Cartridge\BllRomImageFileFormat.cs" />
+    <Compile Include="Cartridge\Eeprom93C46BCart.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Cartridge\FaultyCart.cs" />
     <Compile Include="Cartridge\ICartridge.cs" />
     <Compile Include="Cartridge\LnxRomImageFileFormat.cs" />
@@ -126,6 +129,10 @@
     <ProjectReference Include="..\..\Framework\Emulation.6502\Emulation.6502.csproj">
       <Project>{244BE6E7-3086-4522-A21F-975BB9D37F0B}</Project>
       <Name>Emulation.6502</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Framework\Emulation.93XX\Emulation.93XX.csproj">
+      <Project>{687F3F48-65FB-4B13-9105-7892AA211A0E}</Project>
+      <Name>Emulation.93XX</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Framework\Emulation.Core8Bit\Emulation.Core8Bit.csproj">
       <Project>{714EA8D7-CD22-41B6-956B-C0B8076E7C30}</Project>

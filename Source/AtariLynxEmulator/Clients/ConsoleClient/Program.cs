@@ -26,7 +26,7 @@ namespace ConsoleClient
 
 			LynxHandheld handheld = new LynxHandheld();
 			handheld.BootRomImage = bootRomImageStream;
-			handheld.Cartridge = cartridge;
+			handheld.InsertCartridge(cartridge);
 
 			handheld.Initialize();
 
