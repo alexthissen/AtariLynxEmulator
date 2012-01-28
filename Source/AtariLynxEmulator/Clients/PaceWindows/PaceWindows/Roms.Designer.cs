@@ -67,6 +67,13 @@ namespace KillerApps.Gaming.Atari {
             }
         }
         
+        internal static byte[] demo0006 {
+            get {
+                object obj = ResourceManager.GetObject("demo0006", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
         internal static byte[] Demo01 {
             get {
                 object obj = ResourceManager.GetObject("Demo01", resourceCulture);
@@ -119,6 +126,13 @@ namespace KillerApps.Gaming.Atari {
         internal static byte[] LYNXBOOT {
             get {
                 object obj = ResourceManager.GetObject("LYNXBOOT", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        internal static byte[] lynxtest {
+            get {
+                object obj = ResourceManager.GetObject("lynxtest", resourceCulture);
                 return ((byte[])(obj));
             }
         }

@@ -33,6 +33,41 @@ namespace KillerApps.Emulation.Eeproms.Tests
 			return value;
 		}
 
+		public static void Write(this Eeprom93C46B eeprom, ushort address, ushort data)
+		{
+			eeprom.Pulse(false);
+			eeprom.Pulse(true);
+			address &= 0x3F;
+			for (int i = 0; i < 6; i++)
+			{
+				eeprom.Pulse(((address >> (5 - i) & 0x01) != 0x00));
+			}
+
+			for (int i = 0; i < 16; i++)
+			{
+				bool value = ((data >> (15 - i)) & 0x01) == 1;
+				eeprom.Pulse(value);
+			}
+		}
+
+		public static void WriteAll(this Eeprom93C46B eeprom, ushort data)
+		{
+			eeprom.Pulse(false);
+			eeprom.Pulse(false);
+			eeprom.Pulse(false);
+			eeprom.Pulse(true);
+			eeprom.Pulse(true);
+			eeprom.Pulse(true);
+			eeprom.Pulse(true);
+			eeprom.Pulse(true);
+
+			for (int i = 0; i < 16; i++)
+			{
+				bool value = ((data >> (15 - i)) & 0x01) == 1;
+				eeprom.Pulse(value);
+			}
+		}
+
 		public static void DisableEraseWrite(this Eeprom93C46B eeprom)
 		{
 			// Opcode for EWDS is 0000XXXX

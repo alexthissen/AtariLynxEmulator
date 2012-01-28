@@ -21,8 +21,11 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public Ram64KBMemory(byte[] memory)
 		{
-			Debug.Assert(memory != null);
-			Debug.Assert(memory.Length == 0x10000);
+			if (memory == null)
+				throw new ArgumentNullException("memory", "Memory cannot be null.");
+			if (memory.Length != 0x10000)
+				throw new ArgumentException("Length of memory should be 0x10000.", "memory");
+
 			ram = memory;
 		}
 

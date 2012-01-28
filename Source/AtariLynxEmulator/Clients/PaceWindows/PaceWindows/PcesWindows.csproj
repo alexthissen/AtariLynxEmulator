@@ -183,6 +183,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Awesome Golf.lnx" />
+    <None Include="Resources\Blue Lightning.lnx" />
+    <None Include="Resources\California Games.lnx" />
+    <None Include="Resources\Chips Challenge.lnx" />
     <None Include="Resources\collision.lnx" />
     <None Include="Resources\demo0006.lnx" />
     <None Include="Resources\demo01.o" />
@@ -195,7 +199,14 @@
     <None Include="Resources\lite.o" />
     <None Include="Resources\LYNXBOOT.IMG" />
     <None Include="Resources\Lynxopoly NDA.lnx" />
+    <None Include="Resources\lynxtest.bin" />
     <None Include="Resources\Mode7.lnx" />
+    <None Include="Resources\Pit Fighter.lnx" />
+    <None Include="Resources\Power Factor.lnx" />
+    <None Include="Resources\Robotron 2084.lnx" />
+    <None Include="Resources\Shadow of the Beast.lnx" />
+    <None Include="Resources\Shanghai.lnx" />
+    <None Include="Resources\Todds Adventures in Slimeworld.lnx" />
     <None Include="Resources\Wuerfel.lnx" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

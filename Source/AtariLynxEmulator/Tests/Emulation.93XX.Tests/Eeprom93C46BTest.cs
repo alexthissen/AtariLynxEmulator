@@ -220,6 +220,54 @@ namespace KillerApps.Emulation.Eeproms.Tests
 		}
 
 		[TestMethod]
+		public void WriteShouldSetCorrectDataInMemory()
+		{
+			// Arrange
+			ushort address = 0x000F;
+			ushort value = 0x1234;
+			Instruction instruction = null;
+
+			eeprom.Start();
+			eeprom.EnableEraseWrite();
+			eeprom.Memory[address] = 0x00;
+			eeprom.InstructionDone += (sender, args) => { instruction = args.ExecutedInstruction; };
+			eeprom.Start();
+
+			// Act
+			eeprom.Write(address, value);
+
+			// Assert
+			Assert.IsNotNull(instruction, "Instruction should have executed.");
+			Assert.AreEqual<Opcode>(Opcode.WRITE, instruction.Opcode, "WRITE opcode should have executed.");
+			Assert.AreEqual<ushort>(address, instruction.Address, "Address should be as expected.");
+			Assert.AreEqual<ushort>(value, eeprom.Memory[address], "Write operation should have set value in memory cell.");
+		}
+
+		[TestMethod]
+		public void WriteAllShouldSetCorrectDataInMemory()
+		{
+			// Arrange
+			ushort value = 0x1234;
+			Instruction instruction = null;
+
+			eeprom.Start();
+			eeprom.EnableEraseWrite();
+			eeprom.InstructionDone += (sender, args) => { instruction = args.ExecutedInstruction; };
+			eeprom.Start();
+
+			// Act
+			eeprom.WriteAll(value);
+
+			// Assert
+			Assert.IsNotNull(instruction, "Instruction should have executed.");
+			Assert.AreEqual<Opcode>(Opcode.WRAL, instruction.Opcode, "WRAL opcode should have executed.");
+			for (int i = 0; i < eeprom.Memory.Length; i++)
+			{
+				Assert.AreEqual<ushort>(value, eeprom.Memory[i], "WriteAll operation should have set value in memory cell {0}.", i);				
+			} 
+		}
+
+		[TestMethod]
 		public void ConvertingFrom4BitOpcodeShouldReturnInstruction()
 		{
 			// Arrange

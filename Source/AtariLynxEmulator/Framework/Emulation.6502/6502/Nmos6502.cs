@@ -165,10 +165,9 @@ namespace KillerApps.Emulation.Processors
 			// Fetch opcode
 			Opcode = Memory.Peek(PC);
 			//SystemClock.CycleCount += MemoryReadCycle;
-			
+
 			// Lookup on timings that Keith Wilkins has made
 			SystemClock.CompatibleCycleCount += 1 + timings[Opcode] * MemoryReadCycle;
-
 			PC++;
 			ExecuteOpcode();
 
@@ -355,7 +354,6 @@ namespace KillerApps.Emulation.Processors
 				case 0xFE: AbsoluteX(); INC(); break;
 
 				default:
-					Debug.WriteLine(String.Format("Nmos6502::Execute: Unhandled opcode {0:X2}", Opcode));
 					break;
 			}
 		}
@@ -367,8 +365,6 @@ namespace KillerApps.Emulation.Processors
 
 		public override void Reset()
 		{
-			Debug.WriteLine("Nmos6502::Reset()");
-
 			A = X = Y = 0;
 			SP = 0xff;
 			Opcode = 0;

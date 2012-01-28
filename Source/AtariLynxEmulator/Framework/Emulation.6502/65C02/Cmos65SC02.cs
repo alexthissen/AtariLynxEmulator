@@ -215,7 +215,6 @@ namespace KillerApps.Emulation.Processors
 				case 0xFE: AbsoluteX(); INC(); break;
 
 				default:
-					Debug.WriteLine(String.Format("Cmos65SC02::Execute: Unhandled opcode {0:X2}", Opcode));
 					break;
 			}
 		}

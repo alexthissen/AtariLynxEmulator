@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
@@ -14,8 +15,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		// "12 bits of shift register and 9 bits of tap selector. 
 		// 9 outputs of the 12 bit shift register are individually selectable as inputs to a large exclusive or gate."
 		public ushort ShiftRegister { get; private set; }
-		private ushort tapSelector = 0x0000;
-		private static int[] switches = { 0, 1, 2, 3, 4, 5, 7, 10, 11 };
+		private static int[] switches = { 0, 1, 2, 3, 4, 5, 10, 11, 7 };
 		private AudioControlBits audioControlBits;
 	
 		// "Note: registers only exist on MIKEY rev 2 and later"
@@ -137,6 +137,14 @@ namespace KillerApps.Emulation.Atari.Lynx
 					OutputValue = (sbyte)-VolumeControl;
 				}
 			}
+
+			// "It is set on time out, reset with the reset timer done bit (xxx1, B6)"
+			DynamicControlBits.TimerDone = true; // !StaticControlBits.ResetTimerDone;
+			DynamicControlBits.BorrowOut = true;
+
+			// "Timers can be set to stop when they reach a count of 0 or to reload from their backup register."
+			// Reload if neccessary
+			CurrentValue = AudioControl.EnableReload ? BackupValue : (byte)0;
 		}
 
 		public override ulong Update(ulong currentCycleCount)
@@ -173,12 +181,13 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 			// "The repeat period is programmed by selecting the initial value in the shift register 
 			// (set shifter) and by picking which feedback taps are connected."
-
+			ushort tapSelector = FeedbackEnable.ByteData;
+			if (((AudioControlBits)this.TimerControlBits).FeedbackBit7) tapSelector |= 0x100;
 			ushort feedback = CalculateFeedback(ShiftRegister, tapSelector);
 
 			ShiftRegister <<= 1;
 			ShiftRegister &= 0xffe;
-			ShiftRegister |= feedback;
+			ShiftRegister |= (ushort)((feedback > 0) ? 0 : 1);
 		}
 
 		private ushort CalculateFeedback(ushort ShiftRegister, ushort tapSelector)

@@ -12,6 +12,15 @@ namespace KillerApps.Gaming.Atari
 	{
 		public KeyboardHandler(Game game): base(game) { }
 
+		public override bool ExitGame
+		{
+			get
+			{
+				KeyboardState keyboard = Keyboard.GetState(PlayerIndex.One);
+				return keyboard.IsKeyDown(Keys.F4);
+			}
+		}
+
 		protected override JoystickStates BuildJoystickState()
 		{
 			KeyboardState keyboard = Keyboard.GetState(PlayerIndex.One);

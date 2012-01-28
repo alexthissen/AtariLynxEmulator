@@ -14,7 +14,11 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public byte SERDAT { get; set; }
 		public SerialControlRegister SERCTL { get; set; }
 
+#if MONO
+		private System.Collections.Queue receiveBuffer = new System.Collections.Queue(32);
+#else
 		private Queue<byte> receiveBuffer = new Queue<byte>(32);
+#endif
 		//private Queue<byte> transmitBuffer = new Queue<byte>(32);
 		private int transmitCountdown;
 		private int receiveCountdown;
@@ -87,7 +91,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			if (receiveCountdown == 0 && !receiveInactive)
 			{
 				if (receiveBuffer.Count > 0)
-					SERDAT = receiveBuffer.Dequeue();
+					SERDAT = (byte)receiveBuffer.Dequeue();
 
 				if (receiveBuffer.Count > 0)
 				{

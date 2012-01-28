@@ -25,6 +25,8 @@ namespace KillerApps.Gaming.Atari
 			}
 		}
 
+		public virtual bool ExitGame { get { return false; } }
+
 		protected virtual JoystickStates BuildJoystickState()
 		{
 			return JoystickStates.None;

@@ -78,10 +78,6 @@ namespace KillerApps.Gaming.Atari
 #elif WINDOWS
 			//inputHandler = new GamePadHandler(this);
 			inputHandler = new KeyboardHandler(this);
-
-			//emulator.Mikey.comLynx.DataSent += new DataSentDelegate(emulator2.Mikey.comLynx.ReceiveSerialData);
-			//emulator2.Mikey.comLynx.DataSent += new DataSentDelegate(emulator.Mikey.comLynx.ReceiveSerialData);
-
 #elif XBOX360
 			inputHandler = new GamePadHandler(this);
 #endif
@@ -94,11 +90,9 @@ namespace KillerApps.Gaming.Atari
 		private void InitializeEmulator()
 		{
 			// Lynx related
-			emulator.BootRomImage = new MemoryStream(Roms.LYNXBOOT);
+			emulator.BootRomImage = new MemoryStream(Roms.lynxtest);
 			LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
-
-			BllRomImageFileFormat romImage2 = new BllRomImageFileFormat();
-			emulator.InsertCartridge(romImage.LoadCart(new MemoryStream(Roms.Collision)));
+			emulator.InsertCartridge(romImage.LoadCart(new MemoryStream(Roms.demo0006)));
 			emulator.Initialize();
 
 			//byte[] ram = emulator.Ram.GetDirectAccess();
@@ -133,7 +127,7 @@ namespace KillerApps.Gaming.Atari
 			soundBuffer = new byte[dynamicSound.GetSampleSizeInBytes(TimeSpan.FromMilliseconds(250))];
 			//dynamicSound.BufferNeeded += new EventHandler<EventArgs>(DynamicSoundBufferNeeded);
 			emulator.Mikey.AudioFilter.BufferReady += new EventHandler<BufferEventArgs>(OnAudioFilterBufferReady);
-			//dynamicSound.Play();
+			dynamicSound.Play();
 		}
 
 		void OnAudioFilterBufferReady(object sender, BufferEventArgs e)
@@ -177,15 +171,14 @@ namespace KillerApps.Gaming.Atari
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Update(GameTime gameTime)
 		{
-			//if (inputHandler.ExitGame == true)
-			//	this.Exit();
+			if (inputHandler.ExitGame == true)
+				this.Exit();
 
 			inputHandler.Update(gameTime);
 
 			JoystickStates joystick = inputHandler.Joystick;
 			emulator.UpdateJoystickState(joystick);
-			emulator.Update(50000);
-			//emulator2.Update(50000);
+			emulator.Update(80000);
 
 			base.Update(gameTime);
 		}

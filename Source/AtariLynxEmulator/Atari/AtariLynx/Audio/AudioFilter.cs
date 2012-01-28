@@ -23,8 +23,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 		{
 			if (BufferReady != null)
 			{
-				//byte[] copy = new byte[currentIndex];
-				//Array.Copy(Buffer, 0, copy, 0, currentIndex);
 				BufferReady(this, new BufferEventArgs() { Buffer = this.Buffer });
 			}
 		}
@@ -33,7 +31,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 		{
 			// Buffer must contain 16 bit PCM data
 			Buffer = new byte[AUDIO_BUFFER_SIZE * 2];
-			//Buffer = new byte[10000000];
 		}
 
 		// "The 4 audio channels are mixed digitally and a pulse width modulated waveform is 
@@ -44,7 +41,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 			for (; audioLastUpdateCycle + AUDIO_SAMPLE_PERIOD < cycleCount; audioLastUpdateCycle += AUDIO_SAMPLE_PERIOD)
 			{
 				// Output audio sample
-				//audioBufferIndex++;
 				Buffer[audioBufferIndex++] = 0;
 				Buffer[audioBufferIndex++] = sample;
 				if (audioBufferIndex >= Buffer.Length)
@@ -52,10 +48,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 					OnBufferReady();
 					audioBufferIndex = 0;
 				}
-				//audioBufferIndex %= AUDIO_BUFFER_SIZE;
 			}
-
-			//byte[] buffer = new byte[((cycleCount - audioLastUpdateCycle)/AUDIO_SAMPLE_PERIOD) * 2];
 		}
 	}
 }

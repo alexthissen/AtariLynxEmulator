@@ -77,7 +77,7 @@ namespace AtariLynx.Tests
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof(LynxException), "Boot image file appears to be fake.")]
+		[ExpectedException(typeof(LynxException), "Fake boot ROM image should be detected.")]
 		public void EmulatorShouldThrowForFakeBootRomAtStartup()
 		{
 			// Arrange

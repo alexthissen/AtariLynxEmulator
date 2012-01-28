@@ -1,0 +1,63 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Framework", "Framework", "{084A4CBB-7CF0-4F8D-B743-DFB0D8326EFD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emulation.6502.Mono", "Framework\Emulation.6502\Emulation.6502.Mono.csproj", "{EABA0FD3-3F65-4C7C-B8BE-3D174480CA42}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emulation.Core8Bit.Mono", "Framework\Emulation.Core8Bit\Emulation.Core8Bit.Mono.csproj", "{69D87B0E-F9CB-4F51-A73A-B888AF9D8053}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Atari", "Atari", "{C4FAF6CB-5F0E-4404-B447-818806D0DF9D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtariLynx.Mono", "Atari\AtariLynx\AtariLynx.Mono.csproj", "{7B05EA08-A353-40F7-B49B-D09C195A82B1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{242A48F3-6DA6-46B3-BFE7-6744C157CB18}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcesMonoSDL", "Clients\PcesMonoSDL\PcesMonoSDL.csproj", "{1F7F5ED0-297A-48EE-8BE3-A597B9251A7E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcesSDL", "Clients\PcesSDL\PcesSDL.csproj", "{551C8ED9-686E-47B2-AAFB-D6CC89E36816}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Components", "Components", "{DFA6767B-D95C-4D1F-BE31-C09F6EE56A0D}"
+	ProjectSection(SolutionItems) = preProject
+		Components\SdlDotNet.dll = Components\SdlDotNet.dll
+		Components\Tao.Sdl.dll = Components\Tao.Sdl.dll
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1F7F5ED0-297A-48EE-8BE3-A597B9251A7E}.Debug|x86.ActiveCfg = Debug|x86
+		{1F7F5ED0-297A-48EE-8BE3-A597B9251A7E}.Debug|x86.Build.0 = Debug|x86
+		{1F7F5ED0-297A-48EE-8BE3-A597B9251A7E}.Release|x86.ActiveCfg = Release|x86
+		{1F7F5ED0-297A-48EE-8BE3-A597B9251A7E}.Release|x86.Build.0 = Release|x86
+		{551C8ED9-686E-47B2-AAFB-D6CC89E36816}.Debug|x86.ActiveCfg = Debug|x86
+		{551C8ED9-686E-47B2-AAFB-D6CC89E36816}.Debug|x86.Build.0 = Debug|x86
+		{551C8ED9-686E-47B2-AAFB-D6CC89E36816}.Release|x86.ActiveCfg = Release|x86
+		{551C8ED9-686E-47B2-AAFB-D6CC89E36816}.Release|x86.Build.0 = Release|x86
+		{69D87B0E-F9CB-4F51-A73A-B888AF9D8053}.Debug|x86.ActiveCfg = Debug|x86
+		{69D87B0E-F9CB-4F51-A73A-B888AF9D8053}.Debug|x86.Build.0 = Debug|x86
+		{69D87B0E-F9CB-4F51-A73A-B888AF9D8053}.Release|x86.ActiveCfg = Release|x86
+		{69D87B0E-F9CB-4F51-A73A-B888AF9D8053}.Release|x86.Build.0 = Release|x86
+		{7B05EA08-A353-40F7-B49B-D09C195A82B1}.Debug|x86.ActiveCfg = Debug|x86
+		{7B05EA08-A353-40F7-B49B-D09C195A82B1}.Debug|x86.Build.0 = Debug|x86
+		{7B05EA08-A353-40F7-B49B-D09C195A82B1}.Release|x86.ActiveCfg = Release|x86
+		{7B05EA08-A353-40F7-B49B-D09C195A82B1}.Release|x86.Build.0 = Release|x86
+		{EABA0FD3-3F65-4C7C-B8BE-3D174480CA42}.Debug|x86.ActiveCfg = Debug|x86
+		{EABA0FD3-3F65-4C7C-B8BE-3D174480CA42}.Debug|x86.Build.0 = Debug|x86
+		{EABA0FD3-3F65-4C7C-B8BE-3D174480CA42}.Release|x86.ActiveCfg = Release|x86
+		{EABA0FD3-3F65-4C7C-B8BE-3D174480CA42}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EABA0FD3-3F65-4C7C-B8BE-3D174480CA42} = {084A4CBB-7CF0-4F8D-B743-DFB0D8326EFD}
+		{69D87B0E-F9CB-4F51-A73A-B888AF9D8053} = {084A4CBB-7CF0-4F8D-B743-DFB0D8326EFD}
+		{7B05EA08-A353-40F7-B49B-D09C195A82B1} = {C4FAF6CB-5F0E-4404-B447-818806D0DF9D}
+		{1F7F5ED0-297A-48EE-8BE3-A597B9251A7E} = {242A48F3-6DA6-46B3-BFE7-6744C157CB18}
+		{551C8ED9-686E-47B2-AAFB-D6CC89E36816} = {242A48F3-6DA6-46B3-BFE7-6744C157CB18}
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Clients\PcesSDL\PcesSDL.csproj
+	EndGlobalSection
+EndGlobal

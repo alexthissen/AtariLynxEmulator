@@ -19,7 +19,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public Suzy Suzy { get; private set; }
 		public Cmos65SC02 Cpu { get; private set; }
 		public Clock SystemClock { get; private set; }
-		public uint[] LcdScreenDma;
+		public int[] LcdScreenDma;
 
 		public Stream BootRomImage { get; set; }
 		public Stream CartRomImage { get; set; }
@@ -50,7 +50,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// Pass all hardware that have memory access to MMU
 			Mmu = new MemoryManagementUnit(Rom, Ram, Mikey, Suzy);
 			SystemClock = new Clock();
-			LcdScreenDma = new uint[0x3FC0]; // 160 * 102 pixels
+			LcdScreenDma = new int[0x3FC0]; // 160 * 102 pixels
 
 			// Construct processor
 			Cpu = new Cmos65SC02(Mmu, SystemClock);

@@ -30,8 +30,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 			int bytesRead = stream.Read(romData, 0, ROM_SIZE);
 			if (bytesRead != ROM_SIZE)
 				throw new LynxException("Stream did not have exact size for ROM contents.");
-			if (!VerifyBootImage())
-				throw new LynxException("Boot image file appears to be fake.");
+			// TODO: Perform verification only for original boot ROM image
+			//if (!VerifyBootImage())
+			//	throw new LynxException("Boot image file appears to be fake.");
 		}
 
 		private bool VerifyBootImage()
@@ -57,8 +58,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public byte Peek(ushort address)
 		{
-			Debug.Assert((address - ROM_BASEADDRESS) >= 0, 
-					String.Format("RomMemory::Peek: Address {0:X4} not in correct range for ROM.", address));
+			if ((address - ROM_BASEADDRESS) < 0) 
+					throw new ArgumentException(String.Format("RomMemory::Peek: Address {0:X4} not in correct range for ROM.", address), "address");
+			
 			return romData[address - ROM_BASEADDRESS];
 		}
 

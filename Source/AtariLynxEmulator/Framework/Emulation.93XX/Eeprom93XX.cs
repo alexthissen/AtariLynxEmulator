@@ -258,7 +258,8 @@ namespace KillerApps.Emulation.Eeproms
 					// indicates that the register at the specified address has been written with the data 
 					// specified and the device is ready for another instruction."
 					DO = true; // For now pretend that the storage time is neglectable
-					Memory[Address] = Data;
+					if (CurrentInstruction.Opcode == Opcode.WRITE) Write(currentInstruction.Address, Data);
+					if (CurrentInstruction.Opcode == Opcode.WRAL) WriteAll(currentInstruction.Address);
 					OnStandby();
 				}
 			}
@@ -286,7 +287,7 @@ namespace KillerApps.Emulation.Eeproms
 
 		private void ReadNextBit()
 		{
-			DO = ((Data & (1 << (DataBitCount - Cycles))) != 0);
+			DO = ((Data & (1 << (DataBitCount - Cycles - 1))) != 0);
 		}
 
 		private void Erase(ushort address)
@@ -345,8 +346,10 @@ namespace KillerApps.Emulation.Eeproms
 
 			// "The Write All (WRAL) instruction will write the entire memory array with 
 			// the data specified in the command."
-
-			OnStandby();
+			for (int address = 0; address < Memory.Length; address++)
+			{
+				Memory[address] = data;
+			}
 		}
 	}
 }

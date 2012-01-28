@@ -28,7 +28,7 @@ namespace KillerApps.Gaming.Atari
 		{
 			if (VirtualThumbsticks.LeftThumbstickCenter.HasValue)
 			{
-				spriteBatch.Begin();//SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null);
+				spriteBatch.Begin();
 				spriteBatch.Draw(
 					thumbstick,
 					VirtualThumbsticks.LeftThumbstickCenter.Value - new Vector2(thumbstick.Width / 2f, thumbstick.Height / 2f),
@@ -54,6 +54,13 @@ namespace KillerApps.Gaming.Atari
 			base.LoadContent();
 		}
 
+		public override bool ExitGame
+		{
+			get
+			{
+				return GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed;
+			}
+		}
 		protected override JoystickStates BuildJoystickState()
 		{
 			JoystickStates joystick = JoystickStates.None;
@@ -62,10 +69,10 @@ namespace KillerApps.Gaming.Atari
 			{
 				VirtualThumbsticks.LeftThumbstick.Normalize();
 				
-				if (VirtualThumbsticks.LeftThumbstick.Y > 0.3f) joystick |= JoystickStates.Down;
-				if (VirtualThumbsticks.LeftThumbstick.Y < 0.3f) joystick |= JoystickStates.Up;
-				if (VirtualThumbsticks.LeftThumbstick.X < 0.3f) joystick |= JoystickStates.Left;
-				if (VirtualThumbsticks.LeftThumbstick.X > 0.3f) joystick |= JoystickStates.Right;
+				if (VirtualThumbsticks.LeftThumbstick.Y > 0.7f) joystick |= JoystickStates.Down;
+				if (VirtualThumbsticks.LeftThumbstick.Y < -0.7f) joystick |= JoystickStates.Up;
+				if (VirtualThumbsticks.LeftThumbstick.X < -0.7f) joystick |= JoystickStates.Left;
+				if (VirtualThumbsticks.LeftThumbstick.X > 0.7f) joystick |= JoystickStates.Right;
 			}
 			
 			if (VirtualThumbsticks.RightThumbstickCenter.HasValue)

@@ -175,7 +175,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		// Read answer (LSB->MSB) from D,C,B,A
 		// Read remainder (LSB->MSB) from M,L"
 
-		// "Each letter represents a different byte address. These addresses are identified in the hardware address Appx 2. Each grouping represents the kind of math operation available.
+		// "Each letter represents a different byte address. These addresses are identified in the hardware address Appx 2. 
+		// Each grouping represents the kind of math operation available.
 		//	EFGH 
 		// /	NP 
 		//	----
@@ -187,7 +188,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// No point in explaining the errors here, just don't use it. Thank You VTI."
 			// LX: VTI is manufacturer of chipset
 
-			// TODO: "BIG NOTE: Unsafe access is broken for math operations. Please reset it after every math operation or it will not be useful for sprite operations."
+			// TODO: "BIG NOTE: Unsafe access is broken for math operations. Please reset it after every math operation or 
+			// it will not be useful for sprite operations."
 			
 			SPRSYS.MathInProcess = true;
 
@@ -213,16 +215,16 @@ namespace KillerApps.Emulation.Atari.Lynx
 				{
 					MathABCD = MathABCD.Reverse().ToArray();
 					MathJKLM = MathJKLM.Reverse().ToArray();
+					MathJKLM[0] = 0; // J
+					MathJKLM[1] = 0; // K
 				}
-
-				// "As a courtesy, the hardware will set J,K to zero so that the software can treat the remainder
-				// as a 32 bit number."
-				MathJKLM[3] = 0; // J
-				MathJKLM[2] = 0; // K
-
-				Debug.WriteLine("CSusie::DoMathDivide() EFGH=${0:X8} / NP={1:X4}", EFGH, NP);
-				Debug.WriteLine("CSusie::DoMathDivide() Results (div) ABCD=${0:X8}", ABCD);
-				Debug.WriteLine("CSusie::DoMathDivide() Results (mod) JKLM=${0:X8}", JKLM);
+				else
+				{
+					// "As a courtesy, the hardware will set J,K to zero so that the software can treat the remainder
+					// as a 32 bit number."
+					MathJKLM[3] = 0; // J
+					MathJKLM[2] = 0; // K
+				}
 			}
 			else
 			{
@@ -275,7 +277,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			SPRSYS.SpriteProcessStarted = false;	
 
 			// TODO: Return actual number of clock cycles that passed
-			return 10000; 
+			return 100; 
 		}
 
 		public void Poke(ushort address, byte value)

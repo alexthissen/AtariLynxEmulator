@@ -16,9 +16,4 @@ namespace KillerApps.Emulation.Atari.Lynx
 			RightEar = new Ear();
 		}
 	}
-
-	public class Ear
-	{
-		public bool[] AudioChannelDisabled = new bool[4];
-	}
 }

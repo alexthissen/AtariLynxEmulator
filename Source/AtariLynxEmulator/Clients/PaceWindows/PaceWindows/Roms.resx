@@ -151,4 +151,10 @@
   <data name="Mode7" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\Mode7.lnx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="demo0006" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\demo0006.lnx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lynxtest" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\lynxtest.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

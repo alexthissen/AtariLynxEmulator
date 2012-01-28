@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{551C8ED9-686E-47B2-AAFB-D6CC89E36816}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>PcesSDL</RootNamespace>
+    <AssemblyName>PcesSDL</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <Externalconsole>true</Externalconsole>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <Externalconsole>true</Externalconsole>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="SdlDotNet">
+      <HintPath>..\..\Components\SdlDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Main.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\..\Atari\AtariLynx\AtariLynx.Mono.csproj">
+      <Project>{7B05EA08-A353-40F7-B49B-D09C195A82B1}</Project>
+      <Name>AtariLynx.Mono</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Framework\Emulation.6502\Emulation.6502.Mono.csproj">
+      <Project>{EABA0FD3-3F65-4C7C-B8BE-3D174480CA42}</Project>
+      <Name>Emulation.6502.Mono</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Framework\Emulation.Core8Bit\Emulation.Core8Bit.Mono.csproj">
+      <Project>{69D87B0E-F9CB-4F51-A73A-B888AF9D8053}</Project>
+      <Name>Emulation.Core8Bit.Mono</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="LYNXBOOT.IMG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Game.lnx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

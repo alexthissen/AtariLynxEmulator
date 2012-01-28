@@ -50,7 +50,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 				case 1:
 					return OrdinaryDataPacketType.Literal;
 				default:
-					Debug.WriteLine("SpriteDataUnpacker::PixelsInLine - Data packet type not 0 or 1.");
 					return OrdinaryDataPacketType.Unknown;
 			} 
 		}

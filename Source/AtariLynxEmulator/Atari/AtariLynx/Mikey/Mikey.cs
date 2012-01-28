@@ -24,7 +24,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public uint[] ArgbColorMap = new uint[0x10];
 
 		// TODO: Make Uart member private again
-		public Uart2 comLynx;
+		private Uart comLynx;
 		public SystemControlBits1 SYSCTL1 { get; private set; }
 		public ParallelData IODAT { get; private set; }
 		public DisplayControlBits DISPCTL { get; private set; }
@@ -58,16 +58,16 @@ namespace KillerApps.Emulation.Atari.Lynx
 		
 		private ushort currentLynxDmaAddress;
 		private int currentLcdDmaCounter;
-		private uint[] LcdScreenDma;
+		private int[] LcdScreenDma;
 		private byte[] VideoMemoryDma;
 		private byte currentLine;
 		private bool RestActive;
-		private bool SoundEnabled = false;
+		private bool SoundEnabled = true;
 
 		public Mikey(ILynxDevice lynx)
 		{
 			this.device = lynx;
-			this.comLynx = new Uart2();
+			this.comLynx = new Uart();
 			this.AudioFilter = new AudioFilter();
 
 			// "reset = x"
@@ -85,7 +85,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// TODO: Another hack to avoid rendering when timer 2 has only just started
 			currentLcdDmaCounter = -1;
 			VideoMemoryDma = device.Ram.GetDirectAccess();
-			for (int index = 0; index <= 0x0F; index++) ArgbColorMap[index] = 0xFF000000;
+			unchecked
+			{
+				for (int index = 0; index <= 0x0F; index++) ArgbColorMap[index] = 0xFF000000;
+			}
 		}
 
 		private void InitializeAudioChannels()
@@ -247,7 +250,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		private void SetPixel(byte source)
 		{
-			LcdScreenDma[currentLcdDmaCounter++] = ArgbColorMap[source];
+			LcdScreenDma[currentLcdDmaCounter++] = (int)ArgbColorMap[source];
 		}
 
 		public void Reset()
@@ -337,9 +340,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 			}
 			if (mixedChannels != 0)
 			{
-				//sample += 128 * mixedChannels;
+				sample += 128 * mixedChannels;
 				sample /= mixedChannels;
-				sample += 128;
+				//sample += 128;
 			}
 			else
 				sample = 128;
@@ -422,11 +425,25 @@ namespace KillerApps.Emulation.Atari.Lynx
 						return;
 
 					case 5: // "Audio Control Bits"
-						channel.AudioControl.ByteData = value;
+						//channel.AudioControl.ByteData = value;
+						AudioControlBits control = new AudioControlBits(value);
+						channel.AudioControl = control;
+
+						// "It is set on time out, reset with the reset timer done bit (xxx1, B6)"
+						if (control.ResetTimerDone)
+						{
+							channel.DynamicControlBits.TimerDone = false;
+						}
+						if (control.EnableCount || control.ResetTimerDone)
+						{
+							channel.Start(device.SystemClock.CompatibleCycleCount);
+							ForceTimerUpdate();
+						}
 						return;
 
 					case 6: // "Audio counter"
 						channel.CurrentValue = value;
+						ForceTimerUpdate();
 						return;
 
 					case 7: // "Other control bits"
@@ -501,7 +518,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 					return;
 
 				case Mikey.Addresses.SERDAT:
-					comLynx.WriteToTransmitBuffer(value);
+					comLynx.TransmitSerialData(value);
 					return;
 
 				case Mikey.Addresses.SYSCTL1:

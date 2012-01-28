@@ -112,7 +112,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 			if (address >= 0xFD00) { return MikeySpace.Peek(address); }
 			if (address >= 0xFC00) { return SuzySpace.Peek(address); }
 
-			Debug.WriteLine(String.Format("MemoryManagementUnit::Peek: Unknown address {0}", address));
 			return 0;
 		}
 	}

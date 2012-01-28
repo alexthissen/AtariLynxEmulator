@@ -12,6 +12,15 @@ namespace KillerApps.Gaming.Atari
 	{
 		public GamePadHandler(Game game): base(game) { }
 
+		public override bool ExitGame
+		{
+			get
+			{
+				GamePadState gamePad = GamePad.GetState(PlayerIndex.One);
+				return gamePad.Buttons.Back == ButtonState.Pressed;
+			}
+		} 
+
 		protected override JoystickStates BuildJoystickState()
 		{
 			GamePadState gamePad = GamePad.GetState(PlayerIndex.One);
