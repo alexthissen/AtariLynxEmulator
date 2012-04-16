@@ -32,7 +32,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 			this.Mikey = mikey;
 
 			MAPCTL = new MemoryMapControl();
-			//directAccessRam = ram.GetDirectAccess();
 		}
 
 		public void Reset()
@@ -49,7 +48,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 			if (address < 0xFC00)
 			{
 				Ram.Poke(address, value);
-				//directAccessRam[address] = value;
 				return;
 			}
 

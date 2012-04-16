@@ -118,9 +118,9 @@ namespace PcesSDL
 		private void InitializeEmulator()
 		{
 			// Lynx related
-			emulator.BootRomImage = File.Open(".\\lynxboot.img", FileMode.Open);
+			emulator.BootRomImage = File.Open("lynxboot.img", FileMode.Open);
 			LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
-			emulator.InsertCartridge(romImage.LoadCart(File.Open(".\\Game.lnx", FileMode.Open)));
+			emulator.InsertCartridge(romImage.LoadCart(File.Open("game.lnx", FileMode.Open)));
 			emulator.Initialize();
 
 			emulator.Reset();

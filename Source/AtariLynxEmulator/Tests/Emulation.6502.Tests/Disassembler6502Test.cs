@@ -16,6 +16,7 @@ namespace KillerApps.Emulation.Processors.Tests
 	public class Disassembler6502Test
 	{
 		public const string BootRomImageFilePath = @"LynxBoot.img";
+		public const string RomImageFilePath = @"TestRedEye.bin";
 
 		private TestContext testContextInstance;
 		private Ram64KBMemoryStub ram = null;
@@ -101,6 +102,26 @@ namespace KillerApps.Emulation.Processors.Tests
 		// public void MyTestCleanup() { }
 		//
 		#endregion
+
+		[DeploymentItem(@"Binaries\" + RomImageFilePath)]
+		[TestMethod]
+		public void DisassembleTestRom()
+		{
+			FileStream romImageStream = new FileStream(
+				Path.Combine(TestContext.TestDeploymentDir, RomImageFilePath), FileMode.Open, FileAccess.Read);
+			long romLength = romImageStream.Length;
+			MemoryStream stream = new MemoryStream(memory, 0x0200, (int)(0x200 + romLength)); 
+			romImageStream.CopyTo(stream, (int)romLength);
+
+			ushort offset = 0x0200;
+			ushort PC = 0;
+			StringBuilder sourceBuilder = new StringBuilder();
+			while (PC <= romLength)
+			{
+				PC += (ushort)disassembler.DisassembleSingleStatement(ram, (ushort)(PC + offset), sourceBuilder);
+			}
+			Trace.WriteLine(sourceBuilder.ToString());
+		}
 
 		[DeploymentItem(@"Binaries\" + BootRomImageFilePath)]
 		[TestMethod]

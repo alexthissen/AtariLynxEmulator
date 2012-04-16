@@ -15,7 +15,8 @@ namespace KillerApps.Emulation.Eeproms
 		internal VoltageEdge CurrentEdge;
 		protected int AddressBitCount;
 		protected int DataBitCount { get { return Organization == Organization.Byte ? 8 : 16; } }
-		protected int InstructionBitCount { get { return AddressBitCount + 2; } }
+		//protected int InstructionBitCount { get { return AddressBitCount + 2; } }
+		protected int InstructionBitCount;
 		protected const ushort OpcodeMaskBase = 0xF;
 
 		// Events
@@ -57,9 +58,10 @@ namespace KillerApps.Emulation.Eeproms
 		// with the CLK input (TPD after the positive edge of CLK)."
 		public bool DO { get; set; }
 
-		public Eeprom93XX(byte addressBitCount, Organization organization)
+		public Eeprom93XX(byte instructionBitCount, byte addressBitCount, Organization organization)
 		{
 			this.AddressBitCount = addressBitCount;
+			this.InstructionBitCount = instructionBitCount;
 			this.Organization = organization;
 			CLK = new Clock();
 			CLK.EdgeChange += new EventHandler<EdgeChangedEventArgs>(OnEdgeChange);
@@ -74,13 +76,15 @@ namespace KillerApps.Emulation.Eeproms
 		private void ComputeMasks()
 		{
 			// TODO: Opcode mask calculation will fail for 76A version, because it takes a dummy bit after 2 bit opcode
-			OpcodeMask = (ushort)(OpcodeMaskBase << (AddressBitCount - 2));
+			OpcodeMask = (ushort)(OpcodeMaskBase << (InstructionBitCount - 4));
 			AddressMask = (ushort)((1 << AddressBitCount) - 1);
 		}
 
 		internal Instruction PrepareInstruction(ushort opcodeAndAddress)
 		{
-			byte rawOpcode = (byte)((opcodeAndAddress & OpcodeMask) >> (AddressBitCount - 2));
+			byte rawOpcode = (byte)((opcodeAndAddress & OpcodeMask) >> (InstructionBitCount - 4));
+
+			// Opcodes are either 00.. or ..XX, where . is either 0 or 1 and X is "Don't care"
 			if (rawOpcode > 0x03) rawOpcode &= 0x0C;
 			return new Instruction((Opcode)rawOpcode, (ushort)(opcodeAndAddress & AddressMask));
 		}
@@ -252,14 +256,22 @@ namespace KillerApps.Emulation.Eeproms
 					OpcodeAndAddress++;
 					Cycles = 0;
 				}
-				else
+				else if (CurrentInstruction.Opcode == Opcode.WRITE)
 				{
 					// "DO at logical ‘0’ indicates that programming is still in progress. DO at logical ‘1’ 
 					// indicates that the register at the specified address has been written with the data 
 					// specified and the device is ready for another instruction."
 					DO = true; // For now pretend that the storage time is neglectable
-					if (CurrentInstruction.Opcode == Opcode.WRITE) Write(currentInstruction.Address, Data);
-					if (CurrentInstruction.Opcode == Opcode.WRAL) WriteAll(currentInstruction.Address);
+					Write(currentInstruction.Address, Data);
+					OnStandby();
+				}
+				else if (CurrentInstruction.Opcode == Opcode.WRAL) 
+				{
+					// "DO at logical ‘0’ indicates that programming is still in progress. DO at logical ‘1’ 
+					// indicates that the register at the specified address has been written with the data 
+					// specified and the device is ready for another instruction."
+					DO = true; // For now pretend that the storage time is neglectable
+					WriteAll(currentInstruction.Address);
 					OnStandby();
 				}
 			}

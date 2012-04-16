@@ -9,7 +9,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 {
 	public class Ram64KBMemory: IDirectMemoryAccess<ushort, byte>, IResetable
 	{
-		public const byte DEFAULT_CONTENT = 0xFF;
+		public const byte DEFAULT_RAM_CONTENT = 0xFF;
 		public const int MEMORY_SIZE = 0xFFFF + 1;
 
 		private byte[] ram = null;
@@ -46,7 +46,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public void Reset()
 		{
-			for (int index = 0; index < MEMORY_SIZE; index++) ram[index] = DEFAULT_CONTENT;
+			for (int index = 0; index < MEMORY_SIZE; index++) ram[index] = DEFAULT_RAM_CONTENT;
 		}
 	}
 }

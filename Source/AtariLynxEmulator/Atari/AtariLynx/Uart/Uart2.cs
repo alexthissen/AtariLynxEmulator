@@ -212,6 +212,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			Initialize();
 
 			// "This bit is also set to '1' after a reset."
+			// where 'this bit' is the TXRDY bit
 			SERCTL.TransmitterDone = true;
 		}
 

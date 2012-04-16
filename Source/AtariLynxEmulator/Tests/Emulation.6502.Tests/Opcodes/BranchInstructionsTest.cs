@@ -136,7 +136,8 @@ namespace KillerApps.Emulation.Processors.Tests
 			cpu.Execute(1);
 
 			// Assert
-			Assert.AreEqual<int>(programStart + relativeBranch + 2, cpu.PC, "Program counter should be increased with relative jump after BCC with carry flag clear.");
+			Assert.AreEqual<int>(programStart + relativeBranch + 2, cpu.PC, 
+				"Program counter should be increased with relative jump after BCC with carry flag clear.");
 		}
 
 		[TestMethod]

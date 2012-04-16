@@ -43,18 +43,18 @@ namespace KillerApps.Emulation.Atari.Lynx
 			}
 		}
 
-		public Eeprom93C46B Eeprom { get; set; }
+		public Eeprom93C86B Eeprom { get; set; }
 
 		public Eeprom93C46BCart(int bank0Size, int bank1Size)
 			: base(bank0Size, bank1Size)
 		{
-			Eeprom = new Eeprom93C46B();
+			Eeprom = new Eeprom93C86B();
 		}
 
 		protected override void Poke(RomCartMemoryBank bank, byte value)
 		{
 			base.Poke(bank, value);
-			
+
 			ulong address = bank.GetAddress(this.shiftRegister, this.counter);
 			bool a1 = (address & A1Mask) == A1Mask;
 			bool a7 = (address & A7Mask) == A7Mask;

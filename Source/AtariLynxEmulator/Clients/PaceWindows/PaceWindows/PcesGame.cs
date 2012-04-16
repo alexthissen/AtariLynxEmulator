@@ -92,13 +92,23 @@ namespace KillerApps.Gaming.Atari
 			// Lynx related
 			emulator.BootRomImage = new MemoryStream(Roms.lynxtest);
 			LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
-			emulator.InsertCartridge(romImage.LoadCart(new MemoryStream(Roms.demo0006)));
+			emulator.InsertCartridge(romImage.LoadCart(new MemoryStream(Roms.Collision)));
 			emulator.Initialize();
 
+			//Test Redeye loading
+			//emulator.InsertCartridge(new FaultyCart());
+			//emulator.Initialize();
+			//byte[] test = Roms.testred2;
 			//byte[] ram = emulator.Ram.GetDirectAccess();
-			//Array.Copy(romImage2.Bytes, 0, ram, romImage2.Header.LoadAddress, romImage2.Header.Size);
-			//ram[VectorAddresses.BOOT_VECTOR] = (byte)(romImage2.Header.LoadAddress & 0xFF);
-			//ram[VectorAddresses.BOOT_VECTOR + 1] = (byte)((romImage2.Header.LoadAddress & 0xFF00) >> 8);
+			//Array.Copy(test, 0, ram, 0x200, 0x260);
+			//Array.Copy(test, 0x260, ram, 0x4424, 0x185);
+			//Array.Copy(test, 0x260 + 0x185, ram, 0x45b0, test.Length - 0x185 - 0x260);
+			//emulator.Reset();
+			//emulator.Cpu.PC = 0x200;
+
+			////Array.Copy(romImage2.Bytes, 0, ram, romImage2.Header.LoadAddress, romImage2.Header.Size);
+			////ram[VectorAddresses.BOOT_VECTOR] = (byte)(romImage2.Header.LoadAddress & 0xFF);
+			////ram[VectorAddresses.BOOT_VECTOR + 1] = (byte)((romImage2.Header.LoadAddress & 0xFF00) >> 8);
 
 			emulator.Reset();
 
@@ -178,7 +188,7 @@ namespace KillerApps.Gaming.Atari
 
 			JoystickStates joystick = inputHandler.Joystick;
 			emulator.UpdateJoystickState(joystick);
-			emulator.Update(80000);
+			emulator.Update(66667); // 4 MHz worth of cycles divided by 60 seconds
 
 			base.Update(gameTime);
 		}

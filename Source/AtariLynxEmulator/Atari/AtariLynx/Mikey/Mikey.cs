@@ -36,7 +36,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public Word VideoDisplayStartAddress;
 		public StereoConnection Stereo { get; private set; }
 		public AudioFilter AudioFilter { get; private set; }
-		public bool ComLynxCablePresent;
+		public bool ComLynxCablePresent = false;
 		
 		// Timers
 		public Timer[] Timers = new Timer[8];
@@ -546,7 +546,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 					return;
 
 				case Mikey.Addresses.CPUSLEEP:
-					// "A write of '0' to this address will reset the CPU bus request flip fIop.
+					// "A write of '0' to this address will reset the CPU bus request flip flop.
 					// The setting of the flip flop is described in the hardware specification."
 					
 					// BUG: "Sleep does not work if Suzy does not have the bus."
@@ -628,6 +628,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 				int offset = address - Mikey.Addresses.HTIMBKUP;
 				int index = offset >> 2; // Divide by 4 to get index of timer
 				Timer timer = Timers[index];
+				timer.Update(device.SystemClock.CompatibleCycleCount);
 
 				switch (offset % 4)
 				{

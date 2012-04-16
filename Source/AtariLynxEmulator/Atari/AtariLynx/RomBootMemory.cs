@@ -14,9 +14,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 	{
 		// "The system ROM is embedded in Mikey. Its size is 512 bytes."
 		public const ushort ROM_SIZE = 0x200;
-		public const ushort ROM_ADDRESS_MASK = 0x01ff;
+		public const ushort ROM_ADDRESS_MASK = 0x01FF;
 		public const byte DEFAULT_ROM_CONTENTS = 0x88;
-		public const ushort ROM_BASEADDRESS = 0xfe00;
+		public const ushort ROM_BASEADDRESS = 0xFE00;
 		
 		private byte[] romData = new byte[ROM_SIZE];
 

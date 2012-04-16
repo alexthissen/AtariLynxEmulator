@@ -13,7 +13,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// FD04 -> FD07 Timer channel 1 and mag0a (read current state of TAPE0 in b7)
 			// FD08 -> FD0B Timer channel 2 and Vcount
 			// FD0C -> FD0F Timer channel 3 and mag0b
-			// FD10 -> FD13 Timer channel 4 and ser	ial rate
+			// FD10 -> FD13 Timer channel 4 and serial rate
 			// FD14 -> FD17 Timer channel 5 and mag1a (read current state of TAPE1 in b7)
 			// FD18 -> FD1B Timer channel 6
 			// FD1C -> FD1F Timer channel 7 and mag1b"

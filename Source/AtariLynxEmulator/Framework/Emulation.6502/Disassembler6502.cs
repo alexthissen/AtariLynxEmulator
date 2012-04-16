@@ -23,9 +23,9 @@ namespace KillerApps.Emulation.Processors
 				new Instruction6502(0x09, "ORA", AddressingMode.Immediate),  
 				new Instruction6502(0x0A, "ASL", AddressingMode.Accumulator), 
 				null,
-				new Instruction6502(0x0C, "TSB",AddressingMode.Accumulator),
+				new Instruction6502(0x0C, "TSB",AddressingMode.Absolute),
 				new Instruction6502(0x0D, "ORA",AddressingMode.Absolute),
-				new Instruction6502(0x0E, "ASL",AddressingMode.Absolute), 
+				new Instruction6502(0x0E, "ASL",AddressingMode.Absolute),
 				null,
 		
 				new Instruction6502(0x10, "BPL", AddressingMode.Relative), 
@@ -323,6 +323,7 @@ namespace KillerApps.Emulation.Processors
 				case AddressingMode.AbsoluteX: builder.AppendFormat("{0:X2} {1:X2}\t{2} ${3:X4},x\n", memory.Peek(address), memory.Peek((ushort)(address + 1)), instruction.Mnemonic, operand16Bit); return 3;
 				case AddressingMode.AbsoluteY: builder.AppendFormat("{0:X2} {1:X2}\t{2} ${3:X4},y\n", memory.Peek(address), memory.Peek((ushort)(address + 1)), instruction.Mnemonic, operand16Bit); return 3;
 				case AddressingMode.AbsoluteIndirect: builder.AppendFormat("{0:X2} {1:X2}\t{2} (${3:X4})\n", memory.Peek(address), memory.Peek((ushort)(address + 1)), instruction.Mnemonic, operand16Bit); return 3;
+				case AddressingMode.AbsoluteIndexedIndirectX: builder.AppendFormat("{0:X2} {1:X2}\t{2} (${3:X4},X) Check if notation is correct!\n", memory.Peek(address), memory.Peek((ushort)(address + 1)), instruction.Mnemonic, operand16Bit); return 3;
 
 				default: builder.AppendFormat("\t\t\t.db ${0:X2}\n", opcode); return 1;
 			}
