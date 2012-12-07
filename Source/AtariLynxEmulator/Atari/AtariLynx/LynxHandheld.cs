@@ -102,6 +102,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		private void SynchronizeTime()
 		{
+			if (Suzy.SPRSYS.MathInProcess && SystemClock.CompatibleCycleCount >= this.Suzy.MathReadyTime)
+			{
+				this.Suzy.EndMathOperation();
+			}
 			//Debug.WriteLineIf(GeneralSwitch.TraceVerbose, String.Format("LynxHandheld::SynchronizeTime: Current time is {0}", SystemClock.CompatibleCycleCount));
 		}
 		

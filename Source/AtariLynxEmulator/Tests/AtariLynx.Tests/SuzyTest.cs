@@ -122,7 +122,7 @@ namespace AtariLynx.Tests
 			suzy.MathABCD = BitConverter.GetBytes(0x78563412);
 			
 			// Act
-			suzy.Multiply16By16();
+			suzy.BeginMultiply16By16();
 
 			// Assert
 			Assert.AreEqual<uint>(0x3412 * 0x7856, BitConverter.ToUInt32(suzy.MathEFGH, 0), "Multiplication result is incorrect.");
@@ -140,7 +140,7 @@ namespace AtariLynx.Tests
 			suzy.Poke(Suzy.Addresses.MATHA, 0x00);
 			
 			// Act
-			suzy.Multiply16By16();
+			suzy.BeginMultiply16By16();
 
 			// Assert
 			Assert.AreEqual<uint>(0xFFFFFFFE, BitConverter.ToUInt32(suzy.MathEFGH, 0), "Multiplication result should be negative.");
@@ -158,7 +158,7 @@ namespace AtariLynx.Tests
 			suzy.Poke(Suzy.Addresses.MATHA, 0xFF); // AB = -2
 			
 			// Act
-			suzy.Multiply16By16();
+			suzy.BeginMultiply16By16();
 
 			// Assert
 			Assert.AreEqual<uint>(2, BitConverter.ToUInt32(suzy.MathEFGH, 0), "Multiplication result should be negative.");
@@ -173,8 +173,8 @@ namespace AtariLynx.Tests
 			suzy.MathABCD = BitConverter.GetBytes(0x00010002);
 			
 			// Act
-			suzy.Multiply16By16();
-			suzy.Multiply16By16();
+			suzy.BeginMultiply16By16();
+			suzy.BeginMultiply16By16();
 
 			// Assert
 			Assert.AreEqual<uint>(2*2, BitConverter.ToUInt32(suzy.MathJKLM, 0), "Accumulate result not correct.");
@@ -189,7 +189,7 @@ namespace AtariLynx.Tests
 			suzy.MathABCD = BitConverter.GetBytes(0x00010002);
 			
 			// Act
-			suzy.Multiply16By16();
+			suzy.BeginMultiply16By16();
 
 			// Assert
 			Assert.AreEqual<uint>(0x01020304 + 0x00010002, BitConverter.ToUInt32(suzy.MathJKLM, 0), "Accumulate result not correct.");
@@ -216,7 +216,7 @@ namespace AtariLynx.Tests
 			suzy.MathABCD = BitConverter.GetBytes(0xFFFFFFFF);
 
 			// Act
-			suzy.Multiply16By16();
+			suzy.BeginMultiply16By16();
 
 			// Assert
 			Assert.IsTrue(suzy.SPRSYS.MathWarning, "Accumulate math overflow bit should have been set for overflowing accumulator.");
@@ -230,7 +230,7 @@ namespace AtariLynx.Tests
 			suzy.MathEFGH = BitConverter.GetBytes(0xFFFF0000);
 
 			// Act
-			suzy.Divide32By16();
+			suzy.BeginDivide32By16();
 
 			// Assert
 			Assert.AreEqual<uint>(0x10000, BitConverter.ToUInt32(suzy.MathABCD, 0), "Division not performed correctly.");

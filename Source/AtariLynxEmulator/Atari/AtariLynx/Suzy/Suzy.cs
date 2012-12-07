@@ -43,6 +43,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public byte[] MathABCD = new byte[4];
 		public byte[] MathNP = new byte[2];
 
+		// Used to store results
+		uint ABCD, EFGH, JKLM;
+
 		private SpriteControlBlock SCB = null;
 		private SpriteEngine Engine = null;
 
@@ -87,11 +90,11 @@ namespace KillerApps.Emulation.Atari.Lynx
 		// the accumulator to any value by writing to all 4 bytes (J,K,L,M)."
 		int signAB = 0, signCD = 0, signEFGH = 0;
 		
-		public ulong Multiply16By16()
+		public void BeginMultiply16By16()
 		{
-			uint EFGH;
 			SPRSYS.MathWarning = false;
 			SPRSYS.MathInProcess = true;
+			MathTypeInProgress = MathType.Multiplication;
 
 			ushort AB = BitConverter.IsLittleEndian ? (ushort)((MathABCD[3] << 8) + MathABCD[2]) : (ushort)((MathABCD[2] << 8) + MathABCD[3]);
 			ushort CD = BitConverter.IsLittleEndian ? (ushort)((MathABCD[1] << 8) + MathABCD[0]) : (ushort)((MathABCD[0] << 8) + MathABCD[1]);
@@ -110,41 +113,11 @@ namespace KillerApps.Emulation.Atari.Lynx
 				}
 			}
 
-			MathEFGH = BitConverter.GetBytes(EFGH);
-			if (!BitConverter.IsLittleEndian) MathEFGH = MathEFGH.Reverse().ToArray();
-
-			if (SPRSYS.Accumulate)
-			{
-				if (!BitConverter.IsLittleEndian) MathJKLM = MathJKLM.Reverse().ToArray();
-				uint JKLM = BitConverter.ToUInt32(MathJKLM, 0);
-				uint accumulate = JKLM + EFGH;
-
-				long overflow = (long)(int)JKLM + (long)(int)EFGH;
-				if (overflow > 0xFFFFFFFF || overflow < 0)
-				{
-					// "... and an accumulator overflow bit."
-					SPRSYS.MathWarning = true;
-					//Debug.WriteLineIf(GeneralSwitch.TraceWarning, "Suzy::Multiply16By16() - Overflow detected");
-				}
-				else
-				{
-					SPRSYS.MathWarning = false;
-				}
-
-				// TODO: "BIG NOTE: Unsafe access is broken for math operations.
-				// Please reset it after every math operation or it will not be useful for sprite operations."
-				// Save accumulated result
-				MathJKLM = BitConverter.GetBytes(accumulate);
-				if (!BitConverter.IsLittleEndian) MathJKLM = MathJKLM.Reverse().ToArray();
-			}
-
-			SPRSYS.MathInProcess = false;
-
 			// "Multiplies without sign or accumulate take 44 ticks to complete.
 			// Multiplies with sign and accumulate take 54 ticks to complete"
-			ulong cyclesUsed = 44;
-			if (SPRSYS.SignedMath && SPRSYS.Accumulate) cyclesUsed = 54;
-			return cyclesUsed;
+			ulong cyclesUsed = (SPRSYS.SignedMath && SPRSYS.Accumulate) ? 
+				cyclesUsed = 54 / 4 : 44 / 4; // Ticks are 1/4 cycle
+			MathReadyTime = device.SystemClock.CompatibleCycleCount + cyclesUsed;
 		}
 
 		internal ushort ConvertSignedMathValue(ushort value, out int sign)
@@ -182,7 +155,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		//	----
 		//	ABCD  
 		//Remainder in (JK)LM"
-		public ulong Divide32By16()
+		public void BeginDivide32By16()
 		{
 			// "In divide, the remainder will have 2 possible errors, depending on its actual value. 
 			// No point in explaining the errors here, just don't use it. Thank You VTI."
@@ -192,6 +165,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// it will not be useful for sprite operations."
 			
 			SPRSYS.MathInProcess = true;
+			MathTypeInProgress = MathType.Division;
 
 			// "Mathbit. If mult, 1=accumulator overflow. If div, 1=div by zero attempted."
 			SPRSYS.MathWarning = false;
@@ -200,36 +174,21 @@ namespace KillerApps.Emulation.Atari.Lynx
 			ushort NP = BitConverter.IsLittleEndian ? (ushort)((MathNP[1] << 8) + MathNP[0]) : (ushort)((MathNP[0] << 8) + MathNP[1]);
 			if (NP != 0)
 			{
-				//Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::Divide32By16() - Unsigned math");
-				uint ABCD, JKLM;
-				
 				// Reverse array for big endian
 				if (!BitConverter.IsLittleEndian) MathEFGH = MathEFGH.Reverse().ToArray();
 				uint EFGH = BitConverter.ToUInt32(MathEFGH, 0);
 				ABCD = EFGH / NP;
 				JKLM = EFGH % NP;
 
-				MathABCD = BitConverter.GetBytes(ABCD);
-				MathJKLM = BitConverter.GetBytes(JKLM);
-				if (!BitConverter.IsLittleEndian)
+				// Set current values of ABCD and NP to intermediate result
+				// TODO: Find out what intermediate values start at
+				for (int index = 0; index < 4; index++)
 				{
-					MathABCD = MathABCD.Reverse().ToArray();
-					MathJKLM = MathJKLM.Reverse().ToArray();
-					MathJKLM[0] = 0; // J
-					MathJKLM[1] = 0; // K
-				}
-				else
-				{
-					// "As a courtesy, the hardware will set J,K to zero so that the software can treat the remainder
-					// as a 32 bit number."
-					MathJKLM[3] = 0; // J
-					MathJKLM[2] = 0; // K
+					MathABCD[index] = MathJKLM[index] = 0;
 				}
 			}
 			else
 			{
-				//Debug.WriteLineIf(GeneralSwitch.TraceWarning, "Suzy::Divide32By16() - Divide by zero detected");
-
 				// "The number in the dividend as a result of a divide by zero is 'FFFFFFFF (BigNum)."
 				for (int index = 0; index < 4; index++)
 				{
@@ -239,15 +198,105 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 				// "Mathbit. If mult, 1=accumulator overflow. If div, 1=div by zero attempted."
 				SPRSYS.MathWarning = true;
+				SPRSYS.MathInProcess = false;
+
+				// For now, assume that a zero divisor takes no (significant amount of) cycles for math to complete.
+				return;
+			}
+
+			// "Divides take 176 + 14*N ticks where N is the number of most significant zeros in the divisor."
+			// Count leading zeros in NP
+			byte zeros = GetSignificantZeros(NP);
+			ulong cyclesUsed = (ulong)(176 + 14 * zeros) / 2; // Tick is 1/4th cycle
+			MathReadyTime = device.SystemClock.CompatibleCycleCount + cyclesUsed;
+		}
+
+		private byte GetSignificantZeros(ushort value)
+		{
+			//																							2
+			// Number of significant zeros is determined by  log(x)
+			//return (byte)(15 - Math.Log(value, 2));
+		
+			// Probably a costly operation. Determine by shifting right
+			byte significantZeros = 16;
+			while (value > 0)
+			{
+				significantZeros--;
+				value >>= 1;
+			}
+
+			return significantZeros;
+		}
+
+		public ulong MathReadyTime { get; private set; }
+		private MathType MathTypeInProgress;
+
+		internal void EndMathOperation()
+		{
+			switch (MathTypeInProgress)
+			{
+				case MathType.Division:
+					EndDivide32By16();
+					break;
+
+				case MathType.Multiplication:
+					EndMultiply16By16();
+					break;
+			}
+		}
+
+		private void EndMultiply16By16()
+		{
+			MathEFGH = BitConverter.GetBytes(EFGH);
+			if (!BitConverter.IsLittleEndian) MathEFGH = MathEFGH.Reverse().ToArray();
+
+			if (SPRSYS.Accumulate)
+			{
+				if (!BitConverter.IsLittleEndian) MathJKLM = MathJKLM.Reverse().ToArray();
+				uint JKLM = BitConverter.ToUInt32(MathJKLM, 0);
+				uint accumulate = JKLM + EFGH;
+
+				long overflow = (long)(int)JKLM + (long)(int)EFGH;
+				if (overflow > 0xFFFFFFFF || overflow < 0)
+				{
+					// "... and an accumulator overflow bit."
+					SPRSYS.MathWarning = true;
+				}
+				else
+				{
+					SPRSYS.MathWarning = false;
+				}
+
+				// TODO: "BIG NOTE: Unsafe access is broken for math operations.
+				// Please reset it after every math operation or it will not be useful for sprite operations."
+				// Save accumulated result
+				MathJKLM = BitConverter.GetBytes(accumulate);
+				if (!BitConverter.IsLittleEndian) MathJKLM = MathJKLM.Reverse().ToArray();
 			}
 
 			SPRSYS.MathInProcess = false;
+		}
 
-			// "Divides take 176 + 14*N ticks where N is the number of most significant zeros in the divisor."
-			// TODO: Think of a smart way to count leading zeros in EFGH
-			//int zeros = count number of zeros from E -> H
-			ulong cyclesUsed = 176; // + 14 * zeros;
-			return cyclesUsed;
+		private void EndDivide32By16()
+		{
+			MathABCD = BitConverter.GetBytes(ABCD);
+			MathJKLM = BitConverter.GetBytes(JKLM);
+			if (!BitConverter.IsLittleEndian)
+			{
+				MathABCD = MathABCD.Reverse().ToArray();
+				MathJKLM = MathJKLM.Reverse().ToArray();
+				MathJKLM[0] = 0; // J
+				MathJKLM[1] = 0; // K
+			}
+			else
+			{
+				// "As a courtesy, the hardware will set J,K to zero so that the software can treat the remainder
+				// as a 32 bit number."
+				MathJKLM[3] = 0; // J
+				MathJKLM[2] = 0; // K
+			}
+
+			SPRSYS.MathInProcess = false;
 		}
 
 		public void Initialize()
@@ -500,7 +549,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 					}
 
 					// "Writing to A will start a 16 bit multiply."
-					Multiply16By16();
+					BeginMultiply16By16();
 
 					// TODO: Add clock cycles for multiplication when switching from compatible to precise clock count
 					//device.SystemClock.CompatibleCycleCount += Multiply16By16();
@@ -539,7 +588,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 				case Addresses.MATHE:
 					MathEFGH[3] = value;
 					// "Writing to E will start 8 16 bit divide."
-					Divide32By16();
+					BeginDivide32By16();
 					// TODO: Add clock cycles for multiplication when switching from compatible to precise clock count
 					//device.SystemClock.CompatibleCycleCount += Divide32By16();
 					break;

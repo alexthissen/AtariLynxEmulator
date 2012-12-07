@@ -11,27 +11,24 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 	// "The UART interrupt is not edge sensitive."
 
-	public class Uart2: IResetable
+	public class Uart3: IResetable
 	{
 		// Comlynx related variables
 		public SerialControlRegister SERCTL { get; private set; }
 		public byte SERDAT { get; set; }
-		public event EventHandler<UartDataEventArgs> DataTransmitted;
 
-		private byte transmitHoldingRegister;
-		private byte transmitShiftRegister;
+		private Transmitter Transmitter = new Transmitter();
+
 		private byte receiveHoldingRegister;
-		private int transmitPulseCountdown;
 		private int receivePulseCountdown;
 
-		private const byte TRANSMIT_PERIODS = 11;
 		private const byte RECEIVE_PERIODS = 11;
 
 		private bool receiveInactive = true;
 
 		public IComLynxTransport ComLynxTransport { get; set; }
 
-		public Uart2()
+		public Uart3()
 		{
 			Initialize();
 		}
@@ -62,7 +59,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// control register. The break will continue as long as the bit is set.
 			if (SERCTL.TransmitBreak)
 			{
-				TransmitBreak();
+				Transmitter.TransmitBreak();
 				return;
 			}
 		}
@@ -77,15 +74,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			SERDAT = receiveHoldingRegister;
 			SERCTL.ReceiveReady = true;
 
-			return receiveHoldingRegister;
-		}
-
-		public void Receive()
-		{
-			// TODO: Implement receiving of message through UART
-			// - Prepare on receive when first bit would arrive
-			// - Set countdown until data is completely received
-			// - Baudrate should check if it can read from receive buffer
+			return 0x00;
 		}
 
 		private bool HasParityError()
@@ -166,53 +155,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 			//}
 
 			return fireInterrupt;
-		}
-
-		public void TransmitBreak()
-		{
-			// "A 'break' is defined as a start bit, a data value of 0 (same as a permanent start bit), 
-			// and the absence of a stop bit at the expected time."
-			UartDataEventArgs args = new UartDataEventArgs() { Break = true, Data = 0x00, StopBitPresent = false };
-			OnTransmit(args);
-		}
-
-		public void TransmitData(byte data)
-		{
-			// Complete sending current shift register contents
-			UartDataEventArgs args = new UartDataEventArgs() { Break = false, Data = data };
-			OnTransmit(args);
-
-			// "If TXEMPTY is a '1', then BOTH the transmit holding register and the transmit shift register 
-			// have been emptied and there are no more bits going out the serial data line."
-			if (SERCTL.TransmitterBufferEmpty) SERCTL.TransmitterDone = true;
-		}
-
-		protected virtual void OnTransmit(UartDataEventArgs args)
-		{
-			args.ParityBit = CalculateParityBit(args.Data);
-			if (DataTransmitted != null) DataTransmitted(this, args);
-		}
-
-		private bool CalculateParityBit(byte data)
-		{
-			// "The 9th bit is always sent. It is either the result of a parity calculation on the transmit 
-			// data byte or it is the value set in the parity select bit in the control register.
-			// The choice is made by the parity enable bit in the control byte. For example :
-			// If PAREN is '0', then the 9th bit will be whatever the state of PAREVEN is."
-			if (!SERCTL.ParityBit) return SERCTL.ParityEven;
-
-			// If PAREN is '1' and PAREVEN is '0', then the 9th bit will be the result of an 'odd' parity calculation 
-			// on the transmit data byte.
-			return CalculateParity(data, SERCTL.ParityEven);
-		}
-
-		private bool CalculateParity(byte data, bool evenParity)
-		{
-			// "We have just discovered that the calculation for parity includes the parity bit itself. 
-			// Most of us don't like that, but it is too late to change it."
-
-			// TODO: Implement actual 'odd' parity calculation
-			return false;
 		}
 
 		public void Reset()

@@ -12,6 +12,7 @@ namespace KillerApps.Gaming.Atari
 		{
 			using (PcesGame game = new PcesGame())
 			{
+				game.CommandLine = args;
 				game.Run();
 			}
 		}

@@ -403,8 +403,8 @@ namespace KillerApps.Emulation.Processors
 			// the return address, followed by the low byte, and finally the status byte from 
 			// the P processor status register."
 			PushOnStack((byte)(PC >> 8));
-			PushOnStack((byte)(PC & 0xff));
-			PushOnStack((byte)(ProcessorStatus & 0xef));		// Clear B flag on stack
+			PushOnStack((byte)(PC & 0xFF));
+			PushOnStack((byte)(ProcessorStatus & 0xEF));		// Clear B flag on stack
 
 			UpdateInterruptFlags();
 

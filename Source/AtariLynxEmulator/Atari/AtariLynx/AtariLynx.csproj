@@ -51,6 +51,7 @@
     <Compile Include="Audio\Ear.cs" />
     <Compile Include="Audio\OtherControlBits.cs" />
     <Compile Include="Audio\StereoConnection.cs" />
+    <Compile Include="Cartridge\BinaryReaderExtensions.cs" />
     <Compile Include="Cartridge\BllRomImageHeader.cs" />
     <Compile Include="Cartridge\CartRotation.cs" />
     <Compile Include="Cartridge\BllRomImageFileFormat.cs" />
@@ -69,6 +70,8 @@
     <Compile Include="Audio\ShiftRegisterFeedbackEnable.cs" />
     <Compile Include="Mikey\TimerBase.cs" />
     <Compile Include="Mikey\TimerControlBase.cs" />
+    <Compile Include="Suzy\MathType.cs" />
+    <None Include="Uart\Transmitter.cs" />
     <Compile Include="Uart\Uart2.cs" />
     <Compile Include="Uart\IComLynxTransport.cs" />
     <Compile Include="Uart\Uart.cs" />
@@ -124,6 +127,7 @@
     <Compile Include="Suzy\Suzy.Addresses.cs" />
     <Compile Include="Suzy\SuzyBusEnable.cs" />
     <Compile Include="Suzy\Suzy.cs" />
+    <None Include="Uart\Uart3.cs" />
     <Compile Include="Uart\UartDataEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>

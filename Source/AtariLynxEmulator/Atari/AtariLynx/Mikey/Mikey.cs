@@ -23,7 +23,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public byte[] BlueRedColorMap = new byte[0x10];
 		public uint[] ArgbColorMap = new uint[0x10];
 
-		// TODO: Make Uart member private again
 		private Uart comLynx;
 		public SystemControlBits1 SYSCTL1 { get; private set; }
 		public ParallelData IODAT { get; private set; }
@@ -628,6 +627,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 				int offset = address - Mikey.Addresses.HTIMBKUP;
 				int index = offset >> 2; // Divide by 4 to get index of timer
 				Timer timer = Timers[index];
+				
+				// TODO: This line introduces a bug in Awesome Golf, but fixes the random blocks in Blockout
+				// Find out what breaks Awesome Golf
 				timer.Update(device.SystemClock.CompatibleCycleCount);
 
 				switch (offset % 4)

@@ -45,6 +45,8 @@ namespace KillerApps.Gaming.Atari
 		//private IComLynxTransport transport = null;
 		//private GamerServicesComponent gamerServices = null;
 
+		public string[] CommandLine { get; set; }
+
 		public PcesGame()
 		{
 			emulator = new LynxHandheld();
@@ -87,12 +89,36 @@ namespace KillerApps.Gaming.Atari
 			base.Initialize();
 		}
 
+		private ICartridge LoadCartridge()
+		{
+			ICartridge cartridge = null;
+
+			try
+			{
+#if WINDOWS
+				string cartridgeFileName = CommandLine.Length > 0 ? CommandLine[0] : String.Empty;
+				using (FileStream stream = File.OpenRead(cartridgeFileName))
+				{
+					LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
+					cartridge = romImage.LoadCart(stream);
+				}
+#endif
+			}
+			catch (Exception)
+			{
+				cartridge = new FaultyCart();
+			}
+			return cartridge;
+		}
+
 		private void InitializeEmulator()
 		{
 			// Lynx related
 			emulator.BootRomImage = new MemoryStream(Roms.lynxtest);
-			LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
-			emulator.InsertCartridge(romImage.LoadCart(new MemoryStream(Roms.Collision)));
+			//LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
+			//emulator.InsertCartridge(romImage.LoadCart(new MemoryStream(Roms.Gates_of_Zendocon)));
+			ICartridge cartridge = LoadCartridge();
+			emulator.InsertCartridge(cartridge); 
 			emulator.Initialize();
 
 			//Test Redeye loading
