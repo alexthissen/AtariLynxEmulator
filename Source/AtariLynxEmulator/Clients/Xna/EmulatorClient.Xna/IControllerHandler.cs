@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using KillerApps.Emulation.Atari.Lynx;
 
-namespace KillerApps.Gaming.Atari
+namespace KillerApps.Gaming.Atari.Xna
 {
 	public interface IControllerHandler
 	{

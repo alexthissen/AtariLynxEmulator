@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.GamerServices;
 
-namespace KillerApps.Gaming.Atari
+namespace KillerApps.Gaming.Atari.Xna
 {
 	public class InputHandler : DrawableGameComponent
 	{

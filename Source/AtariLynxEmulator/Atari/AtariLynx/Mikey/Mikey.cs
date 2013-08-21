@@ -630,7 +630,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 				
 				// TODO: This line introduces a bug in Awesome Golf, but fixes the random blocks in Blockout
 				// Find out what breaks Awesome Golf
-				timer.Update(device.SystemClock.CompatibleCycleCount);
+				//timer.Update(device.SystemClock.CompatibleCycleCount);
 
 				switch (offset % 4)
 				{

@@ -6,7 +6,7 @@ using KillerApps.Emulation.Atari.Lynx;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 
-namespace KillerApps.Gaming.Atari
+namespace KillerApps.Gaming.Atari.Xna
 {
 	public class GamePadHandler : InputHandler
 	{

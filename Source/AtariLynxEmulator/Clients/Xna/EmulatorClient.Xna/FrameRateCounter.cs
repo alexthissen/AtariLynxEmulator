@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 
-namespace KillerApps.Gaming.Atari
+namespace KillerApps.Gaming.Atari.Xna
 {
 	public class FrameRateCounter : DrawableGameComponent
 	{

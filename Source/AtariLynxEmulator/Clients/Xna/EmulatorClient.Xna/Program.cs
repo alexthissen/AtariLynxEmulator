@@ -1,6 +1,6 @@
 using System;
 
-namespace KillerApps.Gaming.Atari
+namespace KillerApps.Gaming.Atari.Xna
 {
 #if WINDOWS || XBOX
 	static class Program
@@ -10,7 +10,7 @@ namespace KillerApps.Gaming.Atari
 		/// </summary>
 		static void Main(string[] args)
 		{
-			using (PcesGame game = new PcesGame())
+			using (EmulatorClient game = new EmulatorClient())
 			{
 				game.CommandLine = args;
 				game.Run();
