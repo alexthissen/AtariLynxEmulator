@@ -13,21 +13,21 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 	public class Uart2: IResetable
 	{
+		public const int SerialDataFormatLength = 11;
+
 		// Comlynx related variables
 		public SerialControlRegister SERCTL { get; private set; }
 		public byte SERDAT { get; set; }
 		public event EventHandler<UartDataEventArgs> DataTransmitted;
 
-		private byte transmitHoldingRegister;
-		private byte transmitShiftRegister;
-		private byte receiveHoldingRegister;
-		private int transmitPulseCountdown;
-		private int receivePulseCountdown;
+		internal byte transmitShiftRegister;
+		internal byte transmitHoldingRegister;
+		internal byte receiveHoldingRegister;
+		internal int transmitPulseCountdown;
+		internal int receivePulseCountdown;
 
 		private const byte TRANSMIT_PERIODS = 11;
 		private const byte RECEIVE_PERIODS = 11;
-
-		private bool receiveInactive = true;
 
 		public IComLynxTransport ComLynxTransport { get; set; }
 
@@ -40,26 +40,19 @@ namespace KillerApps.Emulation.Atari.Lynx
 		{
 			// "The UART TXD signal powers up in TTL HIGH, instead of open collector."
 			// meaning that TXOPEN is set to 0 (and consequently SERCTL.TransmitOpen to false)
+			// "This bit is also set to '1' after a reset." // 
 			SERCTL = new SerialControlRegister(0x00); // "reset 0,0,0,0,0,0,0,0"
 		}
 
 		public void SetSerialControlRegister(byte value)
 		{
 			SERCTL.ByteData = value;
-
-			// "Once received, these error bits remain set until they are cleared by writing to the control 
-			// byte with the reset error bit set."
-			if (SERCTL.ResetAllErrors)
-			{
-				SERCTL.OverrunError = false;
-				SERCTL.FrameError = false;
-			}
 		}
 
 		public void OnBaudPulse()
 		{
 			// "A break of any length can be transmitted by setting the transmit break bit in the 
-			// control register. The break will continue as long as the bit is set.
+			// control register. The break will continue as long as the bit is set."
 			if (SERCTL.TransmitBreak)
 			{
 				TransmitBreak();
@@ -94,14 +87,29 @@ namespace KillerApps.Emulation.Atari.Lynx
 			return false;
 		}
 
-		public bool GenerateBaudRate()
+		public bool PulseBaud()
 		{
-			bool fireInterrupt = false;
+			bool triggerInterrupt = false;
 			
+			if (transmitPulseCountdown > 0)
+			{
+				// Almost there
+				transmitPulseCountdown--;
+			}
+			else
+			{
+				TransmitData(transmitShiftRegister);
+				
+				// When buffer still holds data, transfer it to shift register
+				if (!SERCTL.TransmitterBufferEmpty)
+					StartTransmitData();
+			}
+
 			// Check if frame has been received
 			if (receivePulseCountdown == 0)
 			{
 				// When data was already present in SERDAT an overrun has occurred
+				// This is a non-critical error
 				if (SERCTL.ReceiveReady) SERCTL.OverrunError = true;
 
 				// Transfer data to SERDAT
@@ -113,59 +121,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 				receivePulseCountdown--;
 			}
 
-			//if (receiveCountdown == 0 && !receiveInactive)
-			//{
-			//  if (receiveBuffer.Count > 0)
-			//    SERDAT = receiveBuffer.Dequeue();
-
-			//  if (receiveBuffer.Count > 0)
-			//  {
-			//    receiveCountdown = 11 + 44;
-			//    receiveInactive = false;
-			//  }
-			//  else
-			//  {
-			//    receiveInactive = true;
-			//  }
-
-			//  if (SERCTL.ReceiveReady)
-			//    SERCTL.OverrunError = true;
-
-			//  SERCTL.ReceiveReady = true;
-			//}
-			//else if (!receiveInactive)
-			//{
-			//  receiveCountdown--;
-			//}
-
-			//if (transmitCountdown == 0 && !SERCTL.TransmitterDone)
-			//{
-			//  if (SERCTL.TransmitBreak)
-			//  {
-			//    // TODO: Implement break transmission
-			//  }
-			//  else
-			//    SERCTL.TransmitterDone = true;
-			//}
-			//else if (!SERCTL.TransmitterDone)
-			//  transmitCountdown--;
-
-			//// "Well, we did screw something up after all. 
-			//// Both the transmit and receive interrupts are 'level' sensitive, rather than 'edge' sensitive. 
-			//// This means that an interrupt will be continuously generated as long as it is enabled and 
-			//// its UART buffer is ready. 
-			//// As a result, the software must disable the interrupt prior to clearing it. Sorry."
-
-			// "The interrupt bit for timer 4 (UART baud rate) is driven by receiver or transmitter ready bit of the UART."
-
-
-			//// Emulate the UART bug where UART IRQ is level sensitive
-			//if ((SERCTL.TransmitterDone && SERCTL.TransmitterInterruptEnable) || (SERCTL.ReceiveReady && SERCTL.ReceiveInterruptEnable))
-			//{
-			//  fireInterrupt = true;
-			//}
-
-			return fireInterrupt;
+			return triggerInterrupt;
 		}
 
 		public void TransmitBreak()
@@ -195,15 +151,20 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		private bool CalculateParityBit(byte data)
 		{
+			bool parity = false;
+
 			// "The 9th bit is always sent. It is either the result of a parity calculation on the transmit 
 			// data byte or it is the value set in the parity select bit in the control register.
 			// The choice is made by the parity enable bit in the control byte. For example :
 			// If PAREN is '0', then the 9th bit will be whatever the state of PAREVEN is."
-			if (!SERCTL.ParityBit) return SERCTL.ParityEven;
+			if (!SERCTL.TransmitParityEnable) 
+				parity = SERCTL.ParityEven;
+			else
+				// If PAREN is '1' and PAREVEN is '0', then the 9th bit will be the result of an 'odd' parity calculation 
+				// on the transmit data byte.
+				parity = CalculateParity(data, SERCTL.ParityEven);
 
-			// If PAREN is '1' and PAREVEN is '0', then the 9th bit will be the result of an 'odd' parity calculation 
-			// on the transmit data byte.
-			return CalculateParity(data, SERCTL.ParityEven);
+			return parity;
 		}
 
 		private bool CalculateParity(byte data, bool evenParity)
@@ -212,7 +173,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// Most of us don't like that, but it is too late to change it."
 
 			// TODO: Implement actual 'odd' parity calculation
-			return false;
+			// It might be true for all cases anyway.
+			return true;
 		}
 
 		public void Reset()
@@ -221,18 +183,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 			// "This bit is also set to '1' after a reset."
 			// where 'this bit' is the TXRDY bit
-			SERCTL.TransmitterDone = true;
+			SERCTL.TransmitterBufferEmpty = true;
 		}
 
-		public void WriteToTransmitBuffer(byte data)
-		{
-			transmitHoldingRegister = data;
-			SERCTL.TransmitterBufferEmpty = false;
-			// There is data to be sent
-			SERCTL.TransmitterDone = false;
-		}
-
-		public void TransferHoldingToShiftRegister()
+		public void StartTransmitData()
 		{
 			// "If TXRDY is a '1', then the contents of the transmit holding register have been loaded 
 			// into the transmit shift register and the holding register is now available to be 
@@ -241,6 +195,21 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 			// Just emptied holding register
 			SERCTL.TransmitterBufferEmpty = true;
+
+			// Start countdown to completed transmit
+			transmitPulseCountdown = SerialDataFormatLength;
+		}
+
+		public void TransmitSerialData(byte dataToTransmit)
+		{
+			WriteToTransmitBuffer(dataToTransmit);
+		}
+		public void WriteToTransmitBuffer(byte data)
+		{
+			transmitHoldingRegister = data;
+			SERCTL.TransmitterBufferEmpty = false;
+			// There is data to be sent
+			SERCTL.TransmitterDone = false;
 		}
 	}
 }

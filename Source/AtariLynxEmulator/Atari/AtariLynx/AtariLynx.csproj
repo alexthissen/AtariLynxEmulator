@@ -57,6 +57,7 @@
     <Compile Include="Audio\Ear.cs" />
     <Compile Include="Audio\OtherControlBits.cs" />
     <Compile Include="Audio\StereoConnection.cs" />
+    <Compile Include="Cartridge\AlpineGamesCart.cs" />
     <Compile Include="Cartridge\BinaryReaderExtensions.cs" />
     <Compile Include="Cartridge\BllRomImageHeader.cs" />
     <Compile Include="Cartridge\CartRotation.cs" />

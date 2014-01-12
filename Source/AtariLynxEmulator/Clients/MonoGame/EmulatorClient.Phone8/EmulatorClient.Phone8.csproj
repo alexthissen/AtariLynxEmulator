@@ -113,6 +113,7 @@
     <None Include="Properties\WMAppManifest.xml">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Resources\Blue Lightning.lnx" />
     <None Include="Resources\collision.lnx" />
     <None Include="Resources\demo0006.lnx" />
     <None Include="Resources\demo01.o" />

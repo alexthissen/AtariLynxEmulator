@@ -206,10 +206,9 @@ namespace EmulatorClient.Phone8
 		protected override void Draw(GameTime gameTime)
 		{
 			lcdScreen.SetData(emulator.LcdScreenDma, 0x0, 0x3FC0);
-
+			GraphicsDevice.Clear(Color.Black);
 			//  Stream stream = new ;
 			//lcdScreen.SaveAsJpeg(stream, Suzy.SCREEN_WIDTH, Suzy.SCREEN_HEIGHT);
-
 			spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null);
 			//spriteBatch.Draw(border, new Rectangle(0,0, graphicsWidth *2, graphicsHeight*2), Color.White);
 			spriteBatch.Draw(lcdScreen,

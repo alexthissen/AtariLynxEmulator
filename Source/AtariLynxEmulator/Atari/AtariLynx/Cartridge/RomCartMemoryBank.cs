@@ -89,7 +89,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public byte Peek(int shiftRegister, int counter)
 		{
-			ulong address = (ulong)(shiftRegister << shiftCount) + (ulong)(counter & countMask);
+			ulong address = GetAddress(shiftRegister, counter);
 			byte data = cartBank[address & maskBank];
 			return data;
 		}

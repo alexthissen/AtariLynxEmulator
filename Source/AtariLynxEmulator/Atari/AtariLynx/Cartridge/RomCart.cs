@@ -121,6 +121,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			if (!currentStrobe)
 			{
 				counter++;
+				// "... a 11 bit counter"
 				counter &= 0x07ff;
 			}
 		}
@@ -131,6 +132,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			if (!currentStrobe)
 			{
 				counter++;
+				// "... a 11 bit counter"
 				counter &= 0x07ff;
 			}
 			return data;
