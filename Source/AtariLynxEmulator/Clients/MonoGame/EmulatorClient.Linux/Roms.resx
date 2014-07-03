@@ -121,9 +121,6 @@
   <data name="Collision" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\collision.lnx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="LYNXBOOT" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\LYNXBOOT.IMG;System.Byte[], mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e</value>
-  </data>
   <data name="IRQ_Test" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\IRQ Test.lnx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -156,8 +153,5 @@
   </data>
   <data name="lynxtest" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\lynxtest.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="Todds_Adventures_in_Slimeworld" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\Todds Adventures in Slimeworld.lnx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

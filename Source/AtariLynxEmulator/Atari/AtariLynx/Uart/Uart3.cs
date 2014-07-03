@@ -15,7 +15,20 @@ namespace KillerApps.Emulation.Atari.Lynx
 	{
 		// Comlynx related variables
 		public SerialControlRegister SERCTL { get; private set; }
-		public byte SERDAT { get; set; }
+		private byte serialData;
+		public byte SERDAT
+		{
+			get
+			{
+				// When serial data register is read, it 
+				SERCTL.ReceiveReady = false;
+				return serialData;
+			}
+			set 
+			{ 
+				serialData = value;
+			} 
+		}
 
 		private Transmitter Transmitter = new Transmitter();
 
@@ -48,6 +61,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// byte with the reset error bit set."
 			if (SERCTL.ResetAllErrors)
 			{
+				SERCTL.ParityError = false;
 				SERCTL.OverrunError = false;
 				SERCTL.FrameError = false;
 			}

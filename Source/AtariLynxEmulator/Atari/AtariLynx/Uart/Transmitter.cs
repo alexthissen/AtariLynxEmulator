@@ -31,11 +31,11 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		protected virtual void OnTransmit(UartDataEventArgs args)
 		{
-			args.ParityBit = CalculateParityBit(args.Data);
+			args.ParityBit = ComputeParityBit(args.Data);
 			if (DataTransmitted != null) DataTransmitted(this, args);
 		}
 
-		private bool CalculateParityBit(byte data)
+		private bool ComputeParityBit(byte data)
 		{
 			// "The 9th bit is always sent. It is either the result of a parity calculation on the transmit 
 			// data byte or it is the value set in the parity select bit in the control register.

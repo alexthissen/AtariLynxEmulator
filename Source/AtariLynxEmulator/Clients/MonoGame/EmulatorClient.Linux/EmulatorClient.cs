@@ -27,8 +27,6 @@ namespace EmulatorClient.Linux
 		private GraphicsDeviceManager graphics;
 		private SpriteBatch spriteBatch;
 		private Texture2D lcdScreen;
-		private Texture2D border;
-		private SpriteFont font;
 		private const int magnification = 4;
 		private const int graphicsWidth = Suzy.SCREEN_WIDTH * magnification;
 		private const int graphicsHeight = Suzy.SCREEN_HEIGHT * magnification;
@@ -37,7 +35,7 @@ namespace EmulatorClient.Linux
 		private InputHandler inputHandler;
 
 		// Audio
-		private byte[] soundBuffer;
+		//private byte[] soundBuffer;
 		//private DynamicSoundEffectInstance dynamicSound;
 
 		// Network
@@ -110,7 +108,7 @@ namespace EmulatorClient.Linux
 			// Lynx related
 			emulator.BootRomImage = new MemoryStream(Roms.lynxtest);
 			LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
-			emulator.InsertCartridge(romImage.LoadCart(new MemoryStream(Roms.Todds_Adventures_in_Slimeworld)));
+			emulator.InsertCartridge(romImage.LoadCart(new MemoryStream(Roms.Collision)));
 			//ICartridge cartridge = LoadCartridge();
 			//emulator.InsertCartridge(cartridge);
 			emulator.Initialize();
@@ -194,7 +192,7 @@ namespace EmulatorClient.Linux
 
 			JoystickStates joystick = inputHandler.Joystick;
 			emulator.UpdateJoystickState(joystick);
-			emulator.Update(66667); // 4 MHz worth of cycles divided by 60 seconds
+			emulator.Update(86667); // 4 MHz worth of cycles divided by 60 seconds
 
 			base.Update(gameTime);
 		}

@@ -525,7 +525,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 					if (!SYSCTL1.Power)
 					{
 						device.Reset();
-						// TODO: Enter debug mode id configured
+						// TODO: Enter debug mode if configured
 					}
 					device.Cartridge.CartAddressStrobe(SYSCTL1.CartAddressStrobe);
 					return;
@@ -549,9 +549,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 					// The setting of the flip flop is described in the hardware specification."
 					
 					// BUG: "Sleep does not work if Suzy does not have the bus."
-					// We assume that everyone knows about this bug and behaves accordingly, so 
+					// "We assume that everyone knows about this bug and behaves accordingly, so 
 					// writing zero here must be to give Suzy access to the bus and it will start drawing
-					// sprites and will signal when it is done. 
+					// sprites and will signal when it is done." 
 					// This is implemented as a new wakeup time by calculating the number of cycles used
 					// and skipping forward in time to that moment. 
 					ulong suzyCycles = device.Suzy.RenderSprites();

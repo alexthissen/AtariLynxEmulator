@@ -27,8 +27,6 @@ namespace EmulatorClient.Windows
 		private GraphicsDeviceManager graphics;
 		private SpriteBatch spriteBatch;
 		private Texture2D lcdScreen;
-		private Texture2D border;
-		private SpriteFont font;
 		private const int magnification = 4;
 		private const int graphicsWidth = Suzy.SCREEN_WIDTH * magnification;
 		private const int graphicsHeight = Suzy.SCREEN_HEIGHT * magnification;
@@ -37,7 +35,7 @@ namespace EmulatorClient.Windows
 		private InputHandler inputHandler;
 
 		// Audio
-		private byte[] soundBuffer;
+		//private byte[] soundBuffer;
 		//private DynamicSoundEffectInstance dynamicSound;
 
 		// Network
@@ -194,7 +192,7 @@ namespace EmulatorClient.Windows
 
 			JoystickStates joystick = inputHandler.Joystick;
 			emulator.UpdateJoystickState(joystick);
-			emulator.Update(66667); // 4 MHz worth of cycles divided by 60 seconds
+			emulator.Update(86667); // 4 MHz worth of cycles divided by 60 seconds
 
 			base.Update(gameTime);
 		}

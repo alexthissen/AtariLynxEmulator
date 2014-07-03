@@ -22,14 +22,11 @@ namespace EmulatorClient.Phone8
 	{
 		// Emulator 
 		private LynxHandheld emulator;
-		private ContentManager romContent;
 
 		// Video
 		private GraphicsDeviceManager graphics;
 		private SpriteBatch spriteBatch;
 		private Texture2D lcdScreen;
-		private Texture2D border;
-		private SpriteFont font;
 		private const int magnification = 3;
 		private const int graphicsWidth = Suzy.SCREEN_WIDTH * magnification;
 		private const int graphicsHeight = Suzy.SCREEN_HEIGHT * magnification;
@@ -38,7 +35,7 @@ namespace EmulatorClient.Phone8
 		private InputHandler inputHandler;
 
 		// Audio
-		private byte[] soundBuffer;
+		//private byte[] soundBuffer;
 		//private DynamicSoundEffectInstance dynamicSound;
 
 		// Network

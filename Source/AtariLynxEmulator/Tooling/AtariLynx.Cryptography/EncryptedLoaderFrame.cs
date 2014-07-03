@@ -8,7 +8,6 @@ namespace KillerApps.Emulation.Atari.Lynx.Cryptography
 {
 	public class EncryptedLoaderFrame
 	{
-		private byte accumulator;
 		private byte[] encryptedData = null;
 
 		private EncryptedLoaderFrame(byte[] data)

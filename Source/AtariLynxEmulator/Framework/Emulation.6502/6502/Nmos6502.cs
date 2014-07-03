@@ -408,7 +408,7 @@ namespace KillerApps.Emulation.Processors
 
 			UpdateInterruptFlags();
 
-			// Load IRQ vector into program counter
+			// Load IRQ or NMI vector into program counter
 			ushort vector = irqType == InterruptType.Irq ? VectorAddresses.IRQ_VECTOR : VectorAddresses.NMI_VECTOR;
 			PC = Memory.PeekWord(vector);
 

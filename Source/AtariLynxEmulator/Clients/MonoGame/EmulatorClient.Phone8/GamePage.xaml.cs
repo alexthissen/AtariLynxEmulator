@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -15,14 +15,14 @@ namespace EmulatorClient.Phone8
 {
     public partial class GamePage : PhoneApplicationPage
     {
-        private EmulatorClient _game;
+        private EmulatorClient game;
 
         // Constructor
         public GamePage()
         {
             InitializeComponent();
 
-            _game = XamlGame<EmulatorClient>.Create("", XnaSurface);
+            game = XamlGame<EmulatorClient>.Create("", this);
 
             // Sample code to localize the ApplicationBar
             //BuildLocalizedApplicationBar();
