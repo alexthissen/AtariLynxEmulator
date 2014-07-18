@@ -10,12 +10,12 @@ namespace AtariLynx.Tests
 	[TestClass]
 	public class UartTest
 	{
-		Uart2 uart;
+		Uart4 uart;
 
 		[TestInitialize()]
 		public void TestInitialize()
 		{
-			uart = new Uart2();
+			uart = new Uart4();
 		}
 
 		[TestMethod]
@@ -24,29 +24,90 @@ namespace AtariLynx.Tests
 			uart.Reset();
 
 			// Assert
-			Assert.AreEqual<byte>(0x80, uart.SERCTL.ByteData, "SERCTL should have been reset to 0x00");
-			Assert.IsTrue(uart.SERCTL.TransmitterBufferEmpty);
-			Assert.IsFalse(uart.SERCTL.ReceiveReady);
-			Assert.IsFalse(uart.SERCTL.TransmitterDone);
-			Assert.IsFalse(uart.SERCTL.ParityError);
-			Assert.IsFalse(uart.SERCTL.OverrunError);
-			Assert.IsFalse(uart.SERCTL.FrameError);
-			Assert.IsFalse(uart.SERCTL.ReceivedBreak);
-			Assert.IsFalse(uart.SERCTL.ParityBit);
+			Assert.AreEqual<byte>(SerialControlRegister2.TXEMPTYMask | SerialControlRegister2.TXRDYMask, 
+				uart.SERCTL, "SERCTL should have been reset to 0xA0");
 		}
 
 		[TestMethod]
-		public void TransmitSerialDataShouldPrepareTransmit()
+		public void SettingResetAllErrorsShouldClearThreeErrorFlags()
 		{
-			byte dataToTransmit = 0xFF;
-
+			// Arrange
+			
+			// Set individual errors straight to serial control register
+			uart.SerialControlRegister.FrameError = true;
+			uart.SerialControlRegister.ParityError = true;
+			uart.SerialControlRegister.OverrunError = true;
+			
 			// Act
-			uart.TransmitSerialData(dataToTransmit);
+			uart.SERCTL = SerialControlRegister2.RESETERRMask;
 
 			// Assert
-			Assert.AreEqual<byte>(dataToTransmit, uart.transmitHoldingRegister, "Transmit holding register should be filled.");
-			Assert.IsFalse(uart.SERCTL.TransmitterBufferEmpty);
-			Assert.IsFalse(uart.SERCTL.TransmitterDone);
+			Assert.IsFalse(uart.SerialControlRegister.FrameError, "Framing error should have been cleared.");
+			Assert.IsFalse(uart.SerialControlRegister.ParityError, "Parity error should have been cleared.");
+			Assert.IsFalse(uart.SerialControlRegister.OverrunError, "Overrun error should have been cleared.");
+		}
+
+		[TestMethod]
+		public void ParityDisabledShouldReturnTrueParityEvenBit()
+		{
+			// Arrange
+			// Disable parity calculation and set MARK for parity bit
+			uart.SERCTL = SerialControlRegister2.PAREVENMask | SerialControlRegister2.TXOPENMask;
+
+			// Act
+			bool parityBit = Uart4.ComputeParityBit(0x42, uart.SerialControlRegister);
+
+			// Assert
+			Assert.IsTrue(parityBit, "Parity bit should be MARK (true).");
+		}
+
+		[TestMethod]
+		public void ParityDisabledShouldReturnFalseParityEvenBit()
+		{
+			// Arrange
+			// Disable parity calculation and set SPACE for parity bit (by not enabled PAREVEN bit)
+			uart.SERCTL = SerialControlRegister2.TXOPENMask;
+
+			// Act
+			bool parityBit = Uart4.ComputeParityBit(0x42, uart.SerialControlRegister);
+
+			// Assert
+			Assert.IsFalse(parityBit, "Parity bit should be MARK (true).");
+		}
+
+		[TestMethod]
+		public void OddParityEnabledShouldReturnCorrectParityBit()
+		{
+			// Arrange
+			// Enable parity calculation and set ODD for parity bit (by not enabling PAREVEN bit)
+			uart.SERCTL = SerialControlRegister2.PARENMask | SerialControlRegister2.TXOPENMask;
+
+			// Act
+			bool parityBit = Uart4.ComputeParityBit(0x42, uart.SerialControlRegister);
+
+			// Assert
+			Assert.IsTrue(parityBit, "Parity bit should be set.");
+		}
+
+		[TestMethod]
+		public void EvenParityEnabledShouldReturnCorrectParityBit()
+		{
+			// Arrange
+			// Enable parity calculation and set EVEN for parity bit (by enabling PAREVEN bit)
+			uart.SERCTL = SerialControlRegister2.PARENMask | SerialControlRegister2.PAREVENMask | 
+				SerialControlRegister2.TXOPENMask;
+
+			// Act
+			bool parityBit = Uart4.ComputeParityBit(0x42, uart.SerialControlRegister);
+
+			// Assert
+			Assert.IsFalse(parityBit, "Parity bit should not be set.");
+		}
+
+		[TestMethod]
+		public void MyTestMethod()
+		{
+			
 		}
 	}
 }
