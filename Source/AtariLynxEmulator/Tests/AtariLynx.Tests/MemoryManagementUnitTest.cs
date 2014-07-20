@@ -26,21 +26,8 @@ namespace AtariLynx.Tests
 		public const byte suzyValue = 0x33;
 		public const byte mikeyValue = 0x44;
 
-		#region Additional test attributes
-		//
-		// You can use the following additional attributes as you write your tests:
-		//
-		// Use ClassInitialize to run code before running the first test in the class
-		// [ClassInitialize()]
-		// public static void MyClassInitialize(TestContext testContext) { }
-		//
-		// Use ClassCleanup to run code after all tests in a class have run
-		// [ClassCleanup()]
-		// public static void MyClassCleanup() { }
-		//
-		// Use TestInitialize to run code before running each test 
 		[TestInitialize()]
-		public void MyTestInitialize() 
+		public void TestInitialize() 
 		{
 			rom = CreateMockMemory(0xfe00, 0xffff, romValue);
 			ram = CreateMockMemoryWithDirectAccess(0x0000, 0xffff, ramValue, ramSize);
@@ -49,13 +36,6 @@ namespace AtariLynx.Tests
 			
 			mmu = new MemoryManagementUnit(rom, ram, mikey, suzy);
 		}
-
-		//
-		// Use TestCleanup to run code after each test has run
-		// [TestCleanup()]
-		// public void MyTestCleanup() { }
-		//
-		#endregion
 
 		private IMemoryAccess<ushort, byte> CreateMockMemory(ushort from, ushort to, byte value)
 		{

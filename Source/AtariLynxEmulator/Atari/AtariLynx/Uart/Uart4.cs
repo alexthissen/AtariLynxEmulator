@@ -8,8 +8,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 {
 	public class Uart4: IResetable
 	{
-		private Transmitter2 transmitter;
-		private Receiver receiver;
+		internal Transmitter2 Transmitter;
+		internal Receiver Receiver;
 		internal SerialControlRegister2 SerialControlRegister;
 		public event EventHandler BaudPulse;
 
@@ -17,14 +17,15 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public Uart4(SerialControlRegister2 controlRegister)
 		{
 			SerialControlRegister = controlRegister;
-			transmitter = new Transmitter2(controlRegister);
-			receiver = new Receiver(controlRegister);
+			Transmitter = new Transmitter2(controlRegister);
+			Receiver = new Receiver(controlRegister);
 		}
 
 		public void Initialize()
 		{
-			BaudPulse += transmitter.HandleBaudPulse;
-			BaudPulse += receiver.HandleBaudPulse;
+			BaudPulse += Transmitter.HandleBaudPulse;
+			BaudPulse += Receiver.HandleBaudPulse;
+			Transmitter.DataTransmitting += Receiver.HandleDataTransmitting;
 		}
 
 		protected virtual void OnBaudPulse()
@@ -58,6 +59,19 @@ namespace KillerApps.Emulation.Atari.Lynx
 			set 
 			{ 
 				WriteSerialControlRegister(value);
+			}
+		}
+
+		public byte SERDAT
+		{
+			get 
+			{
+				SerialControlRegister.ReceiveReady = false;
+				return Receiver.SerialData;  
+			}
+			set
+			{
+				Transmitter.TransferToBuffer(value);
 			}
 		}
 

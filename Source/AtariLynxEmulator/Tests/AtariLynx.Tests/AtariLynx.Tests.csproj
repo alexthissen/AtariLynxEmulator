@@ -73,7 +73,10 @@
     <Compile Include="StaticTimerControlTest.cs" />
     <Compile Include="SuzyTest.cs" />
     <Compile Include="TimerTest.cs" />
+    <Compile Include="TransmitterTest.cs" />
     <Compile Include="UartTest.cs" />
+    <Compile Include="SerialControlRegisterTest.cs" />
+    <Compile Include="ReceiverTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Atari\AtariLynx\AtariLynx.csproj">

@@ -7,8 +7,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 {
 	public interface IComLynxTransport
 	{
-		bool DisableSoftwareTransmitLoopback { get; }
 		void Send(byte data);
-		byte Receive();
+		void Receive(byte data);
 	}
 }

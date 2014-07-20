@@ -148,7 +148,7 @@ namespace AtariLynx.Tests
 			}
 
 			// Assert
-			Assert.IsFalse(register.TransmitterTotallyDone, "Transmitter should be done after eleven pulses.");
+			Assert.IsFalse(register.TransmitterTotallyDone, "Transmitter should not be done after ten pulses.");
 			Assert.IsTrue(register.TransmitterBufferEmpty, "Transmitter buffer should be empty when no new data was transferred.");
 		}
 	}

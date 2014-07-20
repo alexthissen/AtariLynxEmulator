@@ -11,11 +11,14 @@ namespace AtariLynx.Tests
 	public class UartTest
 	{
 		Uart4 uart;
+		SerialControlRegister2 register;
 
 		[TestInitialize()]
 		public void TestInitialize()
 		{
-			uart = new Uart4();
+			register = new SerialControlRegister2();
+			uart = new Uart4(register);
+			uart.Initialize();
 		}
 
 		[TestMethod]
@@ -105,9 +108,37 @@ namespace AtariLynx.Tests
 		}
 
 		[TestMethod]
-		public void MyTestMethod()
+		public void BaudPulseOnTransmitterShouldStartReceiver()
 		{
-			
+			// Arrange
+			byte data = 0x42;
+			uart.Transmitter.TransferToBuffer(data);
+
+			// Act
+			uart.Transmitter.HandleBaudPulse(null, EventArgs.Empty);
+
+			// Assert
+			Assert.IsTrue(uart.Receiver.IsReceiving, "Transmitter should be done after eleven pulses.");
+		}
+
+		[TestMethod]
+		public void ElevenBaudPulsesShouldReceiveData()
+		{
+			// Arrange
+			byte data = 0x42;
+			uart.Transmitter.TransferToBuffer(data);
+			uart.Receiver.DataReceived +=
+				(sender, args) =>
+				{
+					// Assert
+					Assert.AreEqual<byte>(data, args.Data, "Received data should be same as transmitted data.");
+				};
+
+			// Act
+			for (int count = 0; count < 11; count++)
+			{
+				uart.Transmitter.HandleBaudPulse(null, EventArgs.Empty);
+			} 
 		}
 	}
 }

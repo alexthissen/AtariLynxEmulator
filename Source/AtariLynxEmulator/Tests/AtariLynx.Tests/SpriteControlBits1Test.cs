@@ -7,34 +7,9 @@ using KillerApps.Emulation.Atari.Lynx;
 
 namespace AtariLynx.Tests
 {
-	/// <summary>
-	/// Summary description for SpriteControlBits1Test
-	/// </summary>
 	[TestClass]
 	public class SpriteControlBits1Test
 	{
-		#region Additional test attributes
-		//
-		// You can use the following additional attributes as you write your tests:
-		//
-		// Use ClassInitialize to run code before running the first test in the class
-		// [ClassInitialize()]
-		// public static void MyClassInitialize(TestContext testContext) { }
-		//
-		// Use ClassCleanup to run code after all tests in a class have run
-		// [ClassCleanup()]
-		// public static void MyClassCleanup() { }
-		//
-		// Use TestInitialize to run code before running each test 
-		// [TestInitialize()]
-		// public void MyTestInitialize() { }
-		//
-		// Use TestCleanup to run code after each test has run
-		// [TestCleanup()]
-		// public void MyTestCleanup() { }
-		//
-		#endregion
-
 		private byte byteData = 0xFF;
 
 		[TestMethod]
@@ -48,9 +23,9 @@ namespace AtariLynx.Tests
 		}
 
 		[TestMethod]
-    public void ProperyGettersShouldReturnCorrectValues()
-    {
-    	SpriteControlBits1 sprctl1 = new SpriteControlBits1(0x00);
+		public void ProperyGettersShouldReturnCorrectValues()
+		{
+			SpriteControlBits1 sprctl1 = new SpriteControlBits1(0x00);
 
 			Assert.IsFalse(sprctl1.ReusePalette, "Palette should be marked for reuse.");
 			Assert.IsFalse(sprctl1.SkipSprite, "Sprite should be marked as Skip.");

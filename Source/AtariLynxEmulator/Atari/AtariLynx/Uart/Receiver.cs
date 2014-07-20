@@ -11,7 +11,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private byte? acceptRegister;
 		private int receivePulseCountdown;
 		private const int RECEIVE_PERIODS = 11;
-
+		private IComLynxTransport transport = null;
 		public event EventHandler<UartDataEventArgs> DataReceived;
 
 		public byte SerialData { get; private set; }
@@ -54,6 +54,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 			// Remove data currently received from holding register
 			acceptRegister = null;
+			receivePulseCountdown = 0;
 
 			// Check for overrun
 			if (controlRegister.ReceiveReady)
@@ -77,6 +78,16 @@ namespace KillerApps.Emulation.Atari.Lynx
 		{
 			args.ParityBit = Uart4.ComputeParityBit(args.Data, controlRegister);
 			if (DataReceived != null) DataReceived(this, args);
+		}
+
+		public void HandleDataTransmitting(object sender, UartDataEventArgs e)
+		{
+			// When there is no physical or emulated transport, force a software loopback
+			if (transport == null)
+			{
+				// TODO: Check for break signal
+				AcceptData(e.Data);
+			}
 		}
 	}
 }
