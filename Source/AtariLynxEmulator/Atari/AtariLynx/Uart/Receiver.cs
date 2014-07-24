@@ -7,7 +7,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 {
 	public class Receiver
 	{
-		private SerialControlRegister2 controlRegister;
+		private SerialControlRegister controlRegister;
 		private byte? acceptRegister;
 		private int receivePulseCountdown;
 		private const int RECEIVE_PERIODS = 11;
@@ -16,13 +16,14 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public byte SerialData { get; private set; }
 		
-		public Receiver(SerialControlRegister2 register)
+		public Receiver(SerialControlRegister register)
 		{
 			this.controlRegister = register;
 		}
 
 		public void AcceptData(byte data)
 		{
+			// Used for loopback scenarios
 			if (!acceptRegister.HasValue)
 			{
 				acceptRegister = data;
@@ -47,7 +48,17 @@ namespace KillerApps.Emulation.Atari.Lynx
 			}
 		}
 
-		private void ReceiveData(byte data)
+		public void ReceiveError(byte data, bool parity, bool overrun, bool framing)
+		{
+			if (parity) controlRegister.ParityError = true;
+			if (overrun) controlRegister.OverrunError = true;
+			if (framing) controlRegister.FrameError = true;
+
+			// TODO (UART): Figure out whether data is received when an error occurs
+			ReceiveData(data);
+		}
+
+		public void ReceiveData(byte data)
 		{
 			// Data is ready to receive
 			SerialData = data;

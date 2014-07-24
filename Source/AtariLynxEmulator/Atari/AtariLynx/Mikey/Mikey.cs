@@ -23,7 +23,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public byte[] BlueRedColorMap = new byte[0x10];
 		public uint[] ArgbColorMap = new uint[0x10];
 
-		private Uart comLynx;
+		public Uart4 ComLynx { get; private set; }
 		public SystemControlBits1 SYSCTL1 { get; private set; }
 		public ParallelData IODAT { get; private set; }
 		public DisplayControlBits DISPCTL { get; private set; }
@@ -66,7 +66,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public Mikey(ILynxDevice lynx)
 		{
 			this.device = lynx;
-			this.comLynx = new Uart();
+//			this.comLynx = new Uart();
+			this.ComLynx = new Uart4();
 			this.AudioFilter = new AudioFilter();
 
 			// "reset = x"
@@ -88,6 +89,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			{
 				for (int index = 0; index <= 0x0F; index++) ArgbColorMap[index] = 0xFF000000;
 			}
+			ComLynx.Initialize();
 		}
 
 		private void InitializeAudioChannels()
@@ -161,14 +163,15 @@ namespace KillerApps.Emulation.Atari.Lynx
 		{
 			Timer timer = (Timer)sender;
 
-			bool fireInterrupt = comLynx.GenerateBaudRate();
+//			bool fireInterrupt = comLynx.GenerateBaudRate();
+			bool fireInterrupt = ComLynx.GenerateBaudPulse();
+
 			if (fireInterrupt)
 			{
 				// Update interrupt status
 				timerInterruptStatusRegister |= e.InterruptMask;
 
 				// Trigger a maskable interrupt
-				//Debug.WriteLineIf(GeneralSwitch.TraceInfo, String.Format("Mikie::Update() - Timer IRQ Triggered at {0:X8}", device.SystemClock.CompatibleCycleCount));
 				device.Cpu.SignalInterrupt(InterruptType.Irq);
 			}
 		}
@@ -254,7 +257,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public void Reset()
 		{
-			comLynx.Reset();
+			ComLynx.Reset();
 
 			Initialize();
 
@@ -513,11 +516,13 @@ namespace KillerApps.Emulation.Atari.Lynx
 					return;
 
 				case Mikey.Addresses.SERCTL:
-					comLynx.SetSerialControlRegister(value);
+					//comLynx.SetSerialControlRegister(value);
+					ComLynx.SERCTL = value;
 					return;
 
 				case Mikey.Addresses.SERDAT:
-					comLynx.TransmitSerialData(value);
+					//comLynx.TransmitSerialData(value);
+					ComLynx.SERDAT = value;
 					return;
 
 				case Mikey.Addresses.SYSCTL1:
@@ -731,12 +736,12 @@ namespace KillerApps.Emulation.Atari.Lynx
 					return value;
 
 				case Mikey.Addresses.SERCTL:
-					return comLynx.SERCTL.ByteData;
+//					return comLynx.SERCTL.ByteData;
+						return ComLynx.SERCTL;
 
 				case Mikey.Addresses.SERDAT:
-					// TODO: Build real buffer
-					comLynx.SERCTL.ReceiveReady = false;
-					return comLynx.SERDAT;
+					//comLynx.SERCTL.ReceiveReady = false;
+					return ComLynx.SERDAT;
 
 				case Mikey.Addresses.PBKUP:
 					return PBKUP;

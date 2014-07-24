@@ -11,12 +11,12 @@ namespace AtariLynx.Tests
 	public class UartTest
 	{
 		Uart4 uart;
-		SerialControlRegister2 register;
+		SerialControlRegister register;
 
 		[TestInitialize()]
 		public void TestInitialize()
 		{
-			register = new SerialControlRegister2();
+			register = new SerialControlRegister();
 			uart = new Uart4(register);
 			uart.Initialize();
 		}
@@ -27,7 +27,7 @@ namespace AtariLynx.Tests
 			uart.Reset();
 
 			// Assert
-			Assert.AreEqual<byte>(SerialControlRegister2.TXEMPTYMask | SerialControlRegister2.TXRDYMask, 
+			Assert.AreEqual<byte>(SerialControlRegister.TXEMPTYMask | SerialControlRegister.TXRDYMask, 
 				uart.SERCTL, "SERCTL should have been reset to 0xA0");
 		}
 
@@ -42,7 +42,7 @@ namespace AtariLynx.Tests
 			uart.SerialControlRegister.OverrunError = true;
 			
 			// Act
-			uart.SERCTL = SerialControlRegister2.RESETERRMask;
+			uart.SERCTL = SerialControlRegister.RESETERRMask;
 
 			// Assert
 			Assert.IsFalse(uart.SerialControlRegister.FrameError, "Framing error should have been cleared.");
@@ -55,7 +55,7 @@ namespace AtariLynx.Tests
 		{
 			// Arrange
 			// Disable parity calculation and set MARK for parity bit
-			uart.SERCTL = SerialControlRegister2.PAREVENMask | SerialControlRegister2.TXOPENMask;
+			uart.SERCTL = SerialControlRegister.PAREVENMask | SerialControlRegister.TXOPENMask;
 
 			// Act
 			bool parityBit = Uart4.ComputeParityBit(0x42, uart.SerialControlRegister);
@@ -69,7 +69,7 @@ namespace AtariLynx.Tests
 		{
 			// Arrange
 			// Disable parity calculation and set SPACE for parity bit (by not enabled PAREVEN bit)
-			uart.SERCTL = SerialControlRegister2.TXOPENMask;
+			uart.SERCTL = SerialControlRegister.TXOPENMask;
 
 			// Act
 			bool parityBit = Uart4.ComputeParityBit(0x42, uart.SerialControlRegister);
@@ -83,7 +83,7 @@ namespace AtariLynx.Tests
 		{
 			// Arrange
 			// Enable parity calculation and set ODD for parity bit (by not enabling PAREVEN bit)
-			uart.SERCTL = SerialControlRegister2.PARENMask | SerialControlRegister2.TXOPENMask;
+			uart.SERCTL = SerialControlRegister.PARENMask | SerialControlRegister.TXOPENMask;
 
 			// Act
 			bool parityBit = Uart4.ComputeParityBit(0x42, uart.SerialControlRegister);
@@ -97,8 +97,8 @@ namespace AtariLynx.Tests
 		{
 			// Arrange
 			// Enable parity calculation and set EVEN for parity bit (by enabling PAREVEN bit)
-			uart.SERCTL = SerialControlRegister2.PARENMask | SerialControlRegister2.PAREVENMask | 
-				SerialControlRegister2.TXOPENMask;
+			uart.SERCTL = SerialControlRegister.PARENMask | SerialControlRegister.PAREVENMask | 
+				SerialControlRegister.TXOPENMask;
 
 			// Act
 			bool parityBit = Uart4.ComputeParityBit(0x42, uart.SerialControlRegister);

@@ -5,9 +5,9 @@ using System.Text;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
-	public class Transmitter2
+	public class Transmitter
 	{
-		private SerialControlRegister2 controlRegister;
+		private SerialControlRegister controlRegister;
 		
 		private byte bufferRegister;
 		private byte? shiftRegister;
@@ -18,8 +18,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public event EventHandler<UartDataEventArgs> DataTransmitting;
 		//public event EventHandler TransmitBufferReady;
+		public IComLynxTransport Transport;
 
-		public Transmitter2(SerialControlRegister2 register)
+		public Transmitter(SerialControlRegister register)
 		{
 			this.controlRegister = register;
 		}
@@ -61,20 +62,13 @@ namespace KillerApps.Emulation.Atari.Lynx
 			controlRegister.TransmitterTotallyDone = false;
 			transmitPulseCountdown = TRANSMIT_PERIODS;
 
-			//OnTransmitBufferReady();
-
 			// Immediately start with the countdown
-			// TODO: Check whether there is an additional cycle required 
+			// TODO (UART): Check whether there is an additional cycle required 
 			// for transferring from buffer to shift register
 
 			// Send actual data across ComLynx wire
 			TransmitData(shiftRegister.Value);
 		}
-
-		//protected virtual void OnTransmitBufferReady()
-		//{
-		//	if (TransmitBufferReady != null) TransmitBufferReady(this, EventArgs.Empty);
-		//}
 
 		public void TransmitData(byte data)
 		{
@@ -86,6 +80,18 @@ namespace KillerApps.Emulation.Atari.Lynx
 				StopBitPresent = true 
 			};
 			OnTransmit(args);
+		}
+
+		public void TransmitBreak()
+		{
+			// Complete sending current shift register contents
+			UartDataEventArgs args = new UartDataEventArgs()
+			{
+				Break = true,
+				Data = 0x00,
+				StopBitPresent = false
+			};
+			OnTransmit(args);			
 		}
 
 		protected virtual void OnTransmit(UartDataEventArgs args)

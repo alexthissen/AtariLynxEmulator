@@ -8,16 +8,17 @@ namespace KillerApps.Emulation.Atari.Lynx
 {
 	public class Uart4: IResetable
 	{
-		internal Transmitter2 Transmitter;
+		internal Transmitter Transmitter;
 		internal Receiver Receiver;
-		internal SerialControlRegister2 SerialControlRegister;
+		internal SerialControlRegister SerialControlRegister;
 		public event EventHandler BaudPulse;
+		private IComLynxTransport transport = null;
 
-		public Uart4(): this(new SerialControlRegister2()) { }
-		public Uart4(SerialControlRegister2 controlRegister)
+		public Uart4(): this(new SerialControlRegister()) { }
+		public Uart4(SerialControlRegister controlRegister)
 		{
 			SerialControlRegister = controlRegister;
-			Transmitter = new Transmitter2(controlRegister);
+			Transmitter = new Transmitter(controlRegister);
 			Receiver = new Receiver(controlRegister);
 		}
 
@@ -26,6 +27,19 @@ namespace KillerApps.Emulation.Atari.Lynx
 			BaudPulse += Transmitter.HandleBaudPulse;
 			BaudPulse += Receiver.HandleBaudPulse;
 			Transmitter.DataTransmitting += Receiver.HandleDataTransmitting;
+			Transmitter.DataTransmitting += OnTransmitting;
+		}
+
+		private void OnTransmitting(object sender, UartDataEventArgs e)
+		{
+			if (transport != null) transport.Send(e.Data);
+		}
+
+		public void InsertCable(IComLynxTransport transport)
+		{
+			this.transport = transport;
+			transport.Connect(Transmitter, Receiver);
+			transport.Initialize();
 		}
 
 		protected virtual void OnBaudPulse()
@@ -44,7 +58,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// As a result, the software must disable the interrupt prior to clearing it."
 			if (SerialControlRegister.ReceiveInterruptEnable && SerialControlRegister.ReceiveReady)
 				return true;
-			// TODO: Check whether interrupt fires when transmit buffer is empty, 
+			// TODO (UART): Check whether interrupt fires when transmit buffer is empty, 
 			// or when transmitter totally done
 			if (SerialControlRegister.TransmitterInterruptEnable && SerialControlRegister.TransmitterBufferEmpty)
 				return true;
@@ -78,11 +92,15 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private void WriteSerialControlRegister(byte data)
 		{
 			SerialControlRegister.ByteData = data;
-			if ((data & SerialControlRegister2.RESETERRMask) == SerialControlRegister2.RESETERRMask)
+			if ((data & SerialControlRegister.RESETERRMask) == SerialControlRegister.RESETERRMask)
 			{
 				SerialControlRegister.FrameError = false;
 				SerialControlRegister.ParityError = false;
 				SerialControlRegister.OverrunError = false;
+			}
+			if (transport != null)
+			{
+				transport.ChangeSettings(SerialControlRegister, 62500);
 			}
 		}
 
@@ -99,7 +117,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			SerialControlRegister.ParityBit = false;
 		}
 
-		public static bool ComputeParityBit(byte data, SerialControlRegister2 register)
+		public static bool ComputeParityBit(byte data, SerialControlRegister register)
 		{
 			// "The 9th bit is always sent. It is either the result of a parity calculation on the transmit 
 			// data byte or it is the value set in the parity select bit in the control register.

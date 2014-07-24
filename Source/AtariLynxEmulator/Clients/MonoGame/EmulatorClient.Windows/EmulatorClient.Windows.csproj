@@ -86,11 +86,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Resources\Batman Returns.lnx" />
-    <None Include="Resources\Blue Lightning Demo.lnx" />
-    <None Include="Resources\Blue Lightning.lnx" />
-    <None Include="Resources\cart.lnx" />
-    <None Include="Resources\Checkered Flag.lnx" />
     <None Include="Resources\collision.lnx" />
     <None Include="Resources\demo0006.lnx" />
     <None Include="Resources\demo01.o" />
@@ -98,7 +93,6 @@
     <None Include="Resources\demo03.o" />
     <None Include="Resources\demo04.o" />
     <None Include="Resources\demo05.o" />
-    <None Include="Resources\flashcart_slideshow.lnx" />
     <None Include="Resources\IRQ Test.lnx" />
     <None Include="Resources\lite.o" />
     <None Include="Resources\LYNXBOOT.IMG" />
@@ -109,6 +103,7 @@
     <None Include="Resources\S.T.U.N. Runner.lnx" />
     <None Include="Resources\simis.lnx" />
     <None Include="Resources\Todds Adventures in Slimeworld.lnx" />
+    <None Include="Resources\tutorialcomlynx.lnx" />
     <None Include="Resources\Wuerfel.lnx" />
   </ItemGroup>
   <ItemGroup>

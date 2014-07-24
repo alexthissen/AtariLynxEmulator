@@ -113,5 +113,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 		{
 			this.Suzy.JOYSTICK.State = state;
 		}
+
+		public void InsertComLynxCable(IComLynxTransport transport)
+		{
+			this.Mikey.ComLynx.InsertCable(transport);
+		}
 	}
 }

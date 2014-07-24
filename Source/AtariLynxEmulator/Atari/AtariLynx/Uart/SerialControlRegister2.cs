@@ -5,9 +5,9 @@ using System.Text;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
-	public class SerialControlRegister2
+	public class SerialControlRegister
 	{
-		public SerialControlRegister2()
+		public SerialControlRegister()
 		{
 			TransmitterBufferEmpty = true;
 			TransmitterTotallyDone = true;

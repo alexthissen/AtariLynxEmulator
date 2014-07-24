@@ -78,10 +78,10 @@
     <Compile Include="Mikey\TimerBase.cs" />
     <Compile Include="Mikey\TimerControlBase.cs" />
     <Compile Include="Suzy\MathType.cs" />
-    <None Include="Uart\Transmitter.cs" />
-    <Compile Include="Uart\Uart2.cs" />
+    <Compile Include="Uart\Receiver.cs" />
+    <Compile Include="Uart\SerialControlRegister2.cs" />
+    <Compile Include="Uart\Transmitter2.cs" />
     <Compile Include="Uart\IComLynxTransport.cs" />
-    <Compile Include="Uart\Uart.cs" />
     <Compile Include="ILynxDevice.cs" />
     <Compile Include="IResetable.cs" />
     <Compile Include="LynxAddresses.cs" />
@@ -97,7 +97,6 @@
     <Compile Include="Mikey\DisplayControlBits.cs" />
     <Compile Include="Mikey\DynamicTimerControl.cs" />
     <Compile Include="Mikey\ParallelDataDirection.cs" />
-    <Compile Include="Uart\SerialControlRegister.cs" />
     <Compile Include="Mikey\TimerExpirationEventArgs.cs" />
     <Compile Include="Mikey\LinkingTimerLogic.cs" />
     <Compile Include="Mikey\Mikey.Addresses.cs" />
@@ -134,7 +133,7 @@
     <Compile Include="Suzy\Suzy.Addresses.cs" />
     <Compile Include="Suzy\SuzyBusEnable.cs" />
     <Compile Include="Suzy\Suzy.cs" />
-    <None Include="Uart\Uart3.cs" />
+    <Compile Include="Uart\Uart4.cs" />
     <Compile Include="Uart\UartDataEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>

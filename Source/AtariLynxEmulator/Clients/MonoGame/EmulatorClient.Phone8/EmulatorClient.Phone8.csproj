@@ -115,7 +115,6 @@
     <None Include="Properties\WMAppManifest.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Resources\Blue Lightning.lnx" />
     <None Include="Resources\collision.lnx" />
     <None Include="Resources\demo0006.lnx" />
     <None Include="Resources\demo01.o" />
@@ -123,7 +122,6 @@
     <None Include="Resources\demo03.o" />
     <None Include="Resources\demo04.o" />
     <None Include="Resources\demo05.o" />
-    <None Include="Resources\flashcart_slideshow.lnx" />
     <None Include="Resources\IRQ Test.lnx" />
     <None Include="Resources\lite.o" />
     <None Include="Resources\lynxtest.bin" />

@@ -8,12 +8,12 @@ namespace AtariLynx.Tests
 	public class ReceiverTest
 	{
 		private Receiver receiver;
-		private SerialControlRegister2 register;
+		private SerialControlRegister register;
 
 		[TestInitialize]
 		public void TestInitialize()
 		{
-			register = new SerialControlRegister2();
+			register = new SerialControlRegister();
 			receiver = new Receiver(register);
 		}
 

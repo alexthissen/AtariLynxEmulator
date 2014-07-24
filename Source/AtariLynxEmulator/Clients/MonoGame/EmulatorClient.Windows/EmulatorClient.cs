@@ -1,5 +1,4 @@
-﻿#region Using Statements
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -10,7 +9,6 @@ using Microsoft.Xna.Framework.GamerServices;
 using KillerApps.Emulation.Atari.Lynx;
 using KillerApps.Gaming.Atari.MonoGame;
 using System.IO;
-#endregion
 
 namespace EmulatorClient.Windows
 {
@@ -27,19 +25,19 @@ namespace EmulatorClient.Windows
 		private GraphicsDeviceManager graphics;
 		private SpriteBatch spriteBatch;
 		private Texture2D lcdScreen;
-		private const int magnification = 4;
+		private const int magnification = 8;
 		private const int graphicsWidth = Suzy.SCREEN_WIDTH * magnification;
 		private const int graphicsHeight = Suzy.SCREEN_HEIGHT * magnification;
 
 		// Input
 		private InputHandler inputHandler;
-
+		
 		// Audio
 		//private byte[] soundBuffer;
 		//private DynamicSoundEffectInstance dynamicSound;
 
 		// Network
-		//private IComLynxTransport transport = null;
+		private IComLynxTransport transport = new SerialPortComLynxTransport();
 		//private GamerServicesComponent gamerServices = null;
 
 		public string[] CommandLine { get; set; }
@@ -109,9 +107,10 @@ namespace EmulatorClient.Windows
 			emulator.BootRomImage = new MemoryStream(Roms.lynxtest);
 			LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
 			emulator.InsertCartridge(romImage.LoadCart(new MemoryStream(Roms.Collision)));
+			emulator.Initialize();
+			//emulator.InsertComLynxCable(new SerialPortComLynxTransport());
 			//ICartridge cartridge = LoadCartridge();
 			//emulator.InsertCartridge(cartridge);
-			emulator.Initialize();
 			emulator.Reset();
 
 			// Preset for homebrew cartridges
@@ -126,7 +125,7 @@ namespace EmulatorClient.Windows
 		{
 			graphics.PreferredBackBufferWidth = graphicsWidth;
 			graphics.PreferredBackBufferHeight = graphicsHeight;
-			graphics.IsFullScreen = false;
+			graphics.IsFullScreen = true;
 			graphics.ApplyChanges();
 
 			lcdScreen = new Texture2D(graphics.GraphicsDevice, Suzy.SCREEN_WIDTH, Suzy.SCREEN_HEIGHT, false, SurfaceFormat.Color);
@@ -192,7 +191,7 @@ namespace EmulatorClient.Windows
 
 			JoystickStates joystick = inputHandler.Joystick;
 			emulator.UpdateJoystickState(joystick);
-			emulator.Update(86667); // 4 MHz worth of cycles divided by 60 seconds
+			emulator.Update(79000); // 4 MHz worth of cycles divided by 60 seconds
 
 			base.Update(gameTime);
 		}

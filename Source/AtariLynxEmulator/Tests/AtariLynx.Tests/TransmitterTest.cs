@@ -13,14 +13,14 @@ namespace AtariLynx.Tests
 	[TestClass]
 	public class TransmitterTest
 	{
-		private Transmitter2 transmitter;
-		private SerialControlRegister2 register;
+		private Transmitter transmitter;
+		private SerialControlRegister register;
  
 		[TestInitialize()]
 		public void TestInitialize() 
 		{
-			register = new SerialControlRegister2();
-			transmitter = new Transmitter2(register);
+			register = new SerialControlRegister();
+			transmitter = new Transmitter(register);
 		}
 
 		[TestMethod]

@@ -7,12 +7,12 @@ namespace AtariLynx.Tests
 	[TestClass]
 	public class SerialControlRegisterTest
 	{
-		private SerialControlRegister2 register;
+		private SerialControlRegister register;
 
 		[TestInitialize()]
 		public void TestInitialize() 
 		{
-			register = new SerialControlRegister2();
+			register = new SerialControlRegister();
 		}
 
 		[TestMethod]
