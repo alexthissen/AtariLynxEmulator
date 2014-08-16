@@ -23,7 +23,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public byte[] BlueRedColorMap = new byte[0x10];
 		public uint[] ArgbColorMap = new uint[0x10];
 
-		public Uart4 ComLynx { get; private set; }
+		public Uart ComLynx { get; private set; }
 		public SystemControlBits1 SYSCTL1 { get; private set; }
 		public ParallelData IODAT { get; private set; }
 		public DisplayControlBits DISPCTL { get; private set; }
@@ -66,8 +66,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public Mikey(ILynxDevice lynx)
 		{
 			this.device = lynx;
-//			this.comLynx = new Uart();
-			this.ComLynx = new Uart4();
+			this.ComLynx = new Uart();
 			this.AudioFilter = new AudioFilter();
 
 			// "reset = x"
@@ -154,7 +153,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 				timerInterruptStatusRegister |= e.InterruptMask;
 
 				// Trigger a maskable interrupt
-				//Debug.WriteLineIf(GeneralSwitch.TraceInfo, String.Format("Mikie::Update() - Timer IRQ Triggered at {0:X8}", device.SystemClock.CompatibleCycleCount));
 				device.Cpu.SignalInterrupt(InterruptType.Irq);
 			}
 		}
@@ -312,16 +310,12 @@ namespace KillerApps.Emulation.Atari.Lynx
 				}
 			}
 
-			// Take lowest timer 
+			// Take lowest timer for next timer event
 			device.NextTimerEvent = nextTimer;
 			//var clocks = Timers.Where(t => t.StaticControlBits.EnableCount);
 			//if (clocks.Count() > 0) device.NextTimerEvent = clocks.Min(t => t.ExpirationTime);
 
-			if (device.Cpu.IsAsleep)
-			{
-				// Make wakeup time next timer event if earlier than first timer
-				if (device.NextTimerEvent > device.Cpu.ScheduledWakeUpTime) device.NextTimerEvent = device.Cpu.ScheduledWakeUpTime;
-			}
+			// Moved code to advance timer to wakeup time to LynxHandheld::ExecuteCpu
 
 			//Trace.WriteLine(String.Format("Time={0:D12}, NextTimer={1:D12}", device.SystemClock.CompatibleCycleCount, device.NextTimerEvent));
 			device.SystemClock.CompatibleCycleCount += cycleCountAdvance;
@@ -472,17 +466,19 @@ namespace KillerApps.Emulation.Atari.Lynx
 					value ^= 0xff;
 					timerInterruptStatusRegister &= value;
 
-					// TODO: Keith Wilkins has fix below for Championship Rally here. Is it still necessary?
-					if (timerInterruptStatusRegister != 0) device.Cpu.SignalInterrupt(InterruptType.Irq);
+					// When timer interrupt status register is zero, IRQ line goes back up (not-active)
+					device.Cpu.SignalInterrupt(timerInterruptStatusRegister != 0 ? InterruptType.Irq : InterruptType.None);
+
 					ForceTimerUpdate();
 					return;
 
 				case Mikey.Addresses.INTSET:
 					// "Read is a poll, write will set the int that corresponds to a set bit."
 					timerInterruptStatusRegister |= value;
-				
-					// TODO: Keith Wilkins has fix for Championship Rally here. Is it still necessary?
-					if (timerInterruptStatusRegister != 0) device.Cpu.SignalInterrupt(InterruptType.Irq);
+
+					// When timer interrupt status register is zero, IRQ line goes back up (not-active)
+					device.Cpu.SignalInterrupt(timerInterruptStatusRegister != 0 ? InterruptType.Irq : InterruptType.None);
+
 					ForceTimerUpdate();
 					return;
 
@@ -516,12 +512,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 					return;
 
 				case Mikey.Addresses.SERCTL:
-					//comLynx.SetSerialControlRegister(value);
 					ComLynx.SERCTL = value;
 					return;
 
 				case Mikey.Addresses.SERDAT:
-					//comLynx.TransmitSerialData(value);
 					ComLynx.SERDAT = value;
 					return;
 
@@ -560,6 +554,10 @@ namespace KillerApps.Emulation.Atari.Lynx
 					// This is implemented as a new wakeup time by calculating the number of cycles used
 					// and skipping forward in time to that moment. 
 					ulong suzyCycles = device.Suzy.RenderSprites();
+					
+					// TODO: For now use estimate of cycles for sprite drawing. 
+					// Needs to be replaced with a better calculation. See also Handy PaintSprites code.
+					suzyCycles = 10000;
 					device.Cpu.TrySleep(suzyCycles);
 					return;
 					

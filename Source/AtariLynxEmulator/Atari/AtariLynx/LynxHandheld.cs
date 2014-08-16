@@ -84,9 +84,12 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private ulong ExecuteCpu()
 		{
 			ulong executedCycles = Cpu.Execute(1);
+
 			if (Cpu.IsAsleep)
 			{
 				executedCycles += NextTimerEvent - SystemClock.CompatibleCycleCount;
+				// Added this line
+				if (NextTimerEvent > Cpu.ScheduledWakeUpTime) NextTimerEvent = Cpu.ScheduledWakeUpTime;
 				SystemClock.CompatibleCycleCount = NextTimerEvent;
 			}
 			return executedCycles;
@@ -97,7 +100,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// Mikey is only source of interrupts. It contains all timers (regular, audio and UART)
 			if (SystemClock.CompatibleCycleCount >= NextTimerEvent) 
 				Mikey.Update();
-			//Debug.WriteLineIf(GeneralSwitch.TraceVerbose, "LynxHandheld::GenerateInterrupts");
 		}
 
 		private void SynchronizeTime()

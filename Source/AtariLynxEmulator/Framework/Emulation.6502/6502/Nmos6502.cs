@@ -122,7 +122,7 @@ namespace KillerApps.Emulation.Processors
 		{ 
 			return Memory.Peek((ushort)((SP + 0x0100 - depth) & 0x01ff)); 
 		}
-
+		bool breaknow = true;
 		public override ulong Execute(int instructionsToExecute)
 		{
 			ulong startCycleCount = SystemClock.CompatibleCycleCount;
@@ -138,7 +138,7 @@ namespace KillerApps.Emulation.Processors
 
 				// Non-maskable interrupts always trigger sequence and maskable interrupts only when 
 				// Interrupt disable flag is clear
-				if (ActiveInterrupt == InterruptType.Nmi || (!I && ActiveInterrupt == InterruptType.Irq)) 
+				if (ActiveInterrupt == InterruptType.Nmi || (!I && ActiveInterrupt == InterruptType.Irq))
 					RunInterruptSequence(ActiveInterrupt);
 			}
 
@@ -148,7 +148,9 @@ namespace KillerApps.Emulation.Processors
 			{
 				// Wake up when scheduled wakeup time has passed
 				if (SystemClock.CompatibleCycleCount >= ScheduledWakeUpTime)
+				{
 					IsAsleep = false;
+				}
 				else
 				{
 					//SystemClock.CompatibleCycleCount = ScheduledWakeUpTime;
@@ -164,9 +166,16 @@ namespace KillerApps.Emulation.Processors
 
 			// Fetch opcode
 			Opcode = Memory.Peek(PC);
+			
+			if (PC == 0x462c)
+			{
+				PC = 0x4630;
+				Opcode = Memory.Peek(PC);
+			}
+
 			//SystemClock.CycleCount += MemoryReadCycle;
 
-			// Lookup on timings that Keith Wilkins has made
+			// Lookup on timings that Keith Wilkins has made	
 			SystemClock.CompatibleCycleCount += 1 + timings[Opcode] * MemoryReadCycle;
 			PC++;
 			ExecuteOpcode();
@@ -383,7 +392,7 @@ namespace KillerApps.Emulation.Processors
 
 		public override object SignalInterrupt(InterruptType interrupt, params object[] details)
 		{
-			// Set flag to indicate a IRQ is being signaled or taken down. 
+			// Set flag to indicate a IRQ is being signaled or taken down.
 			// Active IRQs will be picked up at the next update of the CPU.
 			ActiveInterrupt = interrupt;
 
@@ -397,8 +406,6 @@ namespace KillerApps.Emulation.Processors
 		// -- in that order."
 		protected virtual void RunInterruptSequence(InterruptType irqType)
 		{
-			//Debug.WriteLine(String.Format("IRQ sequence run at PC={0}", PC));
-		
 			// "The interrupt sequence pushes three bytes onto the stack. First is the high byte of 
 			// the return address, followed by the low byte, and finally the status byte from 
 			// the P processor status register."

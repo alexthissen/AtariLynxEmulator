@@ -78,9 +78,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 			unpacker = new SpriteDataUnpacker(shifter, ramMemory);
 		}
 
-		public int RenderSprites()
+		public ulong RenderSprites()
 		{
-			int cyclesUsed = 0;
+			ulong cyclesUsed = 0;
 
 			// "(0 last SCB)"
 			// "The circuit that detects a '0' in the SCB NEXT field of an SCB only looks at the upper byte."
@@ -143,8 +143,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 				}
 			}
 
-			//return cyclesUsed;
-			return 0;
+			return cyclesUsed;
 		}
 
 		public bool RenderSingleSprite()
@@ -279,7 +278,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		}
 
 		// "Each SCB contains certain elements in a certain order as required by the hardware"
-		public int InitializeFromSpriteDataStructure(ushort address)
+		public ulong InitializeFromSpriteDataStructure(ushort address)
 		{
 			ushort startAddress = address;
 
@@ -330,7 +329,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 				}
 			}
 
-			return (address - startAddress) * Suzy.SPRITE_READWRITE_CYCLE;
+			return (ulong)((address - startAddress) * Suzy.SPRITE_READWRITE_CYCLE);
 		}
 
 		public void ProcessCollision(ushort address, byte pixel, bool left)

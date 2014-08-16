@@ -38,9 +38,9 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public SuzyBusEnable SUZYBUSEN { get; private set; }
 		public Joystick JOYSTICK { get; private set; }
 
-		public byte[] MathEFGH = new byte[4];
-		public byte[] MathJKLM = new byte[4];
-		public byte[] MathABCD = new byte[4];
+		public byte[] MathEFGH = new byte[4]; 
+		public byte[] MathJKLM = new byte[4]; 
+		public byte[] MathABCD = new byte[4]; 
 		public byte[] MathNP = new byte[2];
 
 		// Used to store results
@@ -48,8 +48,6 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		private SpriteControlBlock SCB = null;
 		private SpriteEngine Engine = null;
-
-		//private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
 
 		public Suzy(ILynxDevice lynx)
 		{
@@ -89,7 +87,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 		// The write to 'M' will clear the accumulator overflow bit. Note that you can actually initialize 
 		// the accumulator to any value by writing to all 4 bytes (J,K,L,M)."
 		int signAB = 0, signCD = 0, signEFGH = 0;
-		
+
 		public void BeginMultiply16By16()
 		{
 			SPRSYS.MathWarning = false;
@@ -115,7 +113,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 			// "Multiplies without sign or accumulate take 44 ticks to complete.
 			// Multiplies with sign and accumulate take 54 ticks to complete"
-			ulong cyclesUsed = (SPRSYS.SignedMath && SPRSYS.Accumulate) ? 
+			ulong cyclesUsed = (SPRSYS.SignedMath && SPRSYS.Accumulate) ?
 				cyclesUsed = 54 / 4 : 44 / 4; // Ticks are 1/4 cycle
 			MathReadyTime = device.SystemClock.CompatibleCycleCount + cyclesUsed;
 		}
@@ -163,7 +161,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 			// TODO: "BIG NOTE: Unsafe access is broken for math operations. Please reset it after every math operation or 
 			// it will not be useful for sprite operations."
-			
+
 			SPRSYS.MathInProcess = true;
 			MathTypeInProgress = MathType.Division;
 
@@ -216,7 +214,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			//																							2
 			// Number of significant zeros is determined by  log(x)
 			//return (byte)(15 - Math.Log(value, 2));
-		
+
 			// Probably a costly operation. Determine by shifting right
 			byte significantZeros = 16;
 			while (value > 0)
@@ -306,27 +304,27 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public ulong RenderSprites()
 		{
-			//Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::RenderSprites");
-
+			ulong cycles = 0;
 			if (!SUZYBUSEN.BusEnabled || !SPRGO.SpriteProcessEnabled) return 0;
-			
-				// Start rendering sprites
+
+			// Start rendering sprites
 			SPRSYS.SpriteProcessStarted = true;
 
 			// Delegate to engine
 			context.DontCollide = SPRSYS.DontCollide;
 			context.VStretch = SPRSYS.VStretch;
 			context.EveronEnabled = SPRGO.EveronDetectorEnabled;
-			device.SystemClock.CompatibleCycleCount += (ulong)Engine.RenderSprites();
-			
+
+			//device.SystemClock.CompatibleCycleCount += (ulong)Engine.RenderSprites();
+			cycles = Engine.RenderSprites();
+
 			// "When the engine finishes processing the sprite list, or if it has been requested 
 			// to stop at the end of the current sprite, or if it has been forced off by 
 			// writing a 00 to SPRGO, the SPRITESEN flip flop will be reset."
 			SPRGO.SpriteProcessEnabled = false;
-			SPRSYS.SpriteProcessStarted = false;	
+			SPRSYS.SpriteProcessStarted = false;
 
-			// TODO: Return actual number of clock cycles that passed
-			return 100; 
+			return cycles;
 		}
 
 		public void Poke(ushort address, byte value)
@@ -642,7 +640,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 					SPRSYS.StopAtEndOfCurrentSprite = false;
 					break;
 
-				case Addresses.RCART0: 
+				case Addresses.RCART0:
 					// "FCB2 uses 'CART0/' as the strobe."
 					// "Read or write 8 bits of data."
 					device.Cartridge.Poke0(value);
@@ -731,7 +729,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 				case Addresses.SCBADRH: return Engine.SCBADR.HighByte;
 				case Addresses.PROCADRL: return Engine.PROCADR.LowByte;
 				case Addresses.PROCADRH: return Engine.PROCADR.HighByte;
-				
+
 				case Addresses.SUZYHREV:
 					return 0x01;
 

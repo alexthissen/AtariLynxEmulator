@@ -6,28 +6,35 @@ using System.Text;
 
 namespace KillerApps.Emulation.Atari.Lynx
 {
-	public class Uart4: IResetable
+	public class Uart: IResetable
 	{
-		internal Transmitter Transmitter;
-		internal Receiver Receiver;
+		// TODO: Change back to internal
+		public Transmitter Transmitter;
+		public Receiver Receiver;
 		internal SerialControlRegister SerialControlRegister;
 		public event EventHandler BaudPulse;
 		private IComLynxTransport transport = null;
+		public string Name;
 
-		public Uart4(): this(new SerialControlRegister()) { }
-		public Uart4(SerialControlRegister controlRegister)
+		public Uart() : this(new SerialControlRegister()) { }
+		public Uart(SerialControlRegister controlRegister)
 		{
 			SerialControlRegister = controlRegister;
 			Transmitter = new Transmitter(controlRegister);
 			Receiver = new Receiver(controlRegister);
+
+			BaudPulse += Transmitter.HandleBaudPulse;
+			BaudPulse += Receiver.HandleBaudPulse;
+			Transmitter.DataTransmitting += OnTransmitting;
+			Transmitter.DataTransmitting += Receiver.HandleDataTransmitting;
 		}
 
 		public void Initialize()
 		{
-			BaudPulse += Transmitter.HandleBaudPulse;
-			BaudPulse += Receiver.HandleBaudPulse;
-			Transmitter.DataTransmitting += Receiver.HandleDataTransmitting;
-			Transmitter.DataTransmitting += OnTransmitting;
+			//BaudPulse += Transmitter.HandleBaudPulse;
+			//BaudPulse += Receiver.HandleBaudPulse;
+			//Transmitter.DataTransmitting += Receiver.HandleDataTransmitting;
+			//Transmitter.DataTransmitting += OnTransmitting;
 		}
 
 		private void OnTransmitting(object sender, UartDataEventArgs e)
@@ -60,6 +67,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 				return true;
 			// TODO (UART): Check whether interrupt fires when transmit buffer is empty, 
 			// or when transmitter totally done
+			// Seems to be on BufferEmpty, because that gives some results
 			if (SerialControlRegister.TransmitterInterruptEnable && SerialControlRegister.TransmitterBufferEmpty)
 				return true;
 
@@ -70,18 +78,18 @@ namespace KillerApps.Emulation.Atari.Lynx
 		public byte SERCTL
 		{
 			get { return SerialControlRegister.ByteData; }
-			set 
-			{ 
+			set
+			{
 				WriteSerialControlRegister(value);
 			}
 		}
 
 		public byte SERDAT
 		{
-			get 
+			get
 			{
 				SerialControlRegister.ReceiveReady = false;
-				return Receiver.SerialData;  
+				return Receiver.SerialData;
 			}
 			set
 			{
@@ -100,7 +108,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 			}
 			if (transport != null)
 			{
-				transport.ChangeSettings(SerialControlRegister, 62500);
+				// TODO: Remove hardcoded baud rate
+				//transport.ChangeSettings(SerialControlRegister, 62500);
 			}
 		}
 

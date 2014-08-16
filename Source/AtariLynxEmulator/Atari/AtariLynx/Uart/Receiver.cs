@@ -8,14 +8,16 @@ namespace KillerApps.Emulation.Atari.Lynx
 	public class Receiver
 	{
 		private SerialControlRegister controlRegister;
-		private byte? acceptRegister;
+		private byte? receiveRegister;
 		private int receivePulseCountdown;
 		private const int RECEIVE_PERIODS = 11;
 		private IComLynxTransport transport = null;
 		public event EventHandler<UartDataEventArgs> DataReceived;
+		private bool pendingFrameError;
+		public string Name;
 
 		public byte SerialData { get; private set; }
-		
+
 		public Receiver(SerialControlRegister register)
 		{
 			this.controlRegister = register;
@@ -23,27 +25,33 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		public void AcceptData(byte data)
 		{
-			// Used for loopback scenarios
-			if (!acceptRegister.HasValue)
+			// Used for loopback scenarios and fast transports
+			if (!IsReceiving)
 			{
-				acceptRegister = data;
+				// No framing error yet
+				pendingFrameError = false;
 				receivePulseCountdown = RECEIVE_PERIODS;
 			}
 			else
 			{
-				controlRegister.FrameError = true;
+				// Collision during receive. Mark framing error at receive
+				pendingFrameError = true;
+				//controlRegister.FrameError = true;
 			}
+
+			// Data is always accepted, even for framing errors
+			receiveRegister = data;
 		}
 
-		public bool IsReceiving { get { return acceptRegister.HasValue; } }
+		public bool IsReceiving { get { return receiveRegister.HasValue; } }
 
 		public void HandleBaudPulse(object sender, EventArgs e)
 		{
 			receivePulseCountdown--;
 
-			if (receivePulseCountdown == 0)
+			if (receivePulseCountdown == 0 && receiveRegister.HasValue)
 			{
-				byte data = acceptRegister.Value;
+				byte data = receiveRegister.Value;
 				ReceiveData(data);
 			}
 		}
@@ -64,7 +72,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			SerialData = data;
 
 			// Remove data currently received from holding register
-			acceptRegister = null;
+			receiveRegister = null;
 			receivePulseCountdown = 0;
 
 			// Check for overrun
@@ -77,17 +85,31 @@ namespace KillerApps.Emulation.Atari.Lynx
 			// Mark receive ready
 			controlRegister.ReceiveReady = true;
 
+			if (pendingFrameError)
+			{
+				// Report framing error that occurred during receive
+				controlRegister.FrameError = true;
+
+				// TODO (UART): Check whether a second byte needs to be send because of the overlap in data
+				// Second frame with bogus data
+				// AcceptData(0x23);
+				// This is an instant framing error, as it is the result of a previous overlap
+				//pendingFrameError = true;
+			}
+
 			// Complete sending current shift register contents
-			UartDataEventArgs args = new UartDataEventArgs() 
-				{ 
-					Break = false, Data = data, StopBitPresent = false
+			UartDataEventArgs args = new UartDataEventArgs()
+				{
+					Break = false,
+					Data = data,
+					StopBitPresent = false
 				};
 			OnReceived(args);
 		}
 
 		protected virtual void OnReceived(UartDataEventArgs args)
 		{
-			args.ParityBit = Uart4.ComputeParityBit(args.Data, controlRegister);
+			args.ParityBit = Uart.ComputeParityBit(args.Data, controlRegister);
 			if (DataReceived != null) DataReceived(this, args);
 		}
 

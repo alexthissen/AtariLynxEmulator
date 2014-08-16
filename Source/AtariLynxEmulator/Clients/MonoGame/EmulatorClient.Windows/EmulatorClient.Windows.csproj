@@ -98,12 +98,6 @@
     <None Include="Resources\LYNXBOOT.IMG" />
     <None Include="Resources\lynxtest.bin" />
     <None Include="Resources\Mode7.lnx" />
-    <None Include="Resources\Power Factor.lnx" />
-    <None Include="Resources\Robotron 2084.lnx" />
-    <None Include="Resources\S.T.U.N. Runner.lnx" />
-    <None Include="Resources\simis.lnx" />
-    <None Include="Resources\Todds Adventures in Slimeworld.lnx" />
-    <None Include="Resources\tutorialcomlynx.lnx" />
     <None Include="Resources\Wuerfel.lnx" />
   </ItemGroup>
   <ItemGroup>

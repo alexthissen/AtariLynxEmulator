@@ -29,8 +29,6 @@ namespace EmulatorClient.Windows
 			port.Parity = Parity.Odd; //Mark;
 			port.StopBits = StopBits.One;
 			port.DataBits = 8;
-			//port.WriteBufferSize = WRITE_BUFFER_SIZE;
-			//port.ReadBufferSize = READ_BUFFER_SIZE;
 			port.DataReceived += OnDataReceived;
 			port.ErrorReceived += OnErrorReceived;
 			port.Open();
@@ -65,7 +63,8 @@ namespace EmulatorClient.Windows
 		void OnDataReceived(object sender, SerialDataReceivedEventArgs e)
 		{
 			byte data = (byte)port.ReadByte();
-			receiver.ReceiveData(data);
+			//port.DiscardInBuffer();
+			Receive(data);
 		}
 
 		public void Send(byte data)
@@ -76,7 +75,8 @@ namespace EmulatorClient.Windows
 
 		public void Receive(byte data)
 		{
-			// TODO: Accept data
+			// When data has arrived through serial port, it is available immediately
+			receiver.ReceiveData(data);
 		}
 	}
 }

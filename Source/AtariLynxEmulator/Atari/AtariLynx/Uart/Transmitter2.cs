@@ -17,8 +17,8 @@ namespace KillerApps.Emulation.Atari.Lynx
 		private const int TRANSMIT_PERIODS = 11;
 
 		public event EventHandler<UartDataEventArgs> DataTransmitting;
-		//public event EventHandler TransmitBufferReady;
 		public IComLynxTransport Transport;
+		public string Name;
 
 		public Transmitter(SerialControlRegister register)
 		{
@@ -60,7 +60,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 			shiftRegister = bufferRegister;
 			controlRegister.TransmitterBufferEmpty = true;
 			controlRegister.TransmitterTotallyDone = false;
-			transmitPulseCountdown = TRANSMIT_PERIODS;
+			transmitPulseCountdown = TRANSMIT_PERIODS + 1;
 
 			// Immediately start with the countdown
 			// TODO (UART): Check whether there is an additional cycle required 
@@ -96,7 +96,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 
 		protected virtual void OnTransmit(UartDataEventArgs args)
 		{
-			args.ParityBit = Uart4.ComputeParityBit(args.Data, controlRegister);
+			args.ParityBit = Uart.ComputeParityBit(args.Data, controlRegister);
 			if (DataTransmitting != null) DataTransmitting(this, args);
 		}
 	}

@@ -10,14 +10,14 @@ namespace AtariLynx.Tests
 	[TestClass]
 	public class UartTest
 	{
-		Uart4 uart;
+		Uart uart;
 		SerialControlRegister register;
 
 		[TestInitialize()]
 		public void TestInitialize()
 		{
 			register = new SerialControlRegister();
-			uart = new Uart4(register);
+			uart = new Uart(register);
 			uart.Initialize();
 		}
 
@@ -58,7 +58,7 @@ namespace AtariLynx.Tests
 			uart.SERCTL = SerialControlRegister.PAREVENMask | SerialControlRegister.TXOPENMask;
 
 			// Act
-			bool parityBit = Uart4.ComputeParityBit(0x42, uart.SerialControlRegister);
+			bool parityBit = Uart.ComputeParityBit(0x42, uart.SerialControlRegister);
 
 			// Assert
 			Assert.IsTrue(parityBit, "Parity bit should be MARK (true).");
@@ -72,7 +72,7 @@ namespace AtariLynx.Tests
 			uart.SERCTL = SerialControlRegister.TXOPENMask;
 
 			// Act
-			bool parityBit = Uart4.ComputeParityBit(0x42, uart.SerialControlRegister);
+			bool parityBit = Uart.ComputeParityBit(0x42, uart.SerialControlRegister);
 
 			// Assert
 			Assert.IsFalse(parityBit, "Parity bit should be MARK (true).");
@@ -86,7 +86,7 @@ namespace AtariLynx.Tests
 			uart.SERCTL = SerialControlRegister.PARENMask | SerialControlRegister.TXOPENMask;
 
 			// Act
-			bool parityBit = Uart4.ComputeParityBit(0x42, uart.SerialControlRegister);
+			bool parityBit = Uart.ComputeParityBit(0x42, uart.SerialControlRegister);
 
 			// Assert
 			Assert.IsTrue(parityBit, "Parity bit should be set.");
@@ -101,7 +101,7 @@ namespace AtariLynx.Tests
 				SerialControlRegister.TXOPENMask;
 
 			// Act
-			bool parityBit = Uart4.ComputeParityBit(0x42, uart.SerialControlRegister);
+			bool parityBit = Uart.ComputeParityBit(0x42, uart.SerialControlRegister);
 
 			// Assert
 			Assert.IsFalse(parityBit, "Parity bit should not be set.");

@@ -60,8 +60,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmulatorClient.Xna", "Clien
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MonoGame", "MonoGame", "{8D4A9D0B-855D-4DB2-BA61-DCF225357C9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmulatorClient.Windows", "Clients\MonoGame\EmulatorClient.Windows\EmulatorClient.Windows.csproj", "{1218721B-7C6A-441F-B0E8-2DE63D937D9B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmulatorClient.Phone8", "Clients\MonoGame\EmulatorClient.Phone8\EmulatorClient.Phone8.csproj", "{3DF6FBF6-DFF4-48B0-B927-5D29B2B7E4B6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtariLynx.Toolkit", "Tooling\AtariLynx.Toolkit\AtariLynx.Toolkit.csproj", "{1B856B90-6659-4906-87DA-271C8AFECDD2}"
@@ -69,6 +67,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmulatorClient.Linux", "Clients\MonoGame\EmulatorClient.Linux\EmulatorClient.Linux.csproj", "{49B37C9A-875E-48BA-AF13-790B42131BCD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtariLynx.Tooling.Debugger", "Tooling\Debugger\AtariLynx.Tooling.Debugger.csproj", "{CD9970CF-4833-42D5-9E41-6B098DDFA13C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmulatorClient.Windows", "Clients\MonoGame\EmulatorClient.Windows\EmulatorClient.Windows.csproj", "{1218721B-7C6A-441F-B0E8-2DE63D937D9B}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
@@ -136,26 +136,26 @@ Global
 		SccProjectTopLevelParentUniqueName15 = AtariLynxEmulator.sln
 		SccProjectName15 = Clients/Xna/EmulatorClient.Xna.Content
 		SccLocalPath15 = Clients\\Xna\\EmulatorClient.Xna.Content
-		SccProjectUniqueName16 = Clients\\MonoGame\\EmulatorClient.Windows\\EmulatorClient.Windows.csproj
+		SccProjectUniqueName16 = Clients\\MonoGame\\EmulatorClient.Phone8\\EmulatorClient.Phone8.csproj
 		SccProjectTopLevelParentUniqueName16 = AtariLynxEmulator.sln
-		SccProjectName16 = Clients/MonoGame/EmulatorClient.Windows
-		SccLocalPath16 = Clients\\MonoGame\\EmulatorClient.Windows
-		SccProjectUniqueName17 = Clients\\MonoGame\\EmulatorClient.Phone8\\EmulatorClient.Phone8.csproj
+		SccProjectName16 = Clients/MonoGame/EmulatorClient.Phone8
+		SccLocalPath16 = Clients\\MonoGame\\EmulatorClient.Phone8
+		SccProjectUniqueName17 = Tooling\\AtariLynx.Toolkit\\AtariLynx.Toolkit.csproj
 		SccProjectTopLevelParentUniqueName17 = AtariLynxEmulator.sln
-		SccProjectName17 = Clients/MonoGame/EmulatorClient.Phone8
-		SccLocalPath17 = Clients\\MonoGame\\EmulatorClient.Phone8
-		SccProjectUniqueName18 = Tooling\\AtariLynx.Toolkit\\AtariLynx.Toolkit.csproj
+		SccProjectName17 = Tooling/AtariLynx.Toolkit
+		SccLocalPath17 = Tooling\\AtariLynx.Toolkit
+		SccProjectUniqueName18 = Clients\\MonoGame\\EmulatorClient.Linux\\EmulatorClient.Linux.csproj
 		SccProjectTopLevelParentUniqueName18 = AtariLynxEmulator.sln
-		SccProjectName18 = Tooling/AtariLynx.Toolkit
-		SccLocalPath18 = Tooling\\AtariLynx.Toolkit
-		SccProjectUniqueName19 = Clients\\MonoGame\\EmulatorClient.Linux\\EmulatorClient.Linux.csproj
+		SccProjectName18 = Clients/MonoGame/EmulatorClient.Linux
+		SccLocalPath18 = Clients\\MonoGame\\EmulatorClient.Linux
+		SccProjectUniqueName19 = Tooling\\Debugger\\AtariLynx.Tooling.Debugger.csproj
 		SccProjectTopLevelParentUniqueName19 = AtariLynxEmulator.sln
-		SccProjectName19 = Clients/MonoGame/EmulatorClient.Linux
-		SccLocalPath19 = Clients\\MonoGame\\EmulatorClient.Linux
-		SccProjectUniqueName20 = Tooling\\Debugger\\AtariLynx.Tooling.Debugger.csproj
+		SccProjectName19 = Tooling/Debugger
+		SccLocalPath19 = Tooling\\Debugger
+		SccProjectUniqueName20 = Clients\\MonoGame\\EmulatorClient.Windows\\EmulatorClient.Windows.csproj
 		SccProjectTopLevelParentUniqueName20 = AtariLynxEmulator.sln
-		SccProjectName20 = Tooling/Debugger
-		SccLocalPath20 = Tooling\\Debugger
+		SccProjectName20 = Clients/MonoGame/EmulatorClient.Windows
+		SccLocalPath20 = Clients\\MonoGame\\EmulatorClient.Windows
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -456,24 +456,6 @@ Global
 		{9EAC12D0-AE9D-4969-A2E6-B1E50B41936F}.Release|x64.ActiveCfg = Release|x86
 		{9EAC12D0-AE9D-4969-A2E6-B1E50B41936F}.Release|x86.ActiveCfg = Release|x86
 		{9EAC12D0-AE9D-4969-A2E6-B1E50B41936F}.Release|Xbox 360.ActiveCfg = Release|x86
-		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Debug|ARM.ActiveCfg = Debug|x86
-		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Debug|Windows Phone.ActiveCfg = Debug|x86
-		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Debug|x64.ActiveCfg = Debug|x86
-		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Debug|x86.ActiveCfg = Debug|x86
-		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Debug|x86.Build.0 = Debug|x86
-		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Debug|Xbox 360.ActiveCfg = Debug|x86
-		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Release|Any CPU.ActiveCfg = Release|x86
-		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Release|ARM.ActiveCfg = Release|x86
-		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Release|Mixed Platforms.Build.0 = Release|x86
-		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Release|Windows Phone.ActiveCfg = Release|x86
-		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Release|x64.ActiveCfg = Release|x86
-		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Release|x86.ActiveCfg = Release|x86
-		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Release|x86.Build.0 = Release|x86
-		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Release|Xbox 360.ActiveCfg = Release|x86
 		{3DF6FBF6-DFF4-48B0-B927-5D29B2B7E4B6}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{3DF6FBF6-DFF4-48B0-B927-5D29B2B7E4B6}.Debug|ARM.ActiveCfg = Debug|ARM
 		{3DF6FBF6-DFF4-48B0-B927-5D29B2B7E4B6}.Debug|ARM.Build.0 = Debug|ARM
@@ -553,6 +535,24 @@ Global
 		{CD9970CF-4833-42D5-9E41-6B098DDFA13C}.Release|x64.ActiveCfg = Release|Any CPU
 		{CD9970CF-4833-42D5-9E41-6B098DDFA13C}.Release|x86.ActiveCfg = Release|Any CPU
 		{CD9970CF-4833-42D5-9E41-6B098DDFA13C}.Release|Xbox 360.ActiveCfg = Release|Any CPU
+		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Debug|ARM.ActiveCfg = Debug|x86
+		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Debug|Windows Phone.ActiveCfg = Debug|x86
+		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Debug|x64.ActiveCfg = Debug|x86
+		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Debug|x86.ActiveCfg = Debug|x86
+		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Debug|x86.Build.0 = Debug|x86
+		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Debug|Xbox 360.ActiveCfg = Debug|x86
+		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Release|Any CPU.ActiveCfg = Release|x86
+		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Release|ARM.ActiveCfg = Release|x86
+		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Release|Mixed Platforms.Build.0 = Release|x86
+		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Release|Windows Phone.ActiveCfg = Release|x86
+		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Release|x64.ActiveCfg = Release|x86
+		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Release|x86.ActiveCfg = Release|x86
+		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Release|x86.Build.0 = Release|x86
+		{1218721B-7C6A-441F-B0E8-2DE63D937D9B}.Release|Xbox 360.ActiveCfg = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -575,11 +575,11 @@ Global
 		{AE4F3626-2829-43C3-AF7F-B84CC944F708} = {C7727B20-448F-4237-B8E2-597B2C288C2C}
 		{9EAC12D0-AE9D-4969-A2E6-B1E50B41936F} = {C7727B20-448F-4237-B8E2-597B2C288C2C}
 		{8D4A9D0B-855D-4DB2-BA61-DCF225357C9D} = {7B840FDF-4463-4ABD-BADE-E67DDC4213B6}
-		{1218721B-7C6A-441F-B0E8-2DE63D937D9B} = {8D4A9D0B-855D-4DB2-BA61-DCF225357C9D}
 		{3DF6FBF6-DFF4-48B0-B927-5D29B2B7E4B6} = {8D4A9D0B-855D-4DB2-BA61-DCF225357C9D}
 		{1B856B90-6659-4906-87DA-271C8AFECDD2} = {50F192AA-A378-42AE-BA9E-D732B9A3B726}
 		{49B37C9A-875E-48BA-AF13-790B42131BCD} = {8D4A9D0B-855D-4DB2-BA61-DCF225357C9D}
 		{CD9970CF-4833-42D5-9E41-6B098DDFA13C} = {50F192AA-A378-42AE-BA9E-D732B9A3B726}
+		{1218721B-7C6A-441F-B0E8-2DE63D937D9B} = {8D4A9D0B-855D-4DB2-BA61-DCF225357C9D}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = AtariLynxEmulator.vsmdi

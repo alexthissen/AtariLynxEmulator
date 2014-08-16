@@ -25,7 +25,7 @@ namespace EmulatorClient.Windows
 		private GraphicsDeviceManager graphics;
 		private SpriteBatch spriteBatch;
 		private Texture2D lcdScreen;
-		private const int magnification = 8;
+		private const int magnification = 4;
 		private const int graphicsWidth = Suzy.SCREEN_WIDTH * magnification;
 		private const int graphicsHeight = Suzy.SCREEN_HEIGHT * magnification;
 
@@ -104,7 +104,7 @@ namespace EmulatorClient.Windows
 		private void InitializeEmulator()
 		{
 			// Lynx related
-			emulator.BootRomImage = new MemoryStream(Roms.lynxtest);
+			emulator.BootRomImage = new MemoryStream(Roms.LYNXBOOT);
 			LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
 			emulator.InsertCartridge(romImage.LoadCart(new MemoryStream(Roms.Collision)));
 			emulator.Initialize();
@@ -125,7 +125,7 @@ namespace EmulatorClient.Windows
 		{
 			graphics.PreferredBackBufferWidth = graphicsWidth;
 			graphics.PreferredBackBufferHeight = graphicsHeight;
-			graphics.IsFullScreen = true;
+			graphics.IsFullScreen = false;
 			graphics.ApplyChanges();
 
 			lcdScreen = new Texture2D(graphics.GraphicsDevice, Suzy.SCREEN_WIDTH, Suzy.SCREEN_HEIGHT, false, SurfaceFormat.Color);
