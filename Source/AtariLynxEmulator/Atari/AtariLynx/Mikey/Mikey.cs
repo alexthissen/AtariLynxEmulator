@@ -557,7 +557,7 @@ namespace KillerApps.Emulation.Atari.Lynx
 					
 					// TODO: For now use estimate of cycles for sprite drawing. 
 					// Needs to be replaced with a better calculation. See also Handy PaintSprites code.
-					suzyCycles = 10000;
+					suzyCycles = 0;//1000;
 					device.Cpu.TrySleep(suzyCycles);
 					return;
 					

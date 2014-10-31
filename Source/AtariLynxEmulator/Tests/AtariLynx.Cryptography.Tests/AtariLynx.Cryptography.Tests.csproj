@@ -56,18 +56,18 @@
     <Compile Include="SboxHashAlgorithmTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Tooling\AtariLynx.Cryptography\AtariLynx.Cryptography.csproj">
-      <Project>{3BAFEC86-C7FF-4AF6-A577-D116619A466E}</Project>
-      <Name>AtariLynx.Cryptography</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Binaries\APB.bin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Binaries\Quadromania.bin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Tooling\Cryptography\AtariLynx.Cryptography.csproj">
+      <Project>{3bafec86-c7ff-4af6-a577-d116619a466e}</Project>
+      <Name>AtariLynx.Cryptography</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

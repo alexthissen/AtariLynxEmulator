@@ -104,7 +104,7 @@ namespace EmulatorClient.Windows
 		private void InitializeEmulator()
 		{
 			// Lynx related
-			emulator.BootRomImage = new MemoryStream(Roms.LYNXBOOT);
+			emulator.BootRomImage = new MemoryStream(Roms.lynxtest);
 			LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
 			emulator.InsertCartridge(romImage.LoadCart(new MemoryStream(Roms.Collision)));
 			emulator.Initialize();
@@ -191,7 +191,7 @@ namespace EmulatorClient.Windows
 
 			JoystickStates joystick = inputHandler.Joystick;
 			emulator.UpdateJoystickState(joystick);
-			emulator.Update(79000); // 4 MHz worth of cycles divided by 60 seconds
+			emulator.Update(86667); // 4 MHz worth of cycles divided by 60 seconds
 
 			base.Update(gameTime);
 		}

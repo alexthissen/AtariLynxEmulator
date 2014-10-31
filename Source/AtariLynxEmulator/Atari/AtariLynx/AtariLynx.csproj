@@ -78,7 +78,6 @@
     <Compile Include="Mikey\TimerBase.cs" />
     <Compile Include="Mikey\TimerControlBase.cs" />
     <Compile Include="Suzy\MathType.cs" />
-    <None Include="Suzy\Suzy - Copy.cs" />
     <Compile Include="Uart\Receiver.cs" />
     <Compile Include="Uart\SerialControlRegister2.cs" />
     <Compile Include="Uart\Transmitter2.cs" />

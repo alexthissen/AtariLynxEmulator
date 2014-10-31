@@ -167,11 +167,11 @@ namespace KillerApps.Emulation.Processors
 			// Fetch opcode
 			Opcode = Memory.Peek(PC);
 			
-			if (PC == 0x462c)
-			{
-				PC = 0x4630;
-				Opcode = Memory.Peek(PC);
-			}
+			//if (PC == 0x462c)
+			//{
+			//	PC = 0x4630;
+			//	Opcode = Memory.Peek(PC);
+			//}
 
 			//SystemClock.CycleCount += MemoryReadCycle;
 

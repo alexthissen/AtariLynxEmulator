@@ -6,19 +6,19 @@ using System.Linq;
 
 namespace EmulatorClient.Windows
 {
-    /// <summary>
-    /// The main class.
-    /// </summary>
-    public static class Program
-    {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        static void Main()
-        {
-            using (var game = new EmulatorClient())
-                game.Run();
-        }
-    }
+	/// <summary>
+	/// The main class.
+	/// </summary>
+	public static class Program
+	{
+		/// <summary>
+		/// The main entry point for the application.
+		/// </summary>
+		[STAThread]
+		static void Main()
+		{
+			using (var game = new EmulatorClient())
+				game.Run();
+		}
+	}
 }

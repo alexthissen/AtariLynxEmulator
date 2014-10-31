@@ -153,16 +153,6 @@ namespace EmulatorClient.Windows {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] LYNXBOOT {
-            get {
-                object obj = ResourceManager.GetObject("LYNXBOOT", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] lynxtest {
             get {
                 object obj = ResourceManager.GetObject("lynxtest", resourceCulture);
