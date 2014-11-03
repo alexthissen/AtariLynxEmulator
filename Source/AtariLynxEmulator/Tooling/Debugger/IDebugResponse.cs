@@ -11,5 +11,6 @@ namespace KillerApps.Emulation.Atari.Lynx.Debugger
 		int RemainingBytes { get; }
 		bool IsComplete { get; }
 		void AddBytes(IEnumerable<byte> bytes);
+		DebugRequest RequestEcho { get; }
 	}
 }

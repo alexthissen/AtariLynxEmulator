@@ -61,15 +61,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmulatorClient.DualScreen",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmulatorClient.Store", "Backup\EmulatorClient.WindowsStore\EmulatorClient.Store.csproj", "{9BFAC82A-A3B7-47E0-89D6-1E495AFBD2F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtariLynx.VisualStudio", "Tooling\VisualStudio\AtariLynx.VisualStudio.csproj", "{4C97994A-537B-427A-AEAB-D679EA0B9D5F}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtariLynx.Debugger", "Tooling\Debugger\AtariLynx.Debugger.csproj", "{CD9970CF-4833-42D5-9E41-6B098DDFA13C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtariLynx.VisualStudio", "Tooling\VisualStudio\AtariLynx.VisualStudio.csproj", "{4C97994A-537B-427A-AEAB-D679EA0B9D5F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtariLynx.Cryptography", "Tooling\Cryptography\AtariLynx.Cryptography.csproj", "{3BAFEC86-C7FF-4AF6-A577-D116619A466E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DebuggerCLI", "Tooling\DebuggerCLI\DebuggerCLI.csproj", "{ABC40B54-D268-4710-95D2-9174B7AF7029}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtariLynx.Disassembler", "Tooling\Disassembler\AtariLynx.Disassembler.csproj", "{7ABD7D67-B964-487E-BDC3-DC5801693206}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 19
+		SccNumberOfProjects = 21
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs01
 		SccLocalPath0 = .
@@ -129,22 +133,30 @@ Global
 		SccProjectTopLevelParentUniqueName14 = AtariLynxEmulator.sln
 		SccProjectName14 = Backup/EmulatorClient.WindowsStore
 		SccLocalPath14 = Backup\\EmulatorClient.WindowsStore
-		SccProjectUniqueName15 = Tooling\\VisualStudio\\AtariLynx.VisualStudio.csproj
+		SccProjectUniqueName15 = Tooling\\Debugger\\AtariLynx.Tooling.Debugger.csproj
 		SccProjectTopLevelParentUniqueName15 = AtariLynxEmulator.sln
-		SccProjectName15 = Tooling/VisualStudio
-		SccLocalPath15 = Tooling\\VisualStudio
-		SccProjectUniqueName16 = Tooling\\Debugger\\AtariLynx.Tooling.Debugger.csproj
+		SccProjectName15 = Tooling/Debugger
+		SccLocalPath15 = Tooling\\Debugger
+		SccProjectUniqueName16 = Tooling\\Debugger\\AtariLynx.Debugger.csproj
 		SccProjectTopLevelParentUniqueName16 = AtariLynxEmulator.sln
-		SccProjectName16 = Tooling/Debugger
-		SccLocalPath16 = Tooling\\Debugger
-		SccProjectUniqueName17 = Tooling\\Debugger\\AtariLynx.Debugger.csproj
+		SccLocalPath16 = .
+		SccProjectFilePathRelativizedFromConnection16 = Tooling\\Debugger\\
+		SccProjectUniqueName17 = Tooling\\VisualStudio\\AtariLynx.VisualStudio.csproj
 		SccProjectTopLevelParentUniqueName17 = AtariLynxEmulator.sln
-		SccLocalPath17 = .
-		SccProjectFilePathRelativizedFromConnection17 = Tooling\\Debugger\\
+		SccProjectName17 = Tooling/VisualStudio
+		SccLocalPath17 = Tooling\\VisualStudio
 		SccProjectUniqueName18 = Tooling\\Cryptography\\AtariLynx.Cryptography.csproj
 		SccProjectTopLevelParentUniqueName18 = AtariLynxEmulator.sln
 		SccProjectName18 = Tooling/Cryptography
 		SccLocalPath18 = Tooling\\Cryptography
+		SccProjectUniqueName19 = Tooling\\DebuggerCLI\\DebuggerCLI.csproj
+		SccProjectTopLevelParentUniqueName19 = AtariLynxEmulator.sln
+		SccProjectName19 = Tooling/DebuggerCLI
+		SccLocalPath19 = Tooling\\DebuggerCLI
+		SccProjectUniqueName20 = Tooling\\Disassembler\\AtariLynx.Disassembler.csproj
+		SccProjectTopLevelParentUniqueName20 = AtariLynxEmulator.sln
+		SccProjectName20 = Tooling/Disassembler
+		SccLocalPath20 = Tooling\\Disassembler
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -447,24 +459,6 @@ Global
 		{9BFAC82A-A3B7-47E0-89D6-1E495AFBD2F5}.Release|x86.Build.0 = Release|x86
 		{9BFAC82A-A3B7-47E0-89D6-1E495AFBD2F5}.Release|x86.Deploy.0 = Release|x86
 		{9BFAC82A-A3B7-47E0-89D6-1E495AFBD2F5}.Release|Xbox 360.ActiveCfg = Release|Any CPU
-		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Debug|Windows Phone.ActiveCfg = Debug|Any CPU
-		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Debug|Xbox 360.ActiveCfg = Debug|Any CPU
-		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Release|ARM.ActiveCfg = Release|Any CPU
-		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Release|Windows Phone.ActiveCfg = Release|Any CPU
-		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Release|x64.ActiveCfg = Release|Any CPU
-		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Release|x86.ActiveCfg = Release|Any CPU
-		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Release|Xbox 360.ActiveCfg = Release|Any CPU
 		{CD9970CF-4833-42D5-9E41-6B098DDFA13C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CD9970CF-4833-42D5-9E41-6B098DDFA13C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD9970CF-4833-42D5-9E41-6B098DDFA13C}.Debug|ARM.ActiveCfg = Debug|Any CPU
@@ -483,6 +477,24 @@ Global
 		{CD9970CF-4833-42D5-9E41-6B098DDFA13C}.Release|x64.ActiveCfg = Release|Any CPU
 		{CD9970CF-4833-42D5-9E41-6B098DDFA13C}.Release|x86.ActiveCfg = Release|Any CPU
 		{CD9970CF-4833-42D5-9E41-6B098DDFA13C}.Release|Xbox 360.ActiveCfg = Release|Any CPU
+		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Debug|Windows Phone.ActiveCfg = Debug|Any CPU
+		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Debug|Xbox 360.ActiveCfg = Debug|Any CPU
+		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Release|ARM.ActiveCfg = Release|Any CPU
+		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Release|Windows Phone.ActiveCfg = Release|Any CPU
+		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Release|x64.ActiveCfg = Release|Any CPU
+		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Release|x86.ActiveCfg = Release|Any CPU
+		{4C97994A-537B-427A-AEAB-D679EA0B9D5F}.Release|Xbox 360.ActiveCfg = Release|Any CPU
 		{3BAFEC86-C7FF-4AF6-A577-D116619A466E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3BAFEC86-C7FF-4AF6-A577-D116619A466E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3BAFEC86-C7FF-4AF6-A577-D116619A466E}.Debug|ARM.ActiveCfg = Debug|Any CPU
@@ -501,6 +513,42 @@ Global
 		{3BAFEC86-C7FF-4AF6-A577-D116619A466E}.Release|x64.ActiveCfg = Release|Any CPU
 		{3BAFEC86-C7FF-4AF6-A577-D116619A466E}.Release|x86.ActiveCfg = Release|Any CPU
 		{3BAFEC86-C7FF-4AF6-A577-D116619A466E}.Release|Xbox 360.ActiveCfg = Release|Any CPU
+		{ABC40B54-D268-4710-95D2-9174B7AF7029}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABC40B54-D268-4710-95D2-9174B7AF7029}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABC40B54-D268-4710-95D2-9174B7AF7029}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{ABC40B54-D268-4710-95D2-9174B7AF7029}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{ABC40B54-D268-4710-95D2-9174B7AF7029}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{ABC40B54-D268-4710-95D2-9174B7AF7029}.Debug|Windows Phone.ActiveCfg = Debug|Any CPU
+		{ABC40B54-D268-4710-95D2-9174B7AF7029}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{ABC40B54-D268-4710-95D2-9174B7AF7029}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ABC40B54-D268-4710-95D2-9174B7AF7029}.Debug|Xbox 360.ActiveCfg = Debug|Any CPU
+		{ABC40B54-D268-4710-95D2-9174B7AF7029}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABC40B54-D268-4710-95D2-9174B7AF7029}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABC40B54-D268-4710-95D2-9174B7AF7029}.Release|ARM.ActiveCfg = Release|Any CPU
+		{ABC40B54-D268-4710-95D2-9174B7AF7029}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{ABC40B54-D268-4710-95D2-9174B7AF7029}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{ABC40B54-D268-4710-95D2-9174B7AF7029}.Release|Windows Phone.ActiveCfg = Release|Any CPU
+		{ABC40B54-D268-4710-95D2-9174B7AF7029}.Release|x64.ActiveCfg = Release|Any CPU
+		{ABC40B54-D268-4710-95D2-9174B7AF7029}.Release|x86.ActiveCfg = Release|Any CPU
+		{ABC40B54-D268-4710-95D2-9174B7AF7029}.Release|Xbox 360.ActiveCfg = Release|Any CPU
+		{7ABD7D67-B964-487E-BDC3-DC5801693206}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7ABD7D67-B964-487E-BDC3-DC5801693206}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7ABD7D67-B964-487E-BDC3-DC5801693206}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{7ABD7D67-B964-487E-BDC3-DC5801693206}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{7ABD7D67-B964-487E-BDC3-DC5801693206}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{7ABD7D67-B964-487E-BDC3-DC5801693206}.Debug|Windows Phone.ActiveCfg = Debug|Any CPU
+		{7ABD7D67-B964-487E-BDC3-DC5801693206}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7ABD7D67-B964-487E-BDC3-DC5801693206}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7ABD7D67-B964-487E-BDC3-DC5801693206}.Debug|Xbox 360.ActiveCfg = Debug|Any CPU
+		{7ABD7D67-B964-487E-BDC3-DC5801693206}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7ABD7D67-B964-487E-BDC3-DC5801693206}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7ABD7D67-B964-487E-BDC3-DC5801693206}.Release|ARM.ActiveCfg = Release|Any CPU
+		{7ABD7D67-B964-487E-BDC3-DC5801693206}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{7ABD7D67-B964-487E-BDC3-DC5801693206}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{7ABD7D67-B964-487E-BDC3-DC5801693206}.Release|Windows Phone.ActiveCfg = Release|Any CPU
+		{7ABD7D67-B964-487E-BDC3-DC5801693206}.Release|x64.ActiveCfg = Release|Any CPU
+		{7ABD7D67-B964-487E-BDC3-DC5801693206}.Release|x86.ActiveCfg = Release|Any CPU
+		{7ABD7D67-B964-487E-BDC3-DC5801693206}.Release|Xbox 360.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -523,9 +571,11 @@ Global
 		{1814F706-2B16-4984-B670-5A01CD5BFC17} = {7B840FDF-4463-4ABD-BADE-E67DDC4213B6}
 		{65A4A60F-E076-48C6-9CDD-09B8C9817929} = {1814F706-2B16-4984-B670-5A01CD5BFC17}
 		{9BFAC82A-A3B7-47E0-89D6-1E495AFBD2F5} = {8D4A9D0B-855D-4DB2-BA61-DCF225357C9D}
-		{4C97994A-537B-427A-AEAB-D679EA0B9D5F} = {50F192AA-A378-42AE-BA9E-D732B9A3B726}
 		{CD9970CF-4833-42D5-9E41-6B098DDFA13C} = {50F192AA-A378-42AE-BA9E-D732B9A3B726}
+		{4C97994A-537B-427A-AEAB-D679EA0B9D5F} = {50F192AA-A378-42AE-BA9E-D732B9A3B726}
 		{3BAFEC86-C7FF-4AF6-A577-D116619A466E} = {50F192AA-A378-42AE-BA9E-D732B9A3B726}
+		{ABC40B54-D268-4710-95D2-9174B7AF7029} = {50F192AA-A378-42AE-BA9E-D732B9A3B726}
+		{7ABD7D67-B964-487E-BDC3-DC5801693206} = {50F192AA-A378-42AE-BA9E-D732B9A3B726}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = AtariLynxEmulator.vsmdi

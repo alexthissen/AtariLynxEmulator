@@ -10,6 +10,7 @@ namespace KillerApps.Emulation.Atari.Lynx.Debugger
 	{
 		protected List<byte> queue = new List<byte>();
 		protected T Echo;
+		public DebugRequest RequestEcho { get { return Echo; } }
 
 		public DebugResponse()
 		{

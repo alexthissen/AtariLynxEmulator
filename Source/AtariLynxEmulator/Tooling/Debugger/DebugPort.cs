@@ -11,21 +11,33 @@ namespace KillerApps.Emulation.Atari.Lynx.Debugger
 {
 	public class DebugPort
 	{
-		public void Start()
+		private SerialPort serialPort; //"COM6", 62500, Parity.Space,
+
+		public void SendRequest(DebugRequest request)
 		{
-			SerialPort port = new SerialPort("COM6", 62500, Parity.Space, 8, StopBits.One);
-			port.ReceivedBytesThreshold = 1;
-			port.ReadBufferSize = 256;
-			port.WriteBufferSize = 256;
-			//port.DataReceived += OnDataReceived;
+			byte[] buffer = request.ToByteArray();
+			serialPort.Write(buffer, 0, buffer.Length);
+		}
+
+		public void Stop()
+		{
+			serialPort.Close();
+		}
+
+		public void Start(string portName, int baudrate, Parity parity)
+		{
+			serialPort = new SerialPort(portName, baudrate, parity, 8, StopBits.One);
+			serialPort.ReceivedBytesThreshold = 1;
+			serialPort.ReadBufferSize = 256;
+			serialPort.WriteBufferSize = 256;
 
 			var observablePort = Observable.FromEventPattern<SerialDataReceivedEventHandler, SerialDataReceivedEventArgs>(
-				ev => port.DataReceived += ev,
-				ev => port.DataReceived -= ev).Select(args =>
+				ev => serialPort.DataReceived += ev,
+				ev => serialPort.DataReceived -= ev).Select(args =>
 				{
-					int bytesToRead = port.BytesToRead;
+					int bytesToRead = serialPort.BytesToRead;
 					byte[] buffer = new byte[bytesToRead];
-					int bytesRead = port.Read(buffer, 0, bytesToRead);
+					int bytesRead = serialPort.Read(buffer, 0, bytesToRead);
 					return buffer;
 				});
 
@@ -73,6 +85,13 @@ namespace KillerApps.Emulation.Atari.Lynx.Debugger
 				return Disposable.Empty;
 			}
 			);
+
+			observableSerialData.Subscribe(
+				response => { 
+					DebugResponseReceived(this, new DebugResponseReceivedEventArgs(response)); });
+			serialPort.Open();
 		}
+
+		public event EventHandler<DebugResponseReceivedEventArgs> DebugResponseReceived;
 	}
 }

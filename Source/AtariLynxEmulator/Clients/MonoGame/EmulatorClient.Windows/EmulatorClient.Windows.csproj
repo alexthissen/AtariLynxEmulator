@@ -86,11 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Resources\Batman Returns.lnx" />
-    <None Include="Resources\Blue Lightning Demo.lnx" />
-    <None Include="Resources\Blue Lightning.lnx" />
     <None Include="Resources\collision.lnx" />
-    <None Include="Resources\Crystal Mines 2 Buried Treasure.lnx" />
     <None Include="Resources\demo0006.lnx" />
     <None Include="Resources\demo01.o" />
     <None Include="Resources\demo02.o" />
@@ -99,7 +95,6 @@
     <None Include="Resources\demo05.o" />
     <None Include="Resources\IRQ Test.lnx" />
     <None Include="Resources\lite.o" />
-    <None Include="Resources\Luchs3d.lnx" />
     <None Include="Resources\LYNXBOOT.IMG" />
     <None Include="Resources\lynxtest.bin" />
     <None Include="Resources\Mode7.lnx" />
