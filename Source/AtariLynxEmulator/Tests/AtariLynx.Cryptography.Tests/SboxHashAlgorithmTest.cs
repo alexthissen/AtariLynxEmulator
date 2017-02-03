@@ -35,22 +35,22 @@ namespace AtariLynx.Encryption.Tests
 			0xCB, 0xA3, 0x41, 0xBB, 0xF1, 0xD8, 0xC5, 0x7C
 		};
 
-		[DeploymentItem(@"Binaries\" + RomImage128KFilePath)]
-		[TestMethod]
-		public void ComputeHashFor128KImageShouldReturnCorrectValue()
-		{
-			FileStream romImageStream = new FileStream(
-				Path.Combine(TestContext.TestDeploymentDir, RomImage128KFilePath), FileMode.Open, FileAccess.Read);
-			int romLength = (int)romImageStream.Length;
-			byte[] image = new byte[romLength];
-			int bytesRead	= romImageStream.Read(image, 0, romLength);
+		//[DeploymentItem(@"Binaries\" + RomImage128KFilePath)]
+		//[TestMethod]
+		//public void ComputeHashFor128KImageShouldReturnCorrectValue()
+		//{
+		//	FileStream romImageStream = new FileStream(
+		//		Path.Combine(TestContext.TestDeploymentDir, RomImage128KFilePath), FileMode.Open, FileAccess.Read);
+		//	int romLength = (int)romImageStream.Length;
+		//	byte[] image = new byte[romLength];
+		//	int bytesRead	= romImageStream.Read(image, 0, romLength);
 
-			SboxHashAlgorithm algorithm = SboxHashAlgorithm.Create(romLength);
-			byte[] hash = algorithm.ComputeHash(image, 0, romLength);
+		//	SboxHashAlgorithm algorithm = SboxHashAlgorithm.Create(romLength);
+		//	byte[] hash = algorithm.ComputeHash(image, 0, romLength);
 
-			Assert.AreEqual<int>(romLength, bytesRead, "Data read is not same length as expected length");
-			CollectionAssert.AreEqual(QuadroManiaHashValue, hash, "Computed hash is not correct.");
-		}
+		//	Assert.AreEqual<int>(romLength, bytesRead, "Data read is not same length as expected length");
+		//	CollectionAssert.AreEqual(QuadroManiaHashValue, hash, "Computed hash is not correct.");
+		//}
 
 		[DeploymentItem(@"Binaries\" + RomImage256KFilePath)]
 		[TestMethod]

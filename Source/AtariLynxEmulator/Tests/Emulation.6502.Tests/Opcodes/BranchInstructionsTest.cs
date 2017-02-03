@@ -86,7 +86,7 @@ namespace KillerApps.Emulation.Processors.Tests
 		}
 
 		[TestMethod]
-		public void BEQWithZeroFlagClearShouldBranchRelative()
+		public void BEQWithZeroFlagSetShouldBranchRelative()
 		{
 			// Set zero flag to force branch
 			cpu.Z = true;

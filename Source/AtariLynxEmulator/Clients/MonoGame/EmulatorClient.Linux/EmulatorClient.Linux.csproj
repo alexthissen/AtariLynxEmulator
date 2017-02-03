@@ -3,8 +3,6 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{49B37C9A-875E-48BA-AF13-790B42131BCD}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -16,25 +14,30 @@
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
     <NuGetPackageImportStamp>f510a097</NuGetPackageImportStamp>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <ProductVersion>12.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;LINUX</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE;LINUX</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
@@ -55,17 +58,15 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Lidgren.Network">
-      <HintPath>$(MSBuildExtensionsPath)\..\MonoGame\v3.0\Assemblies\Linux\Lidgren.Network.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\OpenTK.1.1.1456.5398\lib\NET40\OpenTK.dll</HintPath>
-    </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="Tao.Sdl">
       <HintPath>$(MSBuildExtensionsPath)\..\MonoGame\v3.0\Assemblies\Linux\Tao.Sdl.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
+    <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4">
+      <HintPath>..\..\..\packages\OpenTK.1.1.2225.0\lib\net20\OpenTK.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icon.ico" />
@@ -75,6 +76,8 @@
     <Folder Include="Content\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
+    <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
     <None Include="Resources\collision.lnx" />
     <None Include="Resources\demo0006.lnx" />
@@ -97,19 +100,19 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Atari\AtariLynx\AtariLynx.csproj">
-      <Project>{55628d95-a00f-4266-b784-20b81d662004}</Project>
+      <Project>{55628D95-A00F-4266-B784-20B81D662004}</Project>
       <Name>AtariLynx</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Framework\Emulation.6502\Emulation.6502.csproj">
-      <Project>{244be6e7-3086-4522-a21f-975bb9d37f0b}</Project>
+      <Project>{244BE6E7-3086-4522-A21F-975BB9D37F0B}</Project>
       <Name>Emulation.6502</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Framework\Emulation.93XX\Emulation.93XX.csproj">
-      <Project>{687f3f48-65fb-4b13-9105-7892aa211a0e}</Project>
+      <Project>{687F3F48-65FB-4B13-9105-7892AA211A0E}</Project>
       <Name>Emulation.93XX</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Framework\Emulation.Core8Bit\Emulation.Core8Bit.csproj">
-      <Project>{714ea8d7-cd22-41b6-956b-c0b8076e7c30}</Project>
+      <Project>{714EA8D7-CD22-41B6-956B-C0B8076E7C30}</Project>
       <Name>Emulation.Core8Bit</Name>
     </ProjectReference>
   </ItemGroup>

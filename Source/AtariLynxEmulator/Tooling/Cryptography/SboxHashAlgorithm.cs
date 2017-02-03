@@ -49,7 +49,7 @@ namespace KillerApps.Emulation.Atari.Lynx.Cryptography
 
 		public byte[] ComputeHash(byte[] image, int offset, int length)
 		{
-			int i, j, k, l, sum, tickler;
+			int i, j, k, sum, tickler;
 
 			for (i = 0; i < RESULT_LENGTH; i++)
 			{
@@ -58,7 +58,6 @@ namespace KillerApps.Emulation.Atari.Lynx.Cryptography
 			}
 
 			j = ((RSA_PAGE_LENGTH * (3 + 5) - 1) + (RomSize / 4096)) & (~((RomSize / 4096) - 1));
-			l = 0;
 
 			while (j < RomSize)
 			{

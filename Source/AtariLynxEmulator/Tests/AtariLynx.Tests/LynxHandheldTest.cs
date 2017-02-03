@@ -13,7 +13,7 @@ namespace AtariLynx.Tests
 	[DeploymentItem(@"Roms\Collision.lnx")]
 	public class LynxHandheldTest
 	{
-		public const string BootRomImageFilePath = @"LynxBoot.img";
+		public const string BootRomImageFilePath = @"lynxboot.img";
 		public const string CartRomImageFilePath = @"Collision.lnx";
 		Stream bootRomImageStream;
 		RomCart cartridge;

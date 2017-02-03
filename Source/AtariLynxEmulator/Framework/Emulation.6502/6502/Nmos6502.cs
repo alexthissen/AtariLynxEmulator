@@ -122,7 +122,7 @@ namespace KillerApps.Emulation.Processors
 		{ 
 			return Memory.Peek((ushort)((SP + 0x0100 - depth) & 0x01ff)); 
 		}
-		bool breaknow = true;
+
 		public override ulong Execute(int instructionsToExecute)
 		{
 			ulong startCycleCount = SystemClock.CompatibleCycleCount;

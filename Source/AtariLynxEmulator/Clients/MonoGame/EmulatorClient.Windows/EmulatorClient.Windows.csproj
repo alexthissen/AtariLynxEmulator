@@ -95,7 +95,6 @@
     <None Include="Resources\demo05.o" />
     <None Include="Resources\IRQ Test.lnx" />
     <None Include="Resources\lite.o" />
-    <None Include="Resources\LYNXBOOT.IMG" />
     <None Include="Resources\lynxtest.bin" />
     <None Include="Resources\Mode7.lnx" />
     <None Include="Resources\Wuerfel.lnx" />
