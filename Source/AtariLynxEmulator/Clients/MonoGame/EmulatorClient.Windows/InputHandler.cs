@@ -5,7 +5,6 @@ using System.Text;
 using KillerApps.Emulation.Atari.Lynx;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.GamerServices;
 
 namespace KillerApps.Gaming.Atari.MonoGame
 {

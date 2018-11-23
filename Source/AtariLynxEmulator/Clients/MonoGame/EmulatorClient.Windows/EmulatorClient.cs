@@ -4,11 +4,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Storage;
-using Microsoft.Xna.Framework.GamerServices;
 using KillerApps.Emulation.Atari.Lynx;
 using KillerApps.Gaming.Atari.MonoGame;
 using System.IO;
+using Microsoft.Xna.Framework.Audio;
 
 namespace EmulatorClient.Windows
 {
@@ -33,8 +32,8 @@ namespace EmulatorClient.Windows
 		private InputHandler inputHandler;
 		
 		// Audio
-		//private byte[] soundBuffer;
-		//private DynamicSoundEffectInstance dynamicSound;
+		private byte[] soundBuffer;
+		private DynamicSoundEffectInstance dynamicSound;
 
 		// Network
 		private IComLynxTransport transport = new SerialPortComLynxTransport();
@@ -69,7 +68,7 @@ namespace EmulatorClient.Windows
 
 			InitializeVideo();
 			InitializeEmulator();
-			//InitializeAudio();
+			InitializeAudio();
 
 			//inputHandler = new GamePadHandler(this);
 			inputHandler = new KeyboardHandler(this);
@@ -104,9 +103,9 @@ namespace EmulatorClient.Windows
 		private void InitializeEmulator()
 		{
 			// Lynx related
-			emulator.BootRomImage = new MemoryStream(Roms.lynxtest);
+			emulator.BootRomImage = new MemoryStream(Roms.LYNXBOOT);
 			LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
-			emulator.InsertCartridge(romImage.LoadCart(new MemoryStream(Roms.Collision)));
+			emulator.InsertCartridge(romImage.LoadCart(new MemoryStream(Roms.Malibu_Beach_Volleyball)));
 			emulator.Initialize();
 			//emulator.InsertComLynxCable(new SerialPortComLynxTransport());
 			//ICartridge cartridge = LoadCartridge();
@@ -132,34 +131,34 @@ namespace EmulatorClient.Windows
 			spriteBatch = new SpriteBatch(GraphicsDevice);
 		}
 
-		//private void InitializeAudio()
-		//{
-		//	dynamicSound = new DynamicSoundEffectInstance(22050, AudioChannels.Mono);
-		//	soundBuffer = new byte[dynamicSound.GetSampleSizeInBytes(TimeSpan.FromMilliseconds(250))];
-		//	//dynamicSound.BufferNeeded += new EventHandler<EventArgs>(DynamicSoundBufferNeeded);
-		//	emulator.Mikey.AudioFilter.BufferReady += new EventHandler<BufferEventArgs>(OnAudioFilterBufferReady);
-		//	dynamicSound.Play();
-		//}
+        private void InitializeAudio()
+        {
+            dynamicSound = new DynamicSoundEffectInstance(22050, AudioChannels.Mono);
+            soundBuffer = new byte[dynamicSound.GetSampleSizeInBytes(TimeSpan.FromMilliseconds(250))];
+            //dynamicSound.BufferNeeded += new EventHandler<EventArgs>(DynamicSoundBufferNeeded);
+            emulator.Mikey.AudioFilter.BufferReady += new EventHandler<BufferEventArgs>(OnAudioFilterBufferReady);
+            dynamicSound.Play();
+        }
 
-		//void OnAudioFilterBufferReady(object sender, BufferEventArgs e)
-		//{
-		//	byte[] buffer = e.Buffer;
-		//	dynamicSound.SubmitBuffer(buffer, 0, buffer.Length / 2);
-		//	dynamicSound.SubmitBuffer(buffer, buffer.Length / 2, buffer.Length / 2);
-		//}
+        void OnAudioFilterBufferReady(object sender, BufferEventArgs e)
+        {
+            byte[] buffer = e.Buffer;
+            dynamicSound.SubmitBuffer(buffer, 0, buffer.Length / 2);
+            dynamicSound.SubmitBuffer(buffer, buffer.Length / 2, buffer.Length / 2);
+        }
 
-		//private void DynamicSoundBufferNeeded(object sender, EventArgs e)
-		//{
-		//	byte[] buffer = emulator.Mikey.AudioFilter.Buffer;
-		//	dynamicSound.SubmitBuffer(buffer, 0, buffer.Length / 2);
-		//	dynamicSound.SubmitBuffer(buffer, buffer.Length / 2, buffer.Length / 2);
-		//}
+        private void DynamicSoundBufferNeeded(object sender, EventArgs e)
+        {
+            byte[] buffer = emulator.Mikey.AudioFilter.Buffer;
+            dynamicSound.SubmitBuffer(buffer, 0, buffer.Length / 2);
+            dynamicSound.SubmitBuffer(buffer, buffer.Length / 2, buffer.Length / 2);
+        }
 
-		/// <summary>
-		/// LoadContent will be called once per game and is the place to load
-		/// all of your content.
-		/// </summary>
-		protected override void LoadContent()
+        /// <summary>
+        /// LoadContent will be called once per game and is the place to load
+        /// all of your content.
+        /// </summary>
+        protected override void LoadContent()
 		{
 			// Create a new SpriteBatch, which can be used to draw textures.
 			spriteBatch = new SpriteBatch(GraphicsDevice);

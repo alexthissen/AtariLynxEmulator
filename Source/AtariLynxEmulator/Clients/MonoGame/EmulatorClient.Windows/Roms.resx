@@ -154,4 +154,10 @@
   <data name="lynxtest" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\lynxtest.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="Malibu_Beach_Volleyball" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\Malibu Beach Volleyball.lnx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LYNXBOOT" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\LYNXBOOT.IMG;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>
