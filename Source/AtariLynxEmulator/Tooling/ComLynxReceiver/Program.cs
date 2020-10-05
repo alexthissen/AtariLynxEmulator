@@ -12,7 +12,7 @@ namespace ComLynxReceiver
 	{
 		static void Main(string[] args)
 		{
-			SerialPort port = new SerialPort("COM4", 62500, Parity.Mark, 8, StopBits.One);
+			SerialPort port = new SerialPort("COM6", 62500, Parity.Mark, 8, StopBits.One);
 			port.ReceivedBytesThreshold = 256;
 			port.ReadBufferSize = 256;
 			port.DataReceived += OnDataReceived;
@@ -21,7 +21,7 @@ namespace ComLynxReceiver
 			Console.WriteLine("Listening. Press ENTER to quit");
 			Console.ReadLine();
 
-			File.WriteAllBytes(@".\dump.bin", file);
+			File.WriteAllBytes(@".\CybervirusCinciClassic.bin", file);
 		}
 
 		static int totalBytes = 0;

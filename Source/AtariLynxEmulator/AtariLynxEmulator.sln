@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2003
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30503.244
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Framework", "Framework", "{57DA1BC1-ABF4-498A-99DA-D60A132A272D}"
 EndProject
@@ -60,7 +60,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtariLynx.Disassembler", "T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComLynxReceiver", "Tooling\ComLynxReceiver\ComLynxReceiver.csproj", "{BD8DD90E-3F2F-442E-85AF-D9279AFC7784}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmulatorClient.CrossPlatformDesktop", "Clients\MonoGame\EmulatorClient.CrossPlatformDesktop\EmulatorClient.CrossPlatformDesktop.csproj", "{CC82ACAB-853D-4293-AFA5-EF369585528F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmulatorClient.CrossPlatformDesktop", "Clients\MonoGame\EmulatorClient.CrossPlatformDesktop\EmulatorClient.CrossPlatformDesktop.csproj", "{62A0304D-A78F-4CD8-92E8-602D5B91B78B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -367,34 +367,34 @@ Global
 		{BD8DD90E-3F2F-442E-85AF-D9279AFC7784}.Release|x86.Build.0 = Release|Any CPU
 		{BD8DD90E-3F2F-442E-85AF-D9279AFC7784}.Release|Xbox 360.ActiveCfg = Release|Any CPU
 		{BD8DD90E-3F2F-442E-85AF-D9279AFC7784}.Release|Xbox 360.Build.0 = Release|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Debug|ARM.Build.0 = Debug|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Debug|Windows Phone.ActiveCfg = Debug|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Debug|Windows Phone.Build.0 = Debug|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Debug|x64.Build.0 = Debug|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Debug|x86.Build.0 = Debug|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Debug|Xbox 360.ActiveCfg = Debug|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Debug|Xbox 360.Build.0 = Debug|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Release|ARM.ActiveCfg = Release|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Release|ARM.Build.0 = Release|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Release|Windows Phone.ActiveCfg = Release|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Release|Windows Phone.Build.0 = Release|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Release|x64.ActiveCfg = Release|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Release|x64.Build.0 = Release|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Release|x86.ActiveCfg = Release|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Release|x86.Build.0 = Release|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Release|Xbox 360.ActiveCfg = Release|Any CPU
-		{CC82ACAB-853D-4293-AFA5-EF369585528F}.Release|Xbox 360.Build.0 = Release|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Debug|ARM.Build.0 = Debug|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Debug|Windows Phone.ActiveCfg = Debug|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Debug|Windows Phone.Build.0 = Debug|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Debug|x64.Build.0 = Debug|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Debug|x86.Build.0 = Debug|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Debug|Xbox 360.ActiveCfg = Debug|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Debug|Xbox 360.Build.0 = Debug|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Release|ARM.ActiveCfg = Release|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Release|ARM.Build.0 = Release|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Release|Windows Phone.ActiveCfg = Release|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Release|Windows Phone.Build.0 = Release|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Release|x64.ActiveCfg = Release|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Release|x64.Build.0 = Release|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Release|x86.ActiveCfg = Release|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Release|x86.Build.0 = Release|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Release|Xbox 360.ActiveCfg = Release|Any CPU
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B}.Release|Xbox 360.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -418,7 +418,7 @@ Global
 		{ABC40B54-D268-4710-95D2-9174B7AF7029} = {50F192AA-A378-42AE-BA9E-D732B9A3B726}
 		{7ABD7D67-B964-487E-BDC3-DC5801693206} = {50F192AA-A378-42AE-BA9E-D732B9A3B726}
 		{BD8DD90E-3F2F-442E-85AF-D9279AFC7784} = {50F192AA-A378-42AE-BA9E-D732B9A3B726}
-		{CC82ACAB-853D-4293-AFA5-EF369585528F} = {8D4A9D0B-855D-4DB2-BA61-DCF225357C9D}
+		{62A0304D-A78F-4CD8-92E8-602D5B91B78B} = {8D4A9D0B-855D-4DB2-BA61-DCF225357C9D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {90E7E76C-615D-498F-B6DA-762BEAF72EB0}

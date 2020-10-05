@@ -60,7 +60,7 @@ namespace DebuggerCLI
 		{
 			try
 			{
-				Engine.Attach("COM3", 62500, Parity.Mark);
+				//Engine.Attach("COM3", 62500, Parity.Mark);
 				return true;
 			}
 			catch { return false; }
