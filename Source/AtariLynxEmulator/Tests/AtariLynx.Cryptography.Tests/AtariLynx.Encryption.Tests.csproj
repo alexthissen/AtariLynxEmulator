@@ -56,12 +56,6 @@
     <Compile Include="SboxHashAlgorithmTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Tooling\Cryptography\AtariLynx.Cryptography.csproj">
-      <Project>{3bafec86-c7ff-4af6-a577-d116619a466e}</Project>
-      <Name>AtariLynx.Cryptography</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Binaries\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
