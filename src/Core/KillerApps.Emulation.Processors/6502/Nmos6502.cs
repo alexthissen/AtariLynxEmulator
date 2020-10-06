@@ -62,12 +62,6 @@ namespace KillerApps.Emulation.Processors
 		protected const ulong MemoryReadCycle = 5;
 		protected const ulong MemoryWriteCycle = 5;
 
-#if DEVELOP
-		private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
-		Disassembler6500 disassembler = new Disassembler6500();
-		StringBuilder builder = new StringBuilder();
-#endif
-
 		// Timing and sleep
 		public bool IsAsleep { get; protected set; }
 		public ulong ScheduledWakeUpTime;
