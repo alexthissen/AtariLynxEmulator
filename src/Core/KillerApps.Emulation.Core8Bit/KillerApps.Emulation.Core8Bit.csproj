@@ -1,8 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>netstandard1.0</TargetFramework>
-    <RootNamespace>KillerApps.Emulation.Core</RootNamespace>
-  </PropertyGroup>
-
-</Project>

@@ -5,7 +5,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 
-namespace KillerApps.Emulation.Core
+namespace KillerApps.Emulation.Processors
 {
 	[DebuggerDisplay("Word ({Value})")]
 	public struct Word
