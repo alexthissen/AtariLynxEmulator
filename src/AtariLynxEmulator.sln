@@ -7,17 +7,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{71B11949-B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6EED3564-4649-464C-9A3D-0BBE19F51136}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KillerApps.Emulation.Processors.Tests", "Tests\KillerApps.Emulation.Processors.Tests\KillerApps.Emulation.Processors.Tests.csproj", "{3D866BE1-64B8-4BEA-B1EC-F4A4F5DD3AB6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Processors.Tests", "Tests\KillerApps.Emulation.Processors.Tests\Processors.Tests.csproj", "{3D866BE1-64B8-4BEA-B1EC-F4A4F5DD3AB6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KillerApps.Emulation.Processors", "Core\KillerApps.Emulation.Processors\KillerApps.Emulation.Processors.csproj", "{33E0EF79-E125-4A78-8281-34E9C5D92147}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Processors", "Core\KillerApps.Emulation.Processors\Processors.csproj", "{33E0EF79-E125-4A78-8281-34E9C5D92147}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KillerApps.Emulation.Eeproms", "Core\KillerApps.Emulation.Eeproms\KillerApps.Emulation.Eeproms.csproj", "{C57E0F18-5ECF-4280-865E-586C05B65743}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eeproms", "Core\KillerApps.Emulation.Eeproms\Eeproms.csproj", "{C57E0F18-5ECF-4280-865E-586C05B65743}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KillerApps.Emulation.Eeproms.Tests", "Tests\KillerApps.Emulation.Eeproms.Tests\KillerApps.Emulation.Eeproms.Tests.csproj", "{E896A6E6-089F-4546-810A-4127A0A083D0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eeproms.Tests", "Tests\KillerApps.Emulation.Eeproms.Tests\Eeproms.Tests.csproj", "{E896A6E6-089F-4546-810A-4127A0A083D0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Atari", "Atari", "{6FEC5B60-00D4-4307-A32C-66314F03E034}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KillerApps.Emulation.AtariLynx", "Atari\KillerApps.Emulation.AtariLynx\KillerApps.Emulation.AtariLynx.csproj", "{ED94BFA5-4DC2-4F7F-96E5-671BB55AF0C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtariLynx", "Atari\KillerApps.Emulation.AtariLynx\AtariLynx.csproj", "{ED94BFA5-4DC2-4F7F-96E5-671BB55AF0C1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{C35A5B44-3F20-4F3B-8CD0-073EEC0B32F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossPlatformDesktop", "Clients\KillerApps.Emulation.Clients.CrossPlatformDesktop\CrossPlatformDesktop.csproj", "{47EDC2B5-BF0C-4AC3-A05F-0710C2176C4C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +49,10 @@ Global
 		{ED94BFA5-4DC2-4F7F-96E5-671BB55AF0C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED94BFA5-4DC2-4F7F-96E5-671BB55AF0C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED94BFA5-4DC2-4F7F-96E5-671BB55AF0C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47EDC2B5-BF0C-4AC3-A05F-0710C2176C4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47EDC2B5-BF0C-4AC3-A05F-0710C2176C4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47EDC2B5-BF0C-4AC3-A05F-0710C2176C4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47EDC2B5-BF0C-4AC3-A05F-0710C2176C4C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,6 +63,7 @@ Global
 		{C57E0F18-5ECF-4280-865E-586C05B65743} = {71B11949-BFF3-47F6-8CCB-31C91C5C1096}
 		{E896A6E6-089F-4546-810A-4127A0A083D0} = {6EED3564-4649-464C-9A3D-0BBE19F51136}
 		{ED94BFA5-4DC2-4F7F-96E5-671BB55AF0C1} = {6FEC5B60-00D4-4307-A32C-66314F03E034}
+		{47EDC2B5-BF0C-4AC3-A05F-0710C2176C4C} = {C35A5B44-3F20-4F3B-8CD0-073EEC0B32F2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B7D6BA82-744C-4D4F-958C-294C3F422631}
