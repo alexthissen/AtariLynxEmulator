@@ -96,7 +96,7 @@ namespace KillerApps.Emulation.AtariLynx
 
 		private void GenerateInterrupts() 
 		{
-			// Mikey is only source of interrupts. It contains all timers (regular, audio and UART)
+			// "Mikey is only source of interrupts. It contains all timers (regular, audio and UART)"
 			if (SystemClock.CompatibleCycleCount >= NextTimerEvent) 
 				Mikey.Update();
 		}

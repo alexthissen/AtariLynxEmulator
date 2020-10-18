@@ -151,12 +151,6 @@ namespace KillerApps.Emulation.Processors
 				}
 			}
 
-#if DEVELOP
-			disassembler.DisassembleSingleStatement(Memory, PC, builder);
-			Debug.WriteLineIf(GeneralSwitch.TraceVerbose, String.Format("{0:X4} {1}", PC, builder.ToString()));
-			builder.Clear();
-#endif
-
 			// Fetch opcode
 			Opcode = Memory.Peek(PC);
 			

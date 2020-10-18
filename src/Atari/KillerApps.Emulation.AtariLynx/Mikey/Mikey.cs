@@ -291,7 +291,6 @@ namespace KillerApps.Emulation.AtariLynx
 			ulong nextTimer = UInt64.MaxValue;
 			ulong cycleCountAdvance = 0;
 			
-			//Debug.WriteLineIf(GeneralSwitch.TraceVerbose, "Mikey::Update");
 			foreach (Timer timer in Timers)
 			{
 				cycleCountAdvance += timer.Update(device.SystemClock.CompatibleCycleCount);

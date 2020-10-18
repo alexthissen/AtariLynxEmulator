@@ -69,7 +69,7 @@ namespace KillerApps.Emulation.Processors.Tests
 		[TestMethod]
 		public void ASLShouldSetCarryFlagIfBit7IsShiftedLeft()
 		{
-			cpu.A = 0x80;
+			cpu.A = 0x80; // Binary 1000 0000
 			byte[] instructions = new byte[]
 				{
 					0x0a // ASLA

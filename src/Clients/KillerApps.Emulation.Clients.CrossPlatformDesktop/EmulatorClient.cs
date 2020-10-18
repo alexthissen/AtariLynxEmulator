@@ -199,16 +199,11 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
         {
             lcdScreen.SetData(emulator.LcdScreenDma, 0x0, 0x3FC0);
 
-            //  Stream stream = new ;
-            //lcdScreen.SaveAsJpeg(stream, Suzy.SCREEN_WIDTH, Suzy.SCREEN_HEIGHT);
-
             spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null);
-            //spriteBatch.Draw(border, new Rectangle(0,0, graphicsWidth *2, graphicsHeight*2), Color.White);
             spriteBatch.Draw(lcdScreen,
                 new Rectangle(0, 0, graphicsWidth, graphicsHeight),
                 new Rectangle(0, 0, Suzy.SCREEN_WIDTH, Suzy.SCREEN_HEIGHT),
                 Color.White);
-            //spriteBatch.DrawString(font, emulator.SystemClock.CompatibleCycleCount.ToString("X16"), new Vector2(10, 50), Color.White);
             spriteBatch.End();
 
             base.Draw(gameTime);
