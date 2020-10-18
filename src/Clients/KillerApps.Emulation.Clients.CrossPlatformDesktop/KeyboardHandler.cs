@@ -17,7 +17,7 @@ namespace KillerApps.Gaming.MonoGame
 			get
 			{
 				KeyboardState keyboard = Keyboard.GetState();
-				return keyboard.IsKeyDown(Keys.F4);
+				return keyboard.IsKeyDown(Keys.F4) || keyboard.IsKeyDown(Keys.Escape);
 			}
 		}
 

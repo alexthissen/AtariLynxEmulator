@@ -20,11 +20,8 @@ namespace KillerApps.Emulation.AtariLynx
 		protected bool currentStrobe = false;
 		protected bool addressData = false;
 
-		// TODO: Change back to private
 		private RomCartMemoryBank Bank0 { get; set; }
 		private RomCartMemoryBank Bank1 { get; set; }
-
-		//private static TraceSwitch GeneralSwitch = new TraceSwitch("General", "General trace switch", "Error");
 
 		public RomCart(int bank0Size, int bank1Size)
 		{

@@ -1,34 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="KillerApps.Emulation.Atari.Lynx.TimerLogicFactory">
+  <Class Name="KillerApps.Emulation.AtariLynx.TimerLogicFactory">
     <Position X="3" Y="5" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Mikey\TimerLogicFactory.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="KillerApps.Emulation.Atari.Lynx.Timer">
-    <Position X="3" Y="0.5" Width="2" />
-    <Compartments>
-      <Compartment Name="Fields" Collapsed="true" />
-    </Compartments>
-    <TypeIdentifier>
-      <HashCode>QAwAAAAAACAABAABACAQAAAAAIAAAABBAAACAAAAAgA=</HashCode>
-      <FileName>Mikey\Timer.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="KillerApps.Emulation.Atari.Lynx.ClockedTimerLogic">
+  <Class Name="KillerApps.Emulation.AtariLynx.ClockedTimerLogic">
     <Position X="5.5" Y="2.5" Width="2" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAQACAACAAAAAAAIAAAABAAEAAiAAAAAAAAAAABAA=</HashCode>
+      <HashCode>AAAAQACAACAAAAAAAIAAAABAAEAAiAAAAAAAACAABAA=</HashCode>
       <FileName>Mikey\ClockedTimerLogic.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="KillerApps.Emulation.Atari.Lynx.DynamicTimerControl">
+  <Class Name="KillerApps.Emulation.AtariLynx.DynamicTimerControl">
     <Position X="0.5" Y="0.5" Width="2" />
     <Members>
       <Field Name="BorrowInMask" Hidden="true" />
@@ -45,7 +35,7 @@
       <FileName>Mikey\DynamicTimerControl.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="KillerApps.Emulation.Atari.Lynx.LinkingTimerLogic">
+  <Class Name="KillerApps.Emulation.AtariLynx.LinkingTimerLogic">
     <Position X="8" Y="2.5" Width="2" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
@@ -56,26 +46,33 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="KillerApps.Emulation.Atari.Lynx.StaticTimerControl">
+  <Class Name="KillerApps.Emulation.AtariLynx.Timer">
+    <Position X="3" Y="0.5" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAABAAAAAAQAAAAAAAAAABAAAACAAAAAgQ=</HashCode>
+      <FileName>Mikey\Timer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="KillerApps.Emulation.AtariLynx.TimerControlBase">
     <Position X="0.5" Y="2.75" Width="2" />
     <Members>
       <Field Name="EnableCountMask" Hidden="true" />
-      <Field Name="EnableInterruptMask" Hidden="true" />
       <Field Name="EnableReloadMask" Hidden="true" />
-      <Field Name="MagModeMask" Hidden="true" />
       <Field Name="ResetTimerDoneMask" Hidden="true" />
-      <Method Name="StaticTimerControl" Hidden="true" />
     </Members>
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AACCAAgQAAAAAAiAAAAAAKBABAAAAAAAAAAAIAAAAAA=</HashCode>
-      <FileName>Mikey\StaticTimerControl.cs</FileName>
+      <HashCode>AAAAAAgQAAAAAAiAAAAAAKBAAAAAAAAAAAAAIAAAAAA=</HashCode>
+      <FileName>Mikey\TimerControlBase.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Interface Name="KillerApps.Emulation.Atari.Lynx.ITimerLogic">
+  <Interface Name="KillerApps.Emulation.AtariLynx.ITimerLogic">
     <Position X="6.75" Y="0.5" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAACAAAAAAAAAAABAA=</HashCode>

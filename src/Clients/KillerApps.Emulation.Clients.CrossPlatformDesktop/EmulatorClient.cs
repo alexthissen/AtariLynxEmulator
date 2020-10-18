@@ -37,7 +37,6 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
 
         // Network
         private IComLynxTransport transport = new SerialPortComLynxTransport();
-        //private GamerServicesComponent gamerServices = null;
 
         public string[] CommandLine { get; set; }
 
@@ -106,9 +105,7 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
             LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
             emulator.InsertCartridge(romImage.LoadCart(new MemoryStream(Roms.junglejack)));
             emulator.Initialize();
-            //emulator.InsertComLynxCable(new SerialPortComLynxTransport());
-            //ICartridge cartridge = LoadCartridge();
-            //emulator.InsertCartridge(cartridge);
+            
             emulator.Reset();
 
             // Preset for homebrew cartridges
