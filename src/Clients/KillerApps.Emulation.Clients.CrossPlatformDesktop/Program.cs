@@ -8,7 +8,9 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
         static void Main()
         {
             using (var game = new EmulatorClient())
+            {
                 game.Run();
+            }
         }
     }
 }

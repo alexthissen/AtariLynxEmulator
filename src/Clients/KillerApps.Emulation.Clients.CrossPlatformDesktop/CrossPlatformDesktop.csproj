@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <PublishReadyToRun>false</PublishReadyToRun>
     <TieredCompilation>false</TieredCompilation>
   </PropertyGroup>
@@ -10,6 +10,9 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
     <AssemblyName>KillerApps.Emulation.Clients.CrossPlatformDesktop</AssemblyName>
     <RootNamespace>KillerApps.Emulation.Clients.CrossPlatformDesktop</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile />
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Icon.ico" />
@@ -28,7 +31,7 @@
   <ItemGroup>
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1641" />
-    <PackageReference Include="System.IO.Ports" Version="4.7.0" />
+    <PackageReference Include="System.IO.Ports" Version="5.0.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Atari\KillerApps.Emulation.AtariLynx\AtariLynx.csproj" />

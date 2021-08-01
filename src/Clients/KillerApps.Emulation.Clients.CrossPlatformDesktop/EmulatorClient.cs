@@ -24,9 +24,13 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         private Texture2D lcdScreen;
-        private const int magnification = 8;
-        private const int graphicsWidth = Suzy.SCREEN_WIDTH * magnification;
-        private const int graphicsHeight = Suzy.SCREEN_HEIGHT * magnification;
+        private int graphicsWidth;
+        private int graphicsHeight;
+
+        public const int DEFAULT_MAGNIFICATION = 8;
+        private const int DEFAULT_GRAPHICS_WIDTH = Suzy.SCREEN_WIDTH * DEFAULT_MAGNIFICATION;
+        private const int DEFAULT_GRAPHICS_HEIGHT = Suzy.SCREEN_HEIGHT * DEFAULT_MAGNIFICATION;
+        private readonly EmulatorClientOptions clientOptions;
 
         // Input
         private InputHandler inputHandler;
@@ -38,16 +42,15 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
         // Network
         private IComLynxTransport transport = new SerialPortComLynxTransport();
 
-        public string[] CommandLine { get; set; }
-
-        public EmulatorClient() : base()
+        public EmulatorClient(EmulatorClientOptions options = null) : base()
         {
             emulator = new LynxHandheld();
             graphics = new GraphicsDeviceManager(this);
             romContent = new ResourceContentManager(Services, Roms.ResourceManager);
 
-            //gamerServices = new GamerServicesComponent(this);
-            //Components.Add(gamerServices);
+            clientOptions = options ?? EmulatorClientOptions.Default;
+            graphicsHeight = clientOptions.Magnification * Suzy.SCREEN_HEIGHT;
+            graphicsWidth = clientOptions.Magnification * Suzy.SCREEN_WIDTH;
         }
 
         /// <summary>
@@ -64,32 +67,32 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
             IsFixedTimeStep = true;
             TargetElapsedTime = TimeSpan.FromMilliseconds(6); // 60Hz
 
-            InitializeVideo();
-            InitializeEmulator();
+            InitializeVideo(clientOptions.FullScreen);
+            InitializeEmulator(clientOptions.GameRom, clientOptions.BootRom);
             InitializeAudio();
 
-            //inputHandler = new GamePadHandler(this);
-            inputHandler = new KeyboardHandler(this);
+            inputHandler = clientOptions.Controller switch
+            {
+                ControllerType.Gamepad => new GamePadHandler(this),
+                ControllerType.Keyboard => new KeyboardHandler(this),
+                _ => throw new NotImplementedException()
+            };
             Components.Add(inputHandler);
-            //Components.Add(new FrameRateCounter(this));
 
             base.Initialize();
         }
 
-        private ICartridge LoadCartridge()
+        private ICartridge LoadCartridge(FileInfo gameRomFileInfo)
         {
             ICartridge cartridge = null;
+            LnxRomImageFileFormat gameRomImage = new LnxRomImageFileFormat();
+
+            Stream gameRomStream = gameRomFileInfo?.OpenRead();
+            if (gameRomStream is null) gameRomStream = new MemoryStream(Roms.junglejack);
 
             try
             {
-#if WINDOWS || LINUX
-                string cartridgeFileName = CommandLine.Length > 0 ? CommandLine[0] : String.Empty;
-                using (FileStream stream = File.OpenRead(cartridgeFileName))
-                {
-                    LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
-                    cartridge = romImage.LoadCart(stream);
-                }
-#endif
+                cartridge = gameRomImage.LoadCart(gameRomStream);
             }
             catch (Exception)
             {
@@ -98,29 +101,23 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
             return cartridge;
         }
 
-        private void InitializeEmulator()
+        private void InitializeEmulator(FileInfo bootRomFileInfo, FileInfo gameRomFileInfo)
         {
             // Lynx related
-            emulator.BootRomImage = new MemoryStream(Roms.LYNXBOOT);
-            LnxRomImageFileFormat romImage = new LnxRomImageFileFormat();
-            emulator.InsertCartridge(romImage.LoadCart(new MemoryStream(Roms.junglejack)));
+            Stream bootRomImage = bootRomFileInfo?.OpenRead();
+            emulator.BootRomImage = bootRomImage ?? (Stream)(new MemoryStream(Roms.LYNXBOOT));
+            emulator.InsertCartridge(LoadCartridge(gameRomFileInfo));
             emulator.Initialize();
             
             emulator.Reset();
-
-            // Preset for homebrew cartridges
-            //emulator.Mikey.Timers[0].BackupValue = 0x9E;
-            //emulator.Mikey.Timers[0].StaticControlBits = new StaticTimerControl(0x18);
-            //emulator.Mikey.Timers[2].BackupValue = 0x68;
-            //emulator.Mikey.Timers[2].StaticControlBits = new StaticTimerControl(0x1F);
-            //emulator.Mikey.DISPCTL.ByteData = 0x09;
         }
 
-        private void InitializeVideo()
+        private void InitializeVideo(bool fullScreen)
         {
+            // Set video options
             graphics.PreferredBackBufferWidth = graphicsWidth;
             graphics.PreferredBackBufferHeight = graphicsHeight;
-            graphics.IsFullScreen = false;
+            graphics.IsFullScreen = fullScreen;
             graphics.ApplyChanges();
 
             lcdScreen = new Texture2D(graphics.GraphicsDevice, Suzy.SCREEN_WIDTH, Suzy.SCREEN_HEIGHT, false, SurfaceFormat.Color);
@@ -158,9 +155,6 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            //font = Content.Load<SpriteFont>("DefaultFont");
-            //border = Content.Load<Texture2D>("BackgroundLynxBorder");
         }
 
         /// <summary>
