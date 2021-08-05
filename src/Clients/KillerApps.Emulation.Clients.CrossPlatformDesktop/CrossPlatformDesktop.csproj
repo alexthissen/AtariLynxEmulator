@@ -1,18 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <PublishReadyToRun>false</PublishReadyToRun>
     <TieredCompilation>false</TieredCompilation>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
-    <AssemblyName>KillerApps.Emulation.Clients.CrossPlatformDesktop</AssemblyName>
+    <AssemblyName>ale</AssemblyName>
     <RootNamespace>KillerApps.Emulation.Clients.CrossPlatformDesktop</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile />
+    <DocumentationFile></DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Icon.ico" />
@@ -31,6 +32,7 @@
   <ItemGroup>
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1641" />
+    <PackageReference Include="System.CommandLine" Version="2.0.0-beta1.21308.1" />
     <PackageReference Include="System.IO.Ports" Version="5.0.1" />
   </ItemGroup>
   <ItemGroup>
@@ -48,5 +50,10 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Roms.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="APB.lnx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

@@ -68,7 +68,7 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
             TargetElapsedTime = TimeSpan.FromMilliseconds(6); // 60Hz
 
             InitializeVideo(clientOptions.FullScreen);
-            InitializeEmulator(clientOptions.GameRom, clientOptions.BootRom);
+            InitializeEmulator(clientOptions.BootRom, clientOptions.GameRom);
             InitializeAudio();
 
             inputHandler = clientOptions.Controller switch

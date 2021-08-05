@@ -23,14 +23,6 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
         }
     }
 
-    public record EmulatorClientOptions2(
-        int Magnification, 
-        bool FullScreen, 
-        ControllerType Controller,
-        FileInfo BootRom, 
-        FileInfo GameRom
-    );
-
     public enum ControllerType
     {
         Gamepad,

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CrossPlatformDesktop": {
+      "commandName": "Project",
+      "commandLineArgs": "APB.lnx -m 8"
+    }
+  }
+}
