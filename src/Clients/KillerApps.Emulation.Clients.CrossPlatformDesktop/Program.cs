@@ -11,14 +11,6 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
     public static class Program
     {
         [STAThread]
-        static void Main2()
-        {
-            using (var game = new EmulatorClient())
-            {
-                game.Run();
-            }
-        }
-
         static int Main(string[] args)
         {
             RootCommand rootCommand = new RootCommand("Atari Lynx Emulator");

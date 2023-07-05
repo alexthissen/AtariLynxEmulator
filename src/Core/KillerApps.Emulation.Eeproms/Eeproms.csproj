@@ -1,14 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard1.0</TargetFramework>
-    <Company>KillerApps</Company>
-    <Authors>Alex Thissen</Authors>
-    <Product>93XX Chipset family emulation</Product>
-    <Description>Core library for 93XX EEPROM emulation</Description>
-    <Copyright>Copyright © Killer-Apps 2020</Copyright>
-    <AssemblyName>KillerApps.Emulation.Eeproms</AssemblyName>
-    <RootNamespace>KillerApps.Emulation.Eeproms</RootNamespace>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>netstandard1.0;net8.0</TargetFrameworks>
+		<Company>KillerApps</Company>
+		<Authors>Alex Thissen</Authors>
+		<Product>93XX Chipset family emulation</Product>
+		<Description>Core library for 93XX EEPROM emulation</Description>
+		<Copyright>Copyright © Killer-Apps 2023</Copyright>
+		<AssemblyName>KillerApps.Emulation.Eeproms</AssemblyName>
+		<RootNamespace>KillerApps.Emulation.Eeproms</RootNamespace>
+	</PropertyGroup>
 
 </Project>

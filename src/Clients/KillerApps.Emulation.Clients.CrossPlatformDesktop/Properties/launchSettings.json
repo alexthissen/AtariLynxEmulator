@@ -2,7 +2,7 @@
   "profiles": {
     "CrossPlatformDesktop": {
       "commandName": "Project",
-      "commandLineArgs": "APB.lnx -m 8"
+      "commandLineArgs": "Rampart.lnx -m 8"
     }
   }
 }
