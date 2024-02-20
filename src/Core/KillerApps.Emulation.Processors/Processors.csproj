@@ -1,14 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>netstandard1.0;net8.0</TargetFrameworks>
-    <RootNamespace>KillerApps.Emulation.Processors</RootNamespace>
-    <Authors>Alex Thissen</Authors>
-    <Company>KillerApps</Company>
-    <Product>6502 Chipset family emulation</Product>
-    <Description>Core library for 6502 and 65SC02 emulation</Description>
-    <Copyright>Copyright © Killer-Apps 2023</Copyright>
-    <AssemblyName>KillerApps.Emulation.Processors</AssemblyName>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>netstandard1.0;net8.0</TargetFrameworks>
+		<RootNamespace>KillerApps.Emulation.Processors</RootNamespace>
+		<Authors>Alex Thissen</Authors>
+		<Company>KillerApps</Company>
+		<Product>6502 Chipset family emulation</Product>
+		<Description>Core library for 6502 and 65SC02 emulation</Description>
+		<Copyright>Copyright © Killer-Apps 2023</Copyright>
+		<AssemblyName>KillerApps.Emulation.Processors</AssemblyName>
+	</PropertyGroup>
 
 </Project>

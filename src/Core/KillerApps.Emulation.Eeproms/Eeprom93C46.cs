@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace KillerApps.Emulation.Eeproms
+﻿namespace KillerApps.Emulation.Eeproms
 {
 	public class Eeprom93C46A : Eeprom93XX
 	{

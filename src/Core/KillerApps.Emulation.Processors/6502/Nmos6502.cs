@@ -146,7 +146,6 @@ namespace KillerApps.Emulation.Processors
 				}
 				else
 				{
-					//SystemClock.CompatibleCycleCount = ScheduledWakeUpTime;
 					return 0;
 				}
 			}
@@ -154,8 +153,6 @@ namespace KillerApps.Emulation.Processors
 			// Fetch opcode
 			Opcode = Memory.Peek(PC);
 			
-			//SystemClock.CycleCount += MemoryReadCycle;
-
 			// Lookup on timings that Keith Wilkins has made	
 			SystemClock.CompatibleCycleCount += 1 + timings[Opcode] * MemoryReadCycle;
 			PC++;

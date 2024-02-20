@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace KillerApps.Emulation.Processors
+﻿namespace KillerApps.Emulation.Processors
 {
 	// TODO: Optimize zero page addressing to use memory directly instead of via Peek and Poke
 	// TODO: Move timings into memory to allow for different cycles per memory access

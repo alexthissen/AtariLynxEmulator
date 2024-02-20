@@ -1,8 +1,7 @@
 ﻿using System;
 using System.CommandLine;
 using System.CommandLine.Builder;
-using System.CommandLine.Help;
-using System.CommandLine.Invocation;
+using System.CommandLine.NamingConventionBinder;
 using System.CommandLine.Parsing;
 using System.IO;
 
@@ -33,12 +32,13 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
 
             Option<int> magnificationOption = new Option<int>("--magnification", "Magnification of screen");
             magnificationOption.AddAlias("-m");
-            magnificationOption.AddValidator(option =>
+            magnificationOption.AddValidator(result =>
             {
-                if (option.Token == null) return null;
-                if (!Int32.TryParse(option.Tokens[0].Value, out int value) || value <= 0 || value > 20)
-                    return "Magnification must be an integer value between 1 and 20";
-                return null;
+                if (result.Token == null) return;
+                if (!Int32.TryParse(result.Tokens[0].Value, out int value) || value <= 0 || value > 20)
+                {
+                    result.ErrorMessage = "Magnification must be an integer value between 1 and 20";
+                }
             });
             magnificationOption.SetDefaultValue(4);
             magnificationOption.IsRequired = true;

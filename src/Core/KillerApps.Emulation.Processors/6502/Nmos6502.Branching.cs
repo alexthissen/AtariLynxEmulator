@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics;
-
-namespace KillerApps.Emulation.Processors
+﻿namespace KillerApps.Emulation.Processors
 {
 	public partial class Nmos6502
 	{
@@ -133,10 +127,8 @@ namespace KillerApps.Emulation.Processors
 			if (!N)
 			{
 				sbyte offset = (sbyte)Memory.Peek(PC);
-				//SystemClock.CycleCount += MemoryReadCycle;
 				PC++;
 				PC = (ushort)(PC + offset);
-				//Debug.WriteLineIf(GeneralSwitch.TraceInfo, String.Format("BPL taking branch to ${0:X4}", PC));
 			}
 			else
 			{

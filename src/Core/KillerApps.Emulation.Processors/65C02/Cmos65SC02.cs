@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics;
-
-namespace KillerApps.Emulation.Processors
+﻿namespace KillerApps.Emulation.Processors
 {
 	public partial class Cmos65SC02 : Nmos6502
 	{

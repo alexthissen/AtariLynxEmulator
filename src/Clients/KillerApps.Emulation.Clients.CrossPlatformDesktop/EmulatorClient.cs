@@ -128,7 +128,7 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
         {
             dynamicSound = new DynamicSoundEffectInstance(22050, AudioChannels.Mono);
             soundBuffer = new byte[dynamicSound.GetSampleSizeInBytes(TimeSpan.FromMilliseconds(250))];
-            //dynamicSound.BufferNeeded += new EventHandler<EventArgs>(DynamicSoundBufferNeeded);
+            //  dynamicSound.BufferNeeded += new EventHandler<EventArgs>(DynamicSoundBufferNeeded);
             emulator.Mikey.AudioFilter.BufferReady += new EventHandler<BufferEventArgs>(OnAudioFilterBufferReady);
             dynamicSound.Play();
         }

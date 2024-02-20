@@ -2,7 +2,7 @@
   "profiles": {
     "CrossPlatformDesktop": {
       "commandName": "Project",
-      "commandLineArgs": "Rampart.lnx -m 8"
+      "commandLineArgs": "CaliforniaGames.lnx -m 8"
     }
   }
 }
