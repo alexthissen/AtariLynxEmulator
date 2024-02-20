@@ -89,10 +89,8 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
         {
             ICartridge cartridge = null;
             LnxRomImageFileFormat gameRomImage = new LnxRomImageFileFormat();
-
-            Stream gameRomStream = gameRomFileInfo?.OpenRead();
+            Stream gameRomStream = new CustomEmbeddedResourceLoader().OpenStream(romContent, "Zarlor.lnx");
             //if (gameRomStream is null) gameRomStream = new MemoryStream(Roms.junglejack);
-            var streampje = romContent.Load<Stream>(gameRomFileInfo.Name);
 
             try
             {
@@ -108,9 +106,8 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
         private void InitializeEmulator(FileInfo bootRomFileInfo, FileInfo gameRomFileInfo)
         {
             // Lynx related
-            Stream bootRomImage = bootRomFileInfo?.OpenRead();
-            var bootimageje = romContent.Load<Stream>("LYNXBOOT.IMG");
-
+            //var bootimageje = romContent.Load<Stream>("LYNXBOOT.IMG");
+            var bootimageje = new CustomEmbeddedResourceLoader().OpenStream(romContent, "LYNXBOOT.IMG");
             //emulator.BootRomImage = bootRomImage ?? (Stream)(new MemoryStream(Roms.LYNXBOOT));
             emulator.BootRomImage = bootimageje;
             emulator.InsertCartridge(LoadCartridge(gameRomFileInfo));
@@ -136,8 +133,8 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
             dynamicSound = new DynamicSoundEffectInstance(22050, AudioChannels.Mono);
             soundBuffer = new byte[dynamicSound.GetSampleSizeInBytes(TimeSpan.FromMilliseconds(250))];
             //  dynamicSound.BufferNeeded += new EventHandler<EventArgs>(DynamicSoundBufferNeeded);
-            emulator.Mikey.AudioFilter.BufferReady += new EventHandler<BufferEventArgs>(OnAudioFilterBufferReady);
-            dynamicSound.Play();
+            //emulator.Mikey.AudioFilter.BufferReady += new EventHandler<BufferEventArgs>(OnAudioFilterBufferReady);
+            //dynamicSound.Play();
         }
 
         void OnAudioFilterBufferReady(object sender, BufferEventArgs e)

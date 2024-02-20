@@ -18,12 +18,7 @@ namespace CrossPlatformDesktop.Blazor
             var assetFullPath = Path.Combine(asmName, content.RootDirectory, assetName);
             assetFullPath = assetFullPath.Replace('/', '.');
 
-            Stream stream = asm.GetManifestResourceStream(assetFullPath + ".lnx");
-            if (stream == null)
-            {
-                stream = asm.GetManifestResourceStream(assetFullPath + ".IMG");
-            }
-
+            Stream stream = asm.GetManifestResourceStream(assetFullPath);
             return stream;
         }
     }
