@@ -9,6 +9,7 @@ using KillerApps.Gaming.MonoGame;
 using System.IO;
 using Microsoft.Xna.Framework.Audio;
 using CrossPlatformDesktop.Blazor;
+using System.Diagnostics;
 
 namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
 {
@@ -28,7 +29,7 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
         private int graphicsWidth;
         private int graphicsHeight;
 
-        public const int DEFAULT_MAGNIFICATION = 8;
+        public const int DEFAULT_MAGNIFICATION = 1;
         private const int DEFAULT_GRAPHICS_WIDTH = Suzy.SCREEN_WIDTH * DEFAULT_MAGNIFICATION;
         private const int DEFAULT_GRAPHICS_HEIGHT = Suzy.SCREEN_HEIGHT * DEFAULT_MAGNIFICATION;
         private readonly EmulatorClientOptions clientOptions;
@@ -119,9 +120,9 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
         private void InitializeVideo(bool fullScreen)
         {
             // Set video options
-            graphics.PreferredBackBufferWidth = graphicsWidth;
-            graphics.PreferredBackBufferHeight = graphicsHeight;
-            graphics.IsFullScreen = fullScreen;
+            graphics.PreferredBackBufferWidth = 1600;
+            graphics.PreferredBackBufferHeight = 1020;
+            graphics.IsFullScreen = true;
             graphics.ApplyChanges();
 
             lcdScreen = new Texture2D(graphics.GraphicsDevice, Suzy.SCREEN_WIDTH, Suzy.SCREEN_HEIGHT, false, SurfaceFormat.Color);
@@ -177,16 +178,21 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            var w = Stopwatch.StartNew();
+
+
+
             if (inputHandler.ExitGame == true)
                 this.Exit();
-
-            inputHandler.Update(gameTime);
 
             JoystickStates joystick = inputHandler.Joystick;
             emulator.UpdateJoystickState(joystick);
             emulator.Update(86667); // 4 MHz worth of cycles divided by 60 seconds
-
             base.Update(gameTime);
+
+
+
+            Console.WriteLine($"Elapsed Update: {w.ElapsedMilliseconds}");
         }
 
         /// <summary>
@@ -195,16 +201,28 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+            var w = Stopwatch.StartNew();
+
+
+
+
+            inputHandler.Update(gameTime);
+
             lcdScreen.SetData(emulator.LcdScreenDma, 0x0, 0x3FC0);
 
-            spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null);
-            spriteBatch.Draw(lcdScreen,
-                new Rectangle(0, 0, graphicsWidth, graphicsHeight),
-                new Rectangle(0, 0, Suzy.SCREEN_WIDTH, Suzy.SCREEN_HEIGHT),
-                Color.White);
+
+            spriteBatch.Begin();
+            spriteBatch.Draw(lcdScreen, new Vector2(0, 0), null, Color.White, 0, Vector2.Zero, 10, SpriteEffects.None, 0);   
+                //new Rectangle(0, 0, graphicsWidth * 8, graphicsHeight * 8),
+                //new Rectangle(0, 0, Suzy.SCREEN_WIDTH, Suzy.SCREEN_HEIGHT),
+                //Color.White);
             spriteBatch.End();
 
             base.Draw(gameTime);
+
+
+
+            Console.WriteLine($"Elapsed Draw: {w.ElapsedMilliseconds}");
         }
 
         //protected override void OnExiting(object sender, EventArgs args)
