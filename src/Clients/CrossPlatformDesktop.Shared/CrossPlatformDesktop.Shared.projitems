@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>f3174862-63f5-465e-be36-48366983e3f7</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>CrossPlatformDesktop.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\KillerApps.Emulation.Clients.CrossPlatformDesktop\EmulatorClient.cs" Link="EmulatorClient.cs" />
+    <Compile Include="..\KillerApps.Emulation.Clients.CrossPlatformDesktop\EmulatorClientOptions.cs" Link="EmulatorClientOptions.cs" />
+    <Compile Include="..\KillerApps.Emulation.Clients.CrossPlatformDesktop\FrameRateCounter.cs" Link="FrameRateCounter.cs" />
+    <Compile Include="..\KillerApps.Emulation.Clients.CrossPlatformDesktop\GamePadHandler.cs" Link="GamePadHandler.cs" />
+    <Compile Include="..\KillerApps.Emulation.Clients.CrossPlatformDesktop\IControllerHandler.cs" Link="IControllerHandler.cs" />
+    <Compile Include="..\KillerApps.Emulation.Clients.CrossPlatformDesktop\InputHandler.cs" Link="InputHandler.cs" />
+    <Compile Include="..\KillerApps.Emulation.Clients.CrossPlatformDesktop\KeyboardHandler.cs" Link="KeyboardHandler.cs" />
+  </ItemGroup>
+</Project>

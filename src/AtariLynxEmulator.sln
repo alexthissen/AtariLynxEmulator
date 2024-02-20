@@ -23,6 +23,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{C35A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CrossPlatformDesktop", "Clients\KillerApps.Emulation.Clients.CrossPlatformDesktop\CrossPlatformDesktop.csproj", "{47EDC2B5-BF0C-4AC3-A05F-0710C2176C4C}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CrossPlatformDesktop.Shared", "Clients\CrossPlatformDesktop.Shared\CrossPlatformDesktop.Shared.shproj", "{F3174862-63F5-465E-BE36-48366983E3F7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CrossPlatformDesktop.Blazor", "Clients\CrossPlatformDesktop.Blazor\CrossPlatformDesktop.Blazor.csproj", "{2EC88D78-A31F-4BFB-9CE5-2341274DE375}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +57,10 @@ Global
 		{47EDC2B5-BF0C-4AC3-A05F-0710C2176C4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47EDC2B5-BF0C-4AC3-A05F-0710C2176C4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47EDC2B5-BF0C-4AC3-A05F-0710C2176C4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EC88D78-A31F-4BFB-9CE5-2341274DE375}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EC88D78-A31F-4BFB-9CE5-2341274DE375}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EC88D78-A31F-4BFB-9CE5-2341274DE375}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EC88D78-A31F-4BFB-9CE5-2341274DE375}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -64,8 +72,14 @@ Global
 		{E896A6E6-089F-4546-810A-4127A0A083D0} = {6EED3564-4649-464C-9A3D-0BBE19F51136}
 		{ED94BFA5-4DC2-4F7F-96E5-671BB55AF0C1} = {6FEC5B60-00D4-4307-A32C-66314F03E034}
 		{47EDC2B5-BF0C-4AC3-A05F-0710C2176C4C} = {C35A5B44-3F20-4F3B-8CD0-073EEC0B32F2}
+		{F3174862-63F5-465E-BE36-48366983E3F7} = {C35A5B44-3F20-4F3B-8CD0-073EEC0B32F2}
+		{2EC88D78-A31F-4BFB-9CE5-2341274DE375} = {C35A5B44-3F20-4F3B-8CD0-073EEC0B32F2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B7D6BA82-744C-4D4F-958C-294C3F422631}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Clients\CrossPlatformDesktop.Shared\CrossPlatformDesktop.Shared.projitems*{2ec88d78-a31f-4bfb-9ce5-2341274de375}*SharedItemsImports = 5
+		Clients\CrossPlatformDesktop.Shared\CrossPlatformDesktop.Shared.projitems*{f3174862-63f5-465e-be36-48366983e3f7}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

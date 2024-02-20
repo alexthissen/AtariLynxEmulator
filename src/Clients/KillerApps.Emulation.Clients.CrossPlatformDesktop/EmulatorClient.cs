@@ -8,6 +8,7 @@ using KillerApps.Emulation.AtariLynx;
 using KillerApps.Gaming.MonoGame;
 using System.IO;
 using Microsoft.Xna.Framework.Audio;
+using CrossPlatformDesktop.Blazor;
 
 namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
 {
@@ -40,13 +41,15 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
         private DynamicSoundEffectInstance dynamicSound;
 
         // Network
-        private IComLynxTransport transport = new SerialPortComLynxTransport();
+        //private IComLynxTransport transport = new SerialPortComLynxTransport();
 
         public EmulatorClient(EmulatorClientOptions options = null) : base()
         {
             emulator = new LynxHandheld();
             graphics = new GraphicsDeviceManager(this);
-            romContent = new ResourceContentManager(Services, Roms.ResourceManager);
+            //romContent = new ResourceContentManager(Services, Roms.ResourceManager);
+            romContent = new ExtendibleContentManager(this.Services, new CustomEmbeddedResourceLoader());
+            romContent.RootDirectory = "Content";
 
             clientOptions = options ?? EmulatorClientOptions.Default;
             graphicsHeight = clientOptions.Magnification * Suzy.SCREEN_HEIGHT;
@@ -88,7 +91,8 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
             LnxRomImageFileFormat gameRomImage = new LnxRomImageFileFormat();
 
             Stream gameRomStream = gameRomFileInfo?.OpenRead();
-            if (gameRomStream is null) gameRomStream = new MemoryStream(Roms.junglejack);
+            //if (gameRomStream is null) gameRomStream = new MemoryStream(Roms.junglejack);
+            var streampje = romContent.Load<Stream>(gameRomFileInfo.Name);
 
             try
             {
@@ -105,10 +109,13 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
         {
             // Lynx related
             Stream bootRomImage = bootRomFileInfo?.OpenRead();
-            emulator.BootRomImage = bootRomImage ?? (Stream)(new MemoryStream(Roms.LYNXBOOT));
+            var bootimageje = romContent.Load<Stream>("LYNXBOOT.IMG");
+
+            //emulator.BootRomImage = bootRomImage ?? (Stream)(new MemoryStream(Roms.LYNXBOOT));
+            emulator.BootRomImage = bootimageje;
             emulator.InsertCartridge(LoadCartridge(gameRomFileInfo));
             emulator.Initialize();
-            
+
             emulator.Reset();
         }
 
@@ -203,11 +210,11 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
             base.Draw(gameTime);
         }
 
-        protected override void OnExiting(object sender, EventArgs args)
-        {
-            // Stop sound before exiting
-            //if (dynamicSound.State != SoundState.Stopped) dynamicSound.Stop(true);
-            base.OnExiting(sender, args);
-        }
+        //protected override void OnExiting(object sender, EventArgs args)
+        //{
+        //    // Stop sound before exiting
+        //    //if (dynamicSound.State != SoundState.Stopped) dynamicSound.Stop(true);
+        //    base.OnExiting(sender, args);
+        //}
     }
 }
