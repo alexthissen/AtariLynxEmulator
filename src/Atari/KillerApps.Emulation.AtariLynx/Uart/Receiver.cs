@@ -62,7 +62,7 @@ namespace KillerApps.Emulation.AtariLynx
 			if (overrun) controlRegister.OverrunError = true;
 			if (framing) controlRegister.FrameError = true;
 
-			// TODO (UART): Figure out whether data is received when an error occurs
+			// Data is received even if an error occurs
 			ReceiveData(data);
 		}
 

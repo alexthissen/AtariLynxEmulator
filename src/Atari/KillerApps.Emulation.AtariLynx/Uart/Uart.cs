@@ -65,6 +65,7 @@ namespace KillerApps.Emulation.AtariLynx
 			// As a result, the software must disable the interrupt prior to clearing it."
 			if (SerialControlRegister.ReceiveInterruptEnable && SerialControlRegister.ReceiveReady)
 				return true;
+
 			// TODO (UART): Check whether interrupt fires when transmit buffer is empty, 
 			// or when transmitter totally done
 			// Seems to be on BufferEmpty, because that gives some results

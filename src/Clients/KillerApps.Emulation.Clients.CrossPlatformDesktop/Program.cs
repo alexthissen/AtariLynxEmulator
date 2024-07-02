@@ -34,14 +34,14 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
             magnificationOption.AddAlias("-m");
             magnificationOption.AddValidator(result =>
             {
-                if (result.Token == null) return;
+                if (result.Token is null) return;
                 if (!Int32.TryParse(result.Tokens[0].Value, out int value) || value <= 0 || value > 20)
                 {
                     result.ErrorMessage = "Magnification must be an integer value between 1 and 20";
                 }
             });
             magnificationOption.SetDefaultValue(4);
-            magnificationOption.IsRequired = true;
+            magnificationOption.IsRequired = false;
             rootCommand.AddOption(magnificationOption);
 
             Parser parser = new CommandLineBuilder(rootCommand).UseDefaults().Build();

@@ -2,7 +2,7 @@
   "profiles": {
     "CrossPlatformDesktop": {
       "commandName": "Project",
-      "commandLineArgs": "CaliforniaGames.lnx -m 8"
+      "commandLineArgs": "--version"
     }
   }
 }
