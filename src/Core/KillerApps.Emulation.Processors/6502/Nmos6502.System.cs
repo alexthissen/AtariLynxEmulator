@@ -32,7 +32,10 @@
 			// "BRK does set the interrupt-disable I flag like an IRQ does, and if you have the 
 			// CMOS 6502 (65C02), it will also clear the decimal D flag."
 			// "On the 65C02, the IRQ, NMI, and RESET hardware interrupts also clear the D flag 
-			// (after pushing the P register), "
+			// (after pushing the P register)"
+			
+			// TODO: Override this method in Cmos65SC02
+			// Nmos6502 does not reset the D-flag 
 			this.D = false;
 			this.I = true;
 

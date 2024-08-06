@@ -120,7 +120,8 @@
 		{
 			FetchData();
 
-			// "BIT has three additional addressing modes. ... The immediate addressing mode only affects the Z flag."
+			// "BIT has three additional addressing modes. ...
+			// The immediate addressing mode only affects the Z flag."
 			UpdateZeroFlag((byte)(Data & A));
 		}
 	}

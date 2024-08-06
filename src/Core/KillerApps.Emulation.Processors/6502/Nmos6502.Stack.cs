@@ -21,7 +21,9 @@
 		/// </remarks>
 		public void PHP()
 		{
-			PushOnStack(ProcessorStatus);
+            // Flags always on when using PHP
+			byte flags = (byte)(ProcessorStatus | 0x30);
+            PushOnStack(flags);
 		}
 
 		/// <summary>

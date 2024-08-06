@@ -21,4 +21,10 @@
     <ProjectReference Include="..\..\Core\KillerApps.Emulation.Processors\Processors.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Binaries\6502_functional_test.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

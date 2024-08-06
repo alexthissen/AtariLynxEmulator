@@ -22,8 +22,8 @@
 			Address = Memory.PeekWord(Address);
 
 			// Fetch low byte, low byte, high byte
-			//SystemClock.CycleCount += 3 * MemoryReadCycle;
-		}
+			//SystemClock.CycleCount += 5 * MemoryReadCycle;
+        }
 
 		// Absolute Indexed Indirect ($abcd,X)
 		private void AbsoluteIndexedIndirectX()

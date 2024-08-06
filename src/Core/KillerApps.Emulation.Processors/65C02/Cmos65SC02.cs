@@ -97,6 +97,8 @@
 
 				case 0x70: BVS(); break;
 				case 0x71: ZeroPageIndirectIndexedY(); ADC(); break;
+				
+				// ADC takes 6 instead of 5 cycles in decimal mode
 				case 0x72: ZeroPageIndirect(); ADC(); break;
 				case 0x74: ZeroPageX(); STZ(); break;
 				case 0x75: ZeroPageX(); ADC(); break;
@@ -198,7 +200,9 @@
 
 				case 0xF0: BEQ(); break;
 				case 0xF1: ZeroPageIndirectIndexedY(); SBC(); break;
-				case 0xF2: ZeroPageIndirect(); SBC(); break;
+                
+				// SBC takes 6 instead of 5 cycles in decimal mode
+                case 0xF2: ZeroPageIndirect(); SBC(); break;
 				case 0xF5: ZeroPageX(); SBC(); break;
 				case 0xF6: ZeroPageX(); INC(); break;
 				case 0xF8: SED(); break;

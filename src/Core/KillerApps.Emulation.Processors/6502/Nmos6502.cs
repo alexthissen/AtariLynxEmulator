@@ -19,6 +19,7 @@ namespace KillerApps.Emulation.Processors
 		public ushort Address; // Instruction operand resolved address
 		public byte Data; // Instruction data
 		public ushort PC; // Program Counter (16 bits)
+
 		public byte ProcessorStatus
 		{
 			get
@@ -58,6 +59,7 @@ namespace KillerApps.Emulation.Processors
 		public bool C; // Carry flag for processor status register
 
 		protected internal IMemoryAccess<ushort, byte> Memory { get; private set; }
+
 		// TODO: Push read cycles down to MMU for precise timings (if desired)
 		protected const ulong MemoryReadCycle = 5;
 		protected const ulong MemoryWriteCycle = 5;
