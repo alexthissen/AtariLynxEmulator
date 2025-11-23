@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+        <PublishReadyToRun>true</PublishReadyToRun>
+        <TieredCompilation>true</TieredCompilation>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+        <RuntimeIdentifiers>win-arm64;linux-arm64;osx-arm64</RuntimeIdentifiers>
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <EnableNETAnalyzers>true</EnableNETAnalyzers>
+        <AnalysisLevel>latest</AnalysisLevel>
+        <Optimize>true</Optimize>
+    </PropertyGroup>
+    
+    <PropertyGroup>
+        <ApplicationIcon>Icon.ico</ApplicationIcon>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AssemblyName>ale-arm</AssemblyName>
+        <RootNamespace>KillerApps.Emulation.Clients.ARMOptimized</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Atari\KillerApps.Emulation.AtariLynx\AtariLynx.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
+        <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+        <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="..\KillerApps.Emulation.Clients.CrossPlatformDesktop\Icon.ico">
+            <Link>Icon.ico</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\KillerApps.Emulation.Clients.CrossPlatformDesktop\Icon.bmp">
+            <Link>Icon.bmp</Link>
+        </EmbeddedResource>
+        <Content Include="..\KillerApps.Emulation.Clients.CrossPlatformDesktop\Content\**\*.*">
+            <Link>Content\%(RecursiveDir)%(Filename)%(Extension)</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="app.manifest">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+</Project>

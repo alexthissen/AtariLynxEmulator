@@ -203,7 +203,7 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
             base.Draw(gameTime);
         }
 
-        protected override void OnExiting(object sender, EventArgs args)
+        protected override void OnExiting(object sender, ExitingEventArgs args)
         {
             // Stop sound before exiting
             //if (dynamicSound.State != SoundState.Stopped) dynamicSound.Stop(true);
