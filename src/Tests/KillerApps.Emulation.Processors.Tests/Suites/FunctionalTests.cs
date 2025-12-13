@@ -27,8 +27,8 @@ namespace KillerApps.Emulation.Processors.Tests.Suites
             while (instructions-- > 0) 
                 cpu.Execute(1);
 
-            Assert.AreEqual(cpu.PC, 0x3469);
-            Assert.AreEqual(cpu.A, 0xf0, "Testing complete opcode incorrect");
+            Assert.AreEqual(0x3469, cpu.PC);
+            Assert.AreEqual(0xf0, cpu.A, "Testing complete opcode incorrect");
         }
     }
 }

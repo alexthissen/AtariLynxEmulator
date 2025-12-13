@@ -59,7 +59,7 @@ public class ShiftInstructionsTest
 
 		// Assert
 		Assert.AreEqual<int>((0x85 << 1) & 0xff, cpu.A, "Accumulator should contain left shifted value.");
-		Assert.IsTrue((cpu.A % 2) == 0, "Bit 0 should always contain zero.");
+		Assert.AreEqual<int>(0, cpu.A % 2, "Bit 0 should always contain zero.");
 	}
 
 	[TestMethod]
