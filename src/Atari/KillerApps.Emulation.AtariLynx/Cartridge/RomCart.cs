@@ -117,9 +117,12 @@ namespace KillerApps.Emulation.AtariLynx
 			// "The strobe is also self timed."
 			if (!currentStrobe)
 			{
-				counter++;
 				// "... a 11 bit counter"
-				counter &= 0x07ff;
+				counter++;
+
+				// Counter seems to be saturating instead of overflowing
+				//counter &= 0x07ff;
+				if (counter > 0x07ff) counter = 0x07ff;
 			}
 		}
 
@@ -128,9 +131,12 @@ namespace KillerApps.Emulation.AtariLynx
 			byte data = bank.Peek(shiftRegister, counter);
 			if (!currentStrobe)
 			{
-				counter++;
 				// "... a 11 bit counter"
-				counter &= 0x07ff;
+				counter++;
+
+				// Counter seems to be saturating instead of overflowing
+				//counter &= 0x07ff;
+				if (counter > 0x07ff) counter = 0x07ff;
 			}
 			return data;
 		}

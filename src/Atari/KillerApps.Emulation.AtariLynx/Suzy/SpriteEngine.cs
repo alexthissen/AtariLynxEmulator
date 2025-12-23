@@ -20,9 +20,9 @@ namespace KillerApps.Emulation.AtariLynx
 		// "Each SCB also points to the sprite data block containing the image of interest. Many SCBs may point to one sprite data block."
 		internal Word PROCADR;
 
-		public bool StretchingEnabled { get; set; }
-		public bool SizingEnabled { get; set; }
-		public bool TiltingEnabled { get; set; }
+		internal bool StretchingEnabled { get; set; }
+		internal bool SizingEnabled { get; set; }
+		internal bool TiltingEnabled { get; set; }
 
 		// "The sprite engine consists of several 8 bit control registers, a 16 bit wide sprite 
 		// control block register set and ALU, an address manipulator, an 8 byte deep source data FIFO, 
@@ -252,7 +252,10 @@ namespace KillerApps.Emulation.AtariLynx
 						// "The horizontal position of a sprite can be modified every time a scan line is processed. 
 						// This allows for 'tilting' a sprite and in conjunction with 'stretch' can be useful in 
 						// creating arbitrary polygons."
-						if (TiltingEnabled) TILTACUM.Value += TILT.Value;
+						if (TiltingEnabled) 
+						{
+							TILTACUM.Value += TILT.Value;
+						}
 					}
 
 					unpacker.MoveToNextLine((byte)(SPRDOFF.Value - 1));
@@ -536,13 +539,13 @@ namespace KillerApps.Emulation.AtariLynx
 			//cycles_used += 2 * SPR_RDWR_CYC;
 		}
 
-		private Quadrant GetNextQuadrant(Quadrant current)
+		internal Quadrant GetNextQuadrant(Quadrant current)
 		{
 			QuadrantOrder order = (current.Order == QuadrantOrder.DownLeft) ? QuadrantOrder.DownRight : current.Order + 1;
 			return SpriteControlBlock.Quadrants[(int)order];
 		}
 
-		private ushort ParseReloadableDepth(byte[] memory, ushort address)
+		internal ushort ParseReloadableDepth(byte[] memory, ushort address)
 		{
 			ushort bytesRead = 0;
 			TiltingEnabled = StretchingEnabled = SizingEnabled = false;
@@ -600,7 +603,7 @@ namespace KillerApps.Emulation.AtariLynx
 			return bytesRead;
 		}
 
-		private void ReloadPalette(byte[] memory, ushort address)
+		internal void ReloadPalette(byte[] memory, ushort address)
 		{
 			// "(8 bytes) 64 bits of pen palette"
 			PenIndexPalette = new byte[16];
