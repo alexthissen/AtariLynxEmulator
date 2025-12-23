@@ -79,7 +79,7 @@ namespace KillerApps.Emulation.AtariLynx
 		// "The actual steps required to perform some of the functions are:
 		// 16 x 16 multiply:
 		// Write LSB to D, MSB to C
-		// Write LSB to B, MS8 to A
+		// Write LSB to B, MSB to A
 		// Poll MULTSTAT until done (or just wait for 54 ticks)
 		// Read answer (LSB->MSB) from H,G,F,E
 		// Accumulate:
@@ -129,7 +129,7 @@ namespace KillerApps.Emulation.AtariLynx
 
 			// Do conversion if value is negative. Subtract 1 to account for 0 being negative
 			sign = 1;
-			if (((value - 1) & 0x8000) == 0x8000)
+			if (value > 0x8000)
 			{
 				ushort conversion = (ushort)(value ^ 0xFFFF);
 				conversion++; // Add 1 for earlier correction
@@ -211,7 +211,6 @@ namespace KillerApps.Emulation.AtariLynx
 
 		private byte GetSignificantZeros(ushort value)
 		{
-			//																							2
 			// Number of significant zeros is determined by  log(x)
 			//return (byte)(15 - Math.Log(value, 2));
 
@@ -817,7 +816,6 @@ namespace KillerApps.Emulation.AtariLynx
 			MathNP = BitConverter.GetBytes(0xFFFF);
 
 			signAB = signCD = signEFGH = 1;
-			//Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::Reset");
 		}
 	}
 }
