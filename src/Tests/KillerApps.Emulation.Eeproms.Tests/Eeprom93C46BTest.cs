@@ -263,7 +263,8 @@ namespace KillerApps.Emulation.Eeproms.Tests
 			Assert.AreEqual<Opcode>(Opcode.WRAL, instruction.Opcode, "WRAL opcode should have executed.");
 			for (int i = 0; i < eeprom.Memory.Length; i++)
 			{
-				Assert.AreEqual<ushort>(value, eeprom.Memory[i], "WriteAll operation should have set value in memory cell {0}.", i);				
+				Assert.AreEqual<ushort>(value, eeprom.Memory[i], 
+					$"WriteAll operation should have set value in memory cell {i}.", value.ToString());
 			} 
 		}
 
