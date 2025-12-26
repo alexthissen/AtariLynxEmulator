@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using KillerApps.Emulation.Processors;
 using System.Diagnostics;
+using System.Data.SqlTypes;
 
 namespace KillerApps.Emulation.AtariLynx
 {
@@ -90,8 +91,8 @@ namespace KillerApps.Emulation.AtariLynx
 
 		public void BeginMultiply16By16()
 		{
-			SPRSYS.MathWarning = false;
-			SPRSYS.MathInProcess = true;
+			SPRSYS.MathWarning = false; // TODO: Is this correct here?
+			SPRSYS.LastCarry = false;
 			MathTypeInProgress = MathType.Multiplication;
 
 			ushort AB = BitConverter.IsLittleEndian ? (ushort)((MathABCD[3] << 8) + MathABCD[2]) : (ushort)((MathABCD[2] << 8) + MathABCD[3]);
@@ -103,37 +104,46 @@ namespace KillerApps.Emulation.AtariLynx
 			{
 				// "At the end of a multiply, the signs of the original numbers are examined and 
 				// if required, the multiply result is converted to a negative number."
-				signEFGH = signAB + signCD; // Add the sign bits. Zero means negative result	
+				signEFGH = signAB + signCD; // Add the sign bits. Zero means negative result
 				if (signEFGH == 0)
 				{
-					EFGH ^= 0xffffffff; // Calculate 2-s complement
-					EFGH++;
+					SPRSYS.LastCarry = EFGH != 0;
+					EFGH = (uint)-(int)EFGH;
+					// EFGH ^= 0xffffffff; // Calculate 2-s complement
+					// EFGH++;
 				}
 			}
 
 			// "Multiplies without sign or accumulate take 44 ticks to complete.
 			// Multiplies with sign and accumulate take 54 ticks to complete"
-			ulong cyclesUsed = (SPRSYS.SignedMath && SPRSYS.Accumulate) ?
-				cyclesUsed = 54 / 4 : 44 / 4; // Ticks are 1/4 cycle
+			ulong cyclesUsed = (SPRSYS.SignedMath || SPRSYS.Accumulate) ? 54u : 44u;
 			MathReadyTime = device.SystemClock.CompatibleCycleCount + cyclesUsed;
+
+			SPRSYS.UnsafeAccess = true;
+			SPRSYS.MathInProcess = true;
 		}
 
 		internal ushort ConvertSignedMathValue(ushort value, out int sign)
 		{
-			// "In signed multiply, the hardware thinks that 8000 is a positive number."
-
-			// "In signed multiply, the hardware thinks that 0 is a negative number. This is not an 
-			// immediate problem for a multiply by zero, since the answer will be re-negated to the 
-			// correct polarity of zero. However, since it will set the sign flag, you can not depend 
-			// on the sign flag to be correct if you just load the lower byte after a multiply by zero."
-
-			// Do conversion if value is negative. Subtract 1 to account for 0 being negative
 			sign = 1;
-			if (value > 0x8000)
+
+			// "In signed multiply, the hardware thinks that 8000 is a positive number."
+			// "In signed multiply, the hardware thinks that 0 is a negative number."
+			if (value == 0x8000) sign = 1;
+			else if (value == 0) sign = -1;
+			else sign = ((value & 0x8000) != 0) ? -1 : 1;
+
+			// " This is not an immediate problem for a multiply by zero, since the answer 
+			// will be re-negated to the correct polarity of zero. However, since it will 
+			// set the sign flag, you can not depend on the sign flag to be correct 
+			// if you just load the lower byte after a multiply by zero."
+
+			// Do conversion if value is negative.
+			if (value != 0 && sign == -1)
 			{
+//				value = (ushort)-(short)value;
 				ushort conversion = (ushort)(value ^ 0xFFFF);
 				conversion++; // Add 1 for earlier correction
-				sign = -1;
 				value = conversion;
 			}
 			return value;
@@ -167,6 +177,7 @@ namespace KillerApps.Emulation.AtariLynx
 
 			// "Mathbit. If mult, 1=accumulator overflow. If div, 1=div by zero attempted."
 			SPRSYS.MathWarning = false;
+			SPRSYS.LastCarry = false;
 
 			// KW: "Divide is ALWAYS unsigned arithmetic..."
 			ushort NP = BitConverter.IsLittleEndian ? (ushort)((MathNP[1] << 8) + MathNP[0]) : (ushort)((MathNP[0] << 8) + MathNP[1]);
@@ -184,6 +195,8 @@ namespace KillerApps.Emulation.AtariLynx
 				{
 					MathABCD[index] = MathJKLM[index] = 0;
 				}
+
+				SPRSYS.LastCarry = JKLM != 0;
 			}
 			else
 			{
@@ -196,7 +209,9 @@ namespace KillerApps.Emulation.AtariLynx
 
 				// "Mathbit. If mult, 1=accumulator overflow. If div, 1=div by zero attempted."
 				SPRSYS.MathWarning = true;
+				SPRSYS.LastCarry = true;
 				SPRSYS.MathInProcess = false;
+				SPRSYS.UnsafeAccess = true;
 
 				// For now, assume that a zero divisor takes no (significant amount of) cycles for math to complete.
 				return;
@@ -253,15 +268,18 @@ namespace KillerApps.Emulation.AtariLynx
 				uint JKLM = BitConverter.ToUInt32(MathJKLM, 0);
 				uint accumulate = JKLM + EFGH;
 
-				long overflow = (long)(int)JKLM + (long)(int)EFGH;
-				if (overflow > 0xFFFFFFFF || overflow < 0)
+				ulong overflow = (ulong)(uint)JKLM + (ulong)(uint)EFGH;
+				if (overflow > 0xFFFFFFFF)
 				{
 					// "... and an accumulator overflow bit."
+					// "Mathbit. If mult, 1=accumulator overflow. If div, 1=div by zero attempted."
 					SPRSYS.MathWarning = true;
+					SPRSYS.LastCarry = true;
 				}
 				else
 				{
 					SPRSYS.MathWarning = false;
+					SPRSYS.LastCarry = false;
 				}
 
 				// TODO: "BIG NOTE: Unsafe access is broken for math operations.
@@ -271,6 +289,7 @@ namespace KillerApps.Emulation.AtariLynx
 				if (!BitConverter.IsLittleEndian) MathJKLM = MathJKLM.Reverse().ToArray();
 			}
 
+			// Calculation is done, so set SPRSYS 7th bit Math in process to 0
 			SPRSYS.MathInProcess = false;
 		}
 
@@ -282,6 +301,8 @@ namespace KillerApps.Emulation.AtariLynx
 			{
 				MathABCD = MathABCD.Reverse().ToArray();
 				MathJKLM = MathJKLM.Reverse().ToArray();
+				// "As a courtesy, the hardware will set J,K to zero so that the software can treat the remainder
+				// as a 32 bit number."
 				MathJKLM[0] = 0; // J
 				MathJKLM[1] = 0; // K
 			}
@@ -294,6 +315,7 @@ namespace KillerApps.Emulation.AtariLynx
 			}
 
 			SPRSYS.MathInProcess = false;
+			SPRSYS.UnsafeAccess = true;
 		}
 
 		public void Initialize()
@@ -525,15 +547,13 @@ namespace KillerApps.Emulation.AtariLynx
 
 				case Addresses.MATHA:
 					MathABCD[3] = value;
-					signAB = 0;
+					//signAB = 0;
 
 					// "The conversion that is performed on the CPU provided starting numbers is done when the 
 					// upper byte is sent by the CPU."
 					// Starting numbers meaning AB and CD
 					if (SPRSYS.SignedMath)
 					{
-						//Debug.WriteLineIf(GeneralSwitch.TraceInfo, "Suzy::Multiply16By16 - Signed math multiply operation.");
-
 						// "When signed multiply is enabled, the hardware will convert the number provided by the CPU 
 						// into a positive number and save the sign of the original number."
 						ushort AB = (ushort)((MathABCD[3] << 8) + MathABCD[2]);
@@ -552,13 +572,15 @@ namespace KillerApps.Emulation.AtariLynx
 					//device.SystemClock.CompatibleCycleCount += Multiply16By16();
 					break;
 				case Addresses.MATHB:
+					// "Therefore, while writing to the lower byte will set the upper byte to zero, it WILL NOT change 
+					// its sign to positive. Therefore, when using signed multiply, you MUST write both bytes of a number."
 					MathABCD[2] = value;
 					// "Writing to B,D,F,H,K, or M will force a '0' to be written to A,C,E,G,J, or L, respectively."
 					MathABCD[3] = 0;
 					break;
 				case Addresses.MATHC:
 					MathABCD[1] = value;
-					signCD = 0;
+					//signCD = 0;
 					// "The conversion that is performed on the CPU provided starting numbers is done when the 
 					// upper byte is sent by the CPU."
 					// Starting numbers meaning AB and CD
@@ -578,6 +600,8 @@ namespace KillerApps.Emulation.AtariLynx
 					}
 					break;
 				case Addresses.MATHD:
+					// "Therefore, while writing to the lower byte will set the upper byte to zero, it WILL NOT change 
+					// its sign to positive. Therefore, when using signed multiply, you MUST write both bytes of a number."
 					MathABCD[0] = value;
 					// "Writing to B,D,F,H,K, or M will force a '0' to be written to A,C,E,G,J, or L, respectively."
 					MathABCD[1] = 0;
