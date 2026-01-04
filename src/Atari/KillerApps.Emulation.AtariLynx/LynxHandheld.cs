@@ -115,6 +115,11 @@ namespace KillerApps.Emulation.AtariLynx
 			this.Suzy.JOYSTICK.State = state;
 		}
 
+		public void UpdateSwitchesState(SwitchesStates state)
+		{
+			this.Suzy.SWITCHES.State = state;
+		}
+
 		public void InsertComLynxCable(IComLynxTransport transport)
 		{
 			this.Mikey.ComLynx.InsertCable(transport);

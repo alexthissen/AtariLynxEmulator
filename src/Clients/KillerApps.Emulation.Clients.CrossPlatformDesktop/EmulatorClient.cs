@@ -178,8 +178,8 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
 
             inputHandler.Update(gameTime);
 
-            JoystickStates joystick = inputHandler.Joystick;
-            emulator.UpdateJoystickState(joystick);
+            emulator.UpdateJoystickState(inputHandler.Joystick);
+            emulator.UpdateSwitchesState(inputHandler.Switches);
             emulator.Update(86667); // 4 MHz worth of cycles divided by 60 seconds
 
             base.Update(gameTime);

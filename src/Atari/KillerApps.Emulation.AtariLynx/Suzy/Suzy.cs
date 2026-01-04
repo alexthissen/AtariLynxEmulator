@@ -38,6 +38,7 @@ namespace KillerApps.Emulation.AtariLynx
 		public SpriteInitializationBits SPRINIT { get; private set; }
 		public SuzyBusEnable SUZYBUSEN { get; private set; }
 		public Joystick JOYSTICK { get; private set; }
+		public Switches SWITCHES { get; private set; }
 
 		public byte[] MathEFGH = new byte[4]; 
 		public byte[] MathJKLM = new byte[4]; 
@@ -61,6 +62,7 @@ namespace KillerApps.Emulation.AtariLynx
 			SPRINIT = new SpriteInitializationBits(0);
 			SUZYBUSEN = new SuzyBusEnable();
 			JOYSTICK = new Joystick();
+			SWITCHES = new Switches(); 
 		}
 
 		// "We have a 16 by 16 to 32 unsigned and signed multiply with accumulate and a ..."
@@ -801,12 +803,15 @@ namespace KillerApps.Emulation.AtariLynx
 					value = JOYSTICK.Value;
 					break;
 
+				case Addresses.SWITCHES:
+					value = SWITCHES.Value;
+					break;
+
 				case Addresses.SPRCOL:
 				case Addresses.SPRINIT:
 				case Addresses.SPRCTL0:
 				case Addresses.SPRCTL1:
 				case Addresses.SUZYBUSEN:
-					//Debug.WriteLineIf(GeneralSwitch.TraceWarning, String.Format("Suzy::Peek - Peeking at write-only address ${0:X4}", address));
 					break;
 
 				case Addresses.SPRSYS:
