@@ -91,7 +91,6 @@ namespace KillerApps.Emulation.AtariLynx
 
 		public void BeginMultiply16By16()
 		{
-			SPRSYS.MathWarning = false; // TODO: Is this correct here?
 			SPRSYS.LastCarry = false;
 			MathTypeInProgress = MathType.Multiplication;
 
@@ -121,6 +120,9 @@ namespace KillerApps.Emulation.AtariLynx
 
 			SPRSYS.UnsafeAccess = true;
 			SPRSYS.MathInProcess = true;
+
+			MathEFGH = BitConverter.GetBytes(EFGH);
+			if (!BitConverter.IsLittleEndian) MathEFGH = MathEFGH.Reverse().ToArray();
 		}
 
 		internal ushort ConvertSignedMathValue(ushort value, out int sign)
@@ -130,8 +132,9 @@ namespace KillerApps.Emulation.AtariLynx
 			// "In signed multiply, the hardware thinks that 8000 is a positive number."
 			// "In signed multiply, the hardware thinks that 0 is a negative number."
 			if (value == 0x8000) sign = 1;
-			else if (value == 0) sign = -1;
+			// else if (value == 0) sign = -1;
 			else sign = ((value & 0x8000) != 0) ? -1 : 1;
+			//sign = ((value & 0x8000) != 0) ? -1 : 1; // Only this line works
 
 			// " This is not an immediate problem for a multiply by zero, since the answer 
 			// will be re-negated to the correct polarity of zero. However, since it will 
@@ -169,8 +172,9 @@ namespace KillerApps.Emulation.AtariLynx
 			// No point in explaining the errors here, just don't use it. Thank You VTI."
 			// LX: VTI is manufacturer of chipset
 
-			// TODO: "BIG NOTE: Unsafe access is broken for math operations. Please reset it after every math operation or 
+			// "BIG NOTE: Unsafe access is broken for math operations. Please reset it after every math operation or 
 			// it will not be useful for sprite operations."
+			SPRSYS.UnsafeAccess = true;
 
 			SPRSYS.MathInProcess = true;
 			MathTypeInProgress = MathType.Division;
@@ -201,20 +205,21 @@ namespace KillerApps.Emulation.AtariLynx
 			else
 			{
 				// "The number in the dividend as a result of a divide by zero is 'FFFFFFFF (BigNum)."
-				for (int index = 0; index < 4; index++)
-				{
-					MathABCD[index] = 0xFF;
-					MathJKLM[index] = 0x00;
-				}
+				// for (int index = 0; index < 4; index++)
+				// {
+				// 	MathABCD[index] = 0xFF; // dividend
+				// 	MathJKLM[index] = 0x00; // remainder
+				// }
+				ABCD = 0xFFFFFFFF;
+				JKLM = 0x00000000;
 
 				// "Mathbit. If mult, 1=accumulator overflow. If div, 1=div by zero attempted."
 				SPRSYS.MathWarning = true;
 				SPRSYS.LastCarry = true;
-				SPRSYS.MathInProcess = false;
-				SPRSYS.UnsafeAccess = true;
+				//SPRSYS.MathInProcess = false;
 
 				// For now, assume that a zero divisor takes no (significant amount of) cycles for math to complete.
-				return;
+				//return;
 			}
 
 			// "Divides take 176 + 14*N ticks where N is the number of most significant zeros in the divisor."
@@ -315,7 +320,6 @@ namespace KillerApps.Emulation.AtariLynx
 			}
 
 			SPRSYS.MathInProcess = false;
-			SPRSYS.UnsafeAccess = true;
 		}
 
 		public void Initialize()
