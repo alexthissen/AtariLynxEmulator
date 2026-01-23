@@ -79,6 +79,9 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
             };
             Components.Add(inputHandler);
 
+            // Force process exit on game exit to ensure clean termination
+            this.Exiting += (sender, args) => Environment.Exit(0);
+
             base.Initialize();
         }
 
@@ -86,9 +89,10 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
         {
             ICartridge cartridge = null;
             LnxRomImageFileFormat gameRomImage = new LnxRomImageFileFormat();
+            //BllRomImageFileFormat gameRomImage = new BllRomImageFileFormat();
 
             Stream gameRomStream = gameRomFileInfo?.OpenRead();
-            if (gameRomStream is null) gameRomStream = new MemoryStream(Roms.junglejack);
+//            if (gameRomStream is null) gameRomStream = new MemoryStream(Roms.junglejack);
 
             try
             {
@@ -163,7 +167,15 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
         /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
+            // Unload any non ContentManager content here
+            if (dynamicSound != null)
+            {
+                dynamicSound.Stop();
+                dynamicSound.Dispose();
+                dynamicSound = null;
+            }
+
+            base.UnloadContent();
         }
 
         /// <summary>
@@ -174,7 +186,14 @@ namespace KillerApps.Emulation.Clients.CrossPlatformDesktop
         protected override void Update(GameTime gameTime)
         {
             if (inputHandler.ExitGame == true)
+            {
+                // Unsubscribe event to prevent further audio submissions
+                if (emulator?.Mikey?.AudioFilter != null)
+                {
+                    emulator.Mikey.AudioFilter.BufferReady -= OnAudioFilterBufferReady;
+                }
                 this.Exit();
+            }
 
             inputHandler.Update(gameTime);
 

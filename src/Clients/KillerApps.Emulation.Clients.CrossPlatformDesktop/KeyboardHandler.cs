@@ -37,5 +37,13 @@ namespace KillerApps.Gaming.MonoGame
 
 			return joystick;
 		}
+
+		protected override SwitchesStates BuildSwitchesState()
+		{
+			KeyboardState keyboard = Keyboard.GetState();
+			SwitchesStates switches = SwitchesStates.None;
+			if (keyboard.IsKeyDown(Keys.P) == true) switches |= SwitchesStates.Pause;
+			return switches;
+		}
 	}
 }
